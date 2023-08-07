@@ -1,9 +1,15 @@
 import React from 'react';
+import {QueryClientProvider} from 'react-query';
+import {queryClient} from "./api/client";
+import Chat from "./component/Chat";
 
 function App() {
   return (
-    <div className="App">
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+          <Chat></Chat>
+      </div>
+    </QueryClientProvider>
   );
 }
 
