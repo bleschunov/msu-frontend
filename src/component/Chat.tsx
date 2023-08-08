@@ -1,30 +1,49 @@
 import {useMutation} from 'react-query';
-import {useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {getPrediction} from "../api/client";
+import {Message} from "./Message";
+import {Flex, HStack, Input} from "@chakra-ui/react";
 
 function Chat() {
     const [query, setQuery] = useState("")
-    const [value, setValue] = useState("")
+    const [messages, setMessages] = useState([
+        <Message direction={"incoming"}>What do you want to know about?</Message>
+    ])
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setQuery(event.target.value)
+    }
 
     const mutation = useMutation(getPrediction, {
         onSuccess: async (response) => {
-            setValue(response.data.answer)
+            setMessages((messages) => [
+                ...messages,
+                <Message direction={"incoming"}>{response.data.answer}</Message>
+            ])
         }
     })
 
     const handleSubmit = () => {
+        setMessages((messages) => [
+            ...messages,
+            <Message direction={"outgoing"}>{query}</Message>
+        ])
+        setQuery("")
         mutation.mutate({query})
     }
 
     return (
-        <div>
-            <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-            />
-            <button onClick={handleSubmit}>Send</button>
-            <div>{mutation.isLoading ? 'Loading...' : value}</div>
-        </div>
+        <Flex direction={"column"}>
+            {messages}
+            <HStack>
+                <Input
+                    value={query}
+                    onChange={handleChange}
+                    placeholder={"Print your query"}
+                />
+                <button onClick={handleSubmit}>Send</button>
+            </HStack>
+        </Flex>
     )
 }
 
