@@ -4,7 +4,7 @@ import {QueryClient} from "react-query";
 export const queryClient = new QueryClient()
 
 export const axiosClient = axios.create({
-    baseURL: 'http://0.0.0.0:8080/'
+    baseURL: 'https://msu-backend.fly.dev'
 });
 
 export const getPrediction = async (body: {query: string}) => {
