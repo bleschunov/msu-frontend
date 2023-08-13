@@ -1,14 +1,15 @@
-import {Card, CardBody, Flex, Text} from "@chakra-ui/react";
+import {Card, CardBody, CardFooter, Flex, Text} from "@chakra-ui/react";
 import {FC, ReactNode} from "react";
 import Avatar from "./Avatar";
 import {ReviewModel} from "../model/ReviewModel";
+import Callback from "./Callback";
 
 export interface MessageModel {
     answer?: string
     chat_id: string
     created_at?: string
     exception?: string
-    id?: string
+    id: number
     note?: string
     query?: string
     sql?: string
@@ -17,12 +18,14 @@ export interface MessageModel {
 }
 
 interface IMessage {
+    messageId: number
     src?: string
     children: ReactNode
     direction: "incoming" | "outgoing"
+    review?: ReviewModel[]
 }
 
-export const Message: FC<IMessage> = ({ src, direction, children }) => {
+export const Message: FC<IMessage> = ({ messageId, src, direction, children , review}) => {
     let justify, flexDirection, name = ""
 
     if (direction === "incoming") {
@@ -56,6 +59,11 @@ export const Message: FC<IMessage> = ({ src, direction, children }) => {
                 <CardBody>
                     {children}
                 </CardBody>
+                {direction === "incoming" &&
+                    <CardFooter>
+                        <Callback messageId={messageId}/>
+                    </CardFooter>}
+                {review && review.map(({commentary, mark}) => <Text>{commentary} {mark}</Text>)}
             </Card>
         </Flex>
     )
@@ -64,23 +72,19 @@ export const Message: FC<IMessage> = ({ src, direction, children }) => {
 export const createMessage = (messageModel: MessageModel) => {
     let messageContent = messageModel.query
 
-    if (messageModel.exception) {
-        messageContent = messageModel.exception
-    }
-
     if (messageModel.answer) {
         messageContent = messageModel.answer
     }
 
     const result = [
-        <Message direction={messageModel.answer ? "incoming" : "outgoing"} key={messageModel.id}>
+        <Message review={messageModel.review} messageId={messageModel.id} direction={messageModel.answer ? "incoming" : "outgoing"} key={messageModel.id}>
             {messageContent}
         </Message>
     ]
 
     if (messageModel.review?.length !== 0) {
         messageModel.review?.forEach(review => result.push(
-            <Message direction="incoming" key={review.id} src="/avatar/admin.png">
+            <Message messageId={messageModel.id} direction="incoming" key={review.id} src="/avatar/admin.png">
                 <Text>Оценка: {review.mark}</Text>
                 <Text mt={1}>Комментарий:</Text>
                 <Text>{review.commentary}</Text>

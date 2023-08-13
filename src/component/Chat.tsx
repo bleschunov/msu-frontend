@@ -1,109 +1,98 @@
 import {useMutation, useQuery, useQueryClient} from 'react-query';
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {getPrediction, resetContext} from "../api/client";
-import {createMessage} from "./Message";
-import {Flex} from "@chakra-ui/react";
+import {getOrCreateChat, getPrediction, insertMessage} from "../api/client";
+import {Button, Flex} from "@chakra-ui/react";
 import InputGroup from "./InputGroup";
-import {getMessagesByChatId, getOrCreateChat, getUser, insertMessage} from "../api/supabase";
-import Callback from "./Callback";
+import {getUser} from "../api/supabase";
+import {createMessage} from "./Message";
+import {getLastN} from "../misc/util";
+
 
 function Chat() {
-    const [clean, setClean] = useState<boolean>(true)
+    const [lastN, setLastN] = useState<number>(20)
     const messageWindowRef = useRef<HTMLDivElement>(null);
-    // const inputRef = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState("")
     const queryClient = useQueryClient()
+    const chatRef = useRef<HTMLDivElement>(null)
 
-    const chat = useQuery("chat", async () => {
-        const user = await getUser()
-        // @ts-ignore
-        const id = user.id
+    const {data: user} = useQuery("user", () => getUser())
+    const {data: chat, status} = useQuery("chat", async () => {
+        if (!user) {
+            return Promise.reject()
+        }
 
-        const chat = await getOrCreateChat(id)
-        // @ts-ignore
-        return chat.data[0]
+        return getOrCreateChat(user.id)
+    }, {
+        enabled: !!user
     })
-    const messages = useQuery(
-        "messages",
-        async () => await getMessagesByChatId(chat.data.id),
-        {
-            enabled: !!chat.data?.id,
-        }
-    )
 
-    useEffect(() => {
-        if (messageWindowRef) {
-            messageWindowRef.current?.addEventListener('DOMNodeInserted', event => {
-                const target = event.currentTarget as HTMLDivElement
-                window.scroll({ top: target.scrollHeight, behavior: 'smooth' });
-            });
-        }
-    }, [])
-
-    const messageMutation = useMutation(insertMessage, {
-        onSuccess: async (response) => {
-            await queryClient.invalidateQueries("messages")
-            setQuery("")
+    const messageCreateMutation = useMutation(insertMessage, {
+        onSuccess: () => {
+            queryClient.invalidateQueries("chat")
         }
     })
 
     const predictionMutation = useMutation(getPrediction, {
-        onSuccess: async (response) => {
-            messageMutation.mutate({chat_id: chat.data.id, answer: response.data.answer})
-            await queryClient.invalidateQueries("messages")
+        onSuccess: ({data: {answer, sql, table}}, {chat_id}) => {
+            messageCreateMutation.mutate({
+                chat_id: chat_id,
+                answer,
+                sql,
+                table
+            })
+        },
+        onError: ({response: {data}}) => {
+            const exception = typeof data.detail === "object"
+                ? JSON.stringify(data.detail)
+                : data.detail
+            const message = "Произошла ошибка"
+
+            messageCreateMutation.mutate({
+                // @ts-ignore
+                chat_id: chat.id,
+                exception,
+                answer: message
+            })
         }
     })
 
-    const contextResetMutation = useMutation(resetContext, {
-        onSuccess: async () => {
-            messageMutation.mutate({chat_id: chat.data.id, answer: "Контекст сброшен"})
-            await queryClient.invalidateQueries("messages")
-        },
-        onError: async () => {
-            messageMutation.mutate({chat_id: chat.data.id, answer: "Контекст не сброшен из–за ошибки"})
-            await queryClient.invalidateQueries("messages")
-        }
-    })
+    useEffect(() => {
+        window.scroll({ top: chatRef.current?.offsetHeight, behavior: 'smooth' });
+    }, [chat])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value)
     }
 
     const handleSubmit = () => {
-        if (query === "") {
-            return;
+        if (query !== "" && chat) {
+            // @ts-ignore
+            messageCreateMutation.mutate({chat_id: chat.id, query})
+            predictionMutation.mutate({query, chat_id: chat.id})
+            setQuery("")
         }
-        messageMutation.mutate({chat_id: chat.data.id, query})
-        predictionMutation.mutate({query})
-        setClean(false)
-        // inputRef.current?.focus()
     }
 
-    const handleContextReset = () => {
-        contextResetMutation.mutate()
-        // inputRef.current?.focus()
+    const handleShowMore = () => {
+        setLastN(lastN => lastN + 10)
     }
 
     const isLoading = predictionMutation.isLoading
-        || contextResetMutation.isLoading
-        || messageMutation.isLoading
-        || messages.isLoading
-
-    const newCallback = messages.data && <Callback messageId={messages.data[messages.data.length - 1].id} />
+        || messageCreateMutation.isLoading
+        || status === "loading"
 
     return (
-        <Flex direction="column" p="10" h="full" gap={10}>
+        <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
+            {chat && chat.message.length > lastN
+                && <Button colorScheme="blue" onClick={handleShowMore}>Показать больше</Button>}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {messages.data?.map(messageModel => createMessage(messageModel))}
-                {!clean && !isLoading && newCallback}
+                {chat && getLastN(lastN, chat.message.map((message: any) => createMessage(message)))}
             </Flex>
             <InputGroup
                 disabled={isLoading}
                 value={query}
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
-                handleContextReset={handleContextReset}
-                // inputRef={inputRef}
             />
         </Flex>
     )

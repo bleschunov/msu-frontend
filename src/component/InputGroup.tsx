@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FC, LegacyRef} from 'react';
-import {Button, Flex, HStack, Input, VStack} from "@chakra-ui/react";
+import {Button, Flex, HStack, Input} from "@chakra-ui/react";
 import useKeypress from 'react-use-keypress';
 
 interface IInputGroup {
@@ -7,7 +7,6 @@ interface IInputGroup {
     value: string
     handleChange: (event: ChangeEvent<HTMLInputElement>) => void
     handleSubmit: () => void
-    handleContextReset: () => void
     disabled: boolean
 }
 
@@ -16,7 +15,6 @@ const InputGroup: FC<IInputGroup> = ({
     value,
     handleChange,
     handleSubmit,
-    handleContextReset,
     disabled
 }) => {
     useKeypress("Enter", handleSubmit)
@@ -40,15 +38,6 @@ const InputGroup: FC<IInputGroup> = ({
                     Send
                 </Button>
             </HStack>
-            <VStack align="start">
-                <Button
-                    colorScheme="blue"
-                    onClick={handleContextReset}
-                    isDisabled={disabled}
-                >
-                    Reset Context
-                </Button>
-            </VStack>
         </Flex>
     );
 };
