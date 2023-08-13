@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from 'react-query';
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {getOrCreateChat, getPrediction, insertMessage} from "../api/client";
+import {getOrCreateChat, getPrediction, createMessage} from "../api/client";
 import {Button, Flex} from "@chakra-ui/react";
 import InputGroup from "./InputGroup";
 import {getUser} from "../api/supabase";
@@ -26,7 +26,7 @@ function Chat() {
         enabled: !!user
     })
 
-    const messageCreateMutation = useMutation(insertMessage, {
+    const messageCreateMutation = useMutation(createMessage, {
         onSuccess: () => {
             queryClient.invalidateQueries("chat")
         }

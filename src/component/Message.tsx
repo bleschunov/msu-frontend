@@ -3,19 +3,8 @@ import {FC, ReactNode} from "react";
 import Avatar from "./Avatar";
 import {ReviewModel} from "../model/ReviewModel";
 import Callback from "./Callback";
+import MessageModel from "../model/MessageModel";
 
-export interface MessageModel {
-    answer?: string
-    chat_id: string
-    created_at?: string
-    exception?: string
-    id: number
-    note?: string
-    query?: string
-    sql?: string
-    table?: string
-    review?: ReviewModel[]
-}
 
 interface IMessage {
     messageId: number

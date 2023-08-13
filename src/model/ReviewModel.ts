@@ -1,5 +1,9 @@
 export interface ReviewModel {
-    commentary?: string
-    mark?: number
-    message_id?: string
+    id: number
+    message_id: string
+    commentary: string
+    created_by: Date
+    created_at: Date
 }
+
+export default ReviewModel
