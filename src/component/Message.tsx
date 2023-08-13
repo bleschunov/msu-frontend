@@ -1,29 +1,35 @@
-import {Card, CardBody, CardFooter, Flex, Text} from "@chakra-ui/react";
+import {Card, CardBody, CardFooter, Flex, Text, VStack} from "@chakra-ui/react";
 import {FC, ReactNode} from "react";
 import Avatar from "./Avatar";
-import {ReviewModel} from "../model/ReviewModel";
 import Callback from "./Callback";
 import MessageModel from "../model/MessageModel";
+import ReviewModel from "../model/ReviewModel";
+import MarkModel from "../model/MarkModel";
 
 
-interface IMessage {
+interface MessageProps {
     messageId: number
-    src?: string
+    src: string
     children: ReactNode
     direction: "incoming" | "outgoing"
-    review?: ReviewModel[]
+    reviewModels: ReviewModel[]
+    markModel?: MarkModel
 }
 
-export const Message: FC<IMessage> = ({ messageId, src, direction, children , review}) => {
+export const Message: FC<MessageProps> = ({
+    messageId,
+    src,
+    direction,
+    children,
+    reviewModels,
+    markModel
+}) => {
     let justify, flexDirection, name = ""
 
     if (direction === "incoming") {
         justify = "start" as const
         flexDirection = "row" as const
         name = "bot"
-        if (!src) {
-            src = "/avatar/bot.png"
-        }
     }
 
 
@@ -31,11 +37,7 @@ export const Message: FC<IMessage> = ({ messageId, src, direction, children , re
         justify = "end" as const
         flexDirection = "row-reverse" as const
         name = "user"
-        if (!src) {
-            src = "/avatar/user.png"
-        }
     }
-
 
     return (
         <Flex
@@ -50,36 +52,38 @@ export const Message: FC<IMessage> = ({ messageId, src, direction, children , re
                 </CardBody>
                 {direction === "incoming" &&
                     <CardFooter>
-                        <Callback messageId={messageId}/>
+                        <VStack align="start">
+                            <Callback markModel={markModel} messageId={messageId} />
+                            {reviewModels.length !== 0 && reviewModels.map(({commentary, id}) => <Text key={id}>{commentary}</Text>)}
+                        </VStack>
                     </CardFooter>}
-                {review && review.map(({commentary, mark}) => <Text>{commentary} {mark}</Text>)}
             </Card>
         </Flex>
     )
 }
 
 export const createMessage = (messageModel: MessageModel) => {
-    let messageContent = messageModel.query
+    let messageContent = ""
+    let src = ""
+
+    if (messageModel.query) {
+        messageContent += messageModel.query
+        src = "/avatar/user.png"
+    }
 
     if (messageModel.answer) {
         messageContent = messageModel.answer
+        src = "/avatar/bot.png"
     }
 
-    const result = [
-        <Message review={messageModel.review} messageId={messageModel.id} direction={messageModel.answer ? "incoming" : "outgoing"} key={messageModel.id}>
-            {messageContent}
-        </Message>
-    ]
-
-    if (messageModel.review?.length !== 0) {
-        messageModel.review?.forEach(review => result.push(
-            <Message messageId={messageModel.id} direction="incoming" key={review.id} src="/avatar/admin.png">
-                <Text>Оценка: {review.mark}</Text>
-                <Text mt={1}>Комментарий:</Text>
-                <Text>{review.commentary}</Text>
-            </Message>
-        ))
-    }
-
-    return result
+    return <Message
+        reviewModels={messageModel.review}
+        markModel={messageModel.mark.length === 0 ? undefined : messageModel.mark[0]}
+        src={src}
+        messageId={messageModel.id}
+        direction={messageModel.answer ? "incoming" : "outgoing"}
+        key={messageModel.id}
+    >
+        {messageContent}
+    </Message>
 }

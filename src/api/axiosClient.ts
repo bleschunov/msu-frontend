@@ -5,8 +5,8 @@ const axiosClient: AxiosInstance = axios.create({
     baseURL: getBaseUrl()
 });
 
-axiosClient.interceptors.response.use(response => response, exception => {
-    console.log(exception)
+axiosClient.interceptors.response.use(response => response, e => {
+    throw e
 })
 
 export default axiosClient

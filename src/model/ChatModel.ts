@@ -6,3 +6,5 @@ interface ChatModel {
     message: MessageModel[]
     created_at: Date
 }
+
+export default ChatModel

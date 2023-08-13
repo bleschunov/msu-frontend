@@ -1,3 +1,3 @@
-const LOGO_TEXT = "Datastep X MSU"
+const LOGO_TEXT = "МСУ"
 
 export { LOGO_TEXT }

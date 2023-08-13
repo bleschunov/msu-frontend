@@ -1,11 +1,14 @@
 import {useMutation, useQuery, useQueryClient} from 'react-query';
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {getOrCreateChat, getPrediction, createMessage} from "../api/client";
+import {getPrediction} from "../api/client";
 import {Button, Flex} from "@chakra-ui/react";
 import InputGroup from "./InputGroup";
 import {getUser} from "../api/supabase";
-import {createMessage} from "./Message";
 import {getLastN} from "../misc/util";
+import ChatModel from "../model/ChatModel";
+import {createMessage} from "./Message";
+import {createMessage as createMessageApi} from "../api/messageApi"
+import {getOrCreateChat} from "../api/chatApi";
 
 
 function Chat() {
@@ -16,17 +19,14 @@ function Chat() {
     const chatRef = useRef<HTMLDivElement>(null)
 
     const {data: user} = useQuery("user", () => getUser())
-    const {data: chat, status} = useQuery("chat", async () => {
-        if (!user) {
-            return Promise.reject()
-        }
-
+    const {data: chat, status} = useQuery<ChatModel>("chat", () => {
+        // @ts-ignore
         return getOrCreateChat(user.id)
     }, {
         enabled: !!user
     })
 
-    const messageCreateMutation = useMutation(createMessage, {
+    const messageCreateMutation = useMutation(createMessageApi, {
         onSuccess: () => {
             queryClient.invalidateQueries("chat")
         }
@@ -35,7 +35,7 @@ function Chat() {
     const predictionMutation = useMutation(getPrediction, {
         onSuccess: ({data: {answer, sql, table}}, {chat_id}) => {
             messageCreateMutation.mutate({
-                chat_id: chat_id,
+                chat_id,
                 answer,
                 sql,
                 table
@@ -48,8 +48,8 @@ function Chat() {
             const message = "Произошла ошибка"
 
             messageCreateMutation.mutate({
-                // @ts-ignore
-                chat_id: chat.id,
+            // @ts-ignore
+                chat_id,
                 exception,
                 answer: message
             })
@@ -66,7 +66,6 @@ function Chat() {
 
     const handleSubmit = () => {
         if (query !== "" && chat) {
-            // @ts-ignore
             messageCreateMutation.mutate({chat_id: chat.id, query})
             predictionMutation.mutate({query, chat_id: chat.id})
             setQuery("")
@@ -83,10 +82,10 @@ function Chat() {
 
     return (
         <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
-            {chat && chat.message.length > lastN
+            {chat && chat.message?.length > lastN
                 && <Button colorScheme="blue" onClick={handleShowMore}>Показать больше</Button>}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {chat && getLastN(lastN, chat.message.map((message: any) => createMessage(message)))}
+                {chat && getLastN(lastN, chat.message?.map((message) => createMessage(message)))}
             </Flex>
             <InputGroup
                 disabled={isLoading}

@@ -3,13 +3,14 @@ import MarkModel from "./MarkModel";
 
 interface MessageModel {
     id: number
+    chat_id: number
     query?: string
     answer?: string
     sql?: string
     table?: string
     exception?: string
     review: ReviewModel[]
-    mark: MarkModel
+    mark: MarkModel[]
     created_at: Date
 }
 

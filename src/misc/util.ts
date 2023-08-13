@@ -6,6 +6,6 @@ export const getBaseUrl = (): string => {
     return "http://localhost:8080"
 }
 
-export const getLastN = (n: number, arr: any) => {
+export const getLastN = (n: number, arr: any[]) => {
     return arr.slice(Math.max(arr.length - n, 0))
 }

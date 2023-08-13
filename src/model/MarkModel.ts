@@ -3,7 +3,7 @@ interface MarkModel {
     mark: number
     message_id: number
     created_at: Date
-    created_by: number
+    created_by: string
 }
 
 export default MarkModel
