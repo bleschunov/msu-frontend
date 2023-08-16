@@ -5,6 +5,8 @@ import Callback from "./Callback";
 import MessageModel from "../model/MessageModel";
 import ReviewModel from "../model/ReviewModel";
 import MarkModel from "../model/MarkModel";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 
 interface MessageProps {
@@ -76,6 +78,8 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         src = "/avatar/bot.png"
     }
 
+    console.log(messageModel)
+
     return <Message
         reviewModels={messageModel.review}
         markModel={messageModel.mark.length === 0 ? undefined : messageModel.mark[0]}
@@ -84,6 +88,8 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         direction={messageModel.answer ? "incoming" : "outgoing"}
         key={messageModel.id}
     >
-        {messageContent}
+        <Text>{messageContent}</Text>
+        {messageModel.sql && <Text mt="5"><ReactMarkdown>{messageModel.sql}</ReactMarkdown></Text>}
+        {messageModel.table && <Text mt="5"><ReactMarkdown remarkPlugins={[remarkGfm]}>{messageModel.table}</ReactMarkdown></Text>}
     </Message>
 }
