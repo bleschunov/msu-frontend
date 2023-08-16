@@ -11,7 +11,9 @@ interface UserContextProviderProps {
 }
 
 const UserContextProvider: FC<UserContextProviderProps> = ({children}) => {
-    const {data: user, isSuccess} = useQuery<User>("user", getUser)
+    const {data: user, isSuccess} = useQuery<User>("user", getUser, {
+        cacheTime: 0
+    })
 
     if (!user || !isSuccess) {
         return (

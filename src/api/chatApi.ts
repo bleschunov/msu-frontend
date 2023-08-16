@@ -14,10 +14,10 @@ const createChat = async (body: Omit<ChatModel, "id" | "created_at" | "message">
 
 const getOrCreateChat = async (userId: string): Promise<ChatModel> => {
     try {
-        return getChat(userId)
+        return await getChat(userId)
     } catch (e) {
         if (e instanceof AxiosError && e.response?.status === 404) {
-            return createChat({user_id: userId})
+            return await createChat({user_id: userId})
         }
 
         throw e

@@ -32,8 +32,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker:build": "docker build -t frontend:dev .",
-    "docker:run": "docker run --rm docker-fronted:dev"
+    "docker:build": "docker build -t msu-frontend:dev .",
+    "docker:run": "docker run --rm -it -p 8080:3000 msu-frontend:dev"
   },
   "eslintConfig": {
     "extends": [

@@ -62,7 +62,7 @@ export const Message: FC<MessageProps> = ({
     )
 }
 
-export const createMessage = (messageModel: MessageModel) => {
+export const createMessage = (messageModel: MessageModel): ReactNode => {
     let messageContent = ""
     let src = ""
 
