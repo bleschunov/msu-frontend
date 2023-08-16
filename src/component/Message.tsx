@@ -78,8 +78,6 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         src = "/avatar/bot.png"
     }
 
-    console.log(messageModel)
-
     return <Message
         reviewModels={messageModel.review}
         markModel={messageModel.mark.length === 0 ? undefined : messageModel.mark[0]}
