@@ -1,5 +1,5 @@
-import React, {ChangeEvent, FC, LegacyRef} from 'react';
-import {Button, Flex, HStack, Input} from "@chakra-ui/react";
+import React, {ChangeEvent, Dispatch, FC, LegacyRef, SetStateAction} from 'react';
+import {Button, Flex, HStack, Input, Text} from "@chakra-ui/react";
 import useKeypress from 'react-use-keypress';
 
 interface IInputGroup {
@@ -7,15 +7,19 @@ interface IInputGroup {
     value: string
     handleChange: (event: ChangeEvent<HTMLInputElement>) => void
     handleSubmit: () => void
+    setValue: Dispatch<SetStateAction<string>>
     disabled: boolean
+    tips: string[]
 }
 
 const InputGroup: FC<IInputGroup> = ({
     // inputRef,
     value,
+    setValue,
     handleChange,
     handleSubmit,
-    disabled
+    disabled,
+    tips
 }) => {
     useKeypress("Enter", handleSubmit)
 
@@ -38,6 +42,8 @@ const InputGroup: FC<IInputGroup> = ({
                     Send
                 </Button>
             </HStack>
+            {tips.length !== 0 && <Text>Возможно, вы имели в виду:</Text>}
+            {tips.map(tip => <Button onClick={() => setValue((value) => value + " " + tip)}>{tip}</Button>)}
         </Flex>
     );
 };

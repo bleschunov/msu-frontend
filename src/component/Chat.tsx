@@ -11,8 +11,14 @@ import {getOrCreateChat} from "../api/chatApi";
 import {UserContext} from "../context/userContext";
 
 
+const dict = {
+    "компан": ["контрагент", "заказчик"]
+}
+
+
 function Chat() {
     const [lastN, setLastN] = useState<number>(20)
+    const [tips, setTips] = useState<string[]>([])
     const messageWindowRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState("")
     const queryClient = useQueryClient()
@@ -57,6 +63,23 @@ function Chat() {
     }, [chat])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const get_replacements = (val: string): string[] => {
+            for (const [key, value] of Object.entries(dict)) {
+                if (val.includes(key)) {
+                    return value
+                }
+            }
+
+            return []
+        }
+
+        const replacements = get_replacements(event.target.value)
+        if (replacements.length !== 0) {
+            setTips(replacements)
+        } else {
+            setTips([])
+        }
+
         setQuery(event.target.value)
     }
 
@@ -84,6 +107,8 @@ function Chat() {
                 {chat && getLastN(lastN, chat.message.map((message) => createMessage(message)))}
             </Flex>
             <InputGroup
+                setValue={setQuery}
+                tips={tips}
                 disabled={isLoading}
                 value={query}
                 handleChange={handleChange}
