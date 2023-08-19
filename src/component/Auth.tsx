@@ -2,8 +2,8 @@ import {FC, ReactNode, useEffect, useState} from 'react'
 import {createClient, Session} from '@supabase/supabase-js'
 import {Auth as SupabaseAuth} from '@supabase/auth-ui-react'
 import {ThemeSupa} from '@supabase/auth-ui-shared'
-import {Container, Grid, Heading} from "@chakra-ui/react";
-import {LOGO_TEXT} from "../misc/const";
+import {Center, Container, Grid} from "@chakra-ui/react";
+import Logo from "./Logo";
 
 interface IAuth {
     children: ReactNode
@@ -32,7 +32,7 @@ const Auth: FC<IAuth> = ({ children }) => {
         return (
             <Grid placeItems="center" h="100vh">
                 <Container maxW="lg" flexGrow="1">
-                    <Heading textAlign="center">{LOGO_TEXT}</Heading>
+                    <Center><Logo /></Center>
                     <SupabaseAuth
                         supabaseClient={supabase}
                         appearance={{

@@ -70,12 +70,12 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
 
     if (messageModel.query) {
         messageContent += messageModel.query
-        src = "/avatar/user.png"
+        src = "/image/avatar/user.png"
     }
 
     if (messageModel.answer) {
         messageContent = messageModel.answer
-        src = "/avatar/bot.png"
+        src = "/image/avatar/bot.png"
     }
 
     return <Message
