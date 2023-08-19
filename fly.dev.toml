@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for msu-frontend on 2023-08-13T23:28:39+03:00
+# fly.toml app configuration file generated for msu-frontend-dev on 2023-08-18T09:31:48+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "msu-frontend"
+app = "msu-frontend-dev"
 primary_region = "ams"
 
 [build]
