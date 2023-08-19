@@ -1,12 +1,13 @@
-import {Card, CardBody, CardFooter, Flex, Text, VStack} from "@chakra-ui/react";
+import {Box, Card, CardBody, Flex, Text, VStack} from "@chakra-ui/react";
 import {FC, ReactNode} from "react";
 import Avatar from "./Avatar";
 import Callback from "./Callback";
 import MessageModel from "../model/MessageModel";
-import ReviewModel from "../model/ReviewModel";
+import {ReviewModelRead} from "../model/ReviewModel";
 import MarkModel from "../model/MarkModel";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import {formatDate} from "../misc/util";
 
 
 interface MessageProps {
@@ -14,7 +15,7 @@ interface MessageProps {
     src: string
     children: ReactNode
     direction: "incoming" | "outgoing"
-    reviewModels: ReviewModel[]
+    reviewModels: ReviewModelRead[]
     markModel?: MarkModel
 }
 
@@ -51,14 +52,26 @@ export const Message: FC<MessageProps> = ({
             <Card>
                 <CardBody>
                     {children}
+
+                    {direction === "incoming" &&
+                        <>
+                            <Box mt="5"><Callback markModel={markModel} messageId={messageId} /></Box>
+                            <VStack align="start">
+                                {reviewModels.length !== 0 &&
+                                    <>
+                                        <Text fontWeight="bold" mt="5">Комментарии</Text>
+                                        {reviewModels.map(({commentary, id, created_at}, index) => (
+                                            <VStack align="left" mt={index === 0 ? 0 : 4} spacing={0}>
+                                                <Text color="gray.500" fontSize="15">{formatDate(created_at)}</Text>
+                                                <Text key={id}>{commentary}</Text>
+                                            </VStack>
+                                        ))}
+                                    </>
+                                }
+                            </VStack>
+                        </>
+                    }
                 </CardBody>
-                {direction === "incoming" &&
-                    <CardFooter>
-                        <VStack align="start">
-                            <Callback markModel={markModel} messageId={messageId} />
-                            {reviewModels.length !== 0 && reviewModels.map(({commentary, id}) => <Text key={id}>{commentary}</Text>)}
-                        </VStack>
-                    </CardFooter>}
             </Card>
         </Flex>
     )
@@ -87,7 +100,23 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         key={messageModel.id}
     >
         <Text>{messageContent}</Text>
-        {messageModel.sql && <Text mt="5"><ReactMarkdown>{messageModel.sql}</ReactMarkdown></Text>}
+        { messageModel.sql &&
+        <Box
+            mt="5"
+            bg="blue.900"
+            color="blue.300"
+            borderRadius="5"
+            padding="5"
+            fontWeight="bold"
+            overflowX="scroll"
+            css={{
+                '&::-webkit-scrollbar': {
+                    display: "none",
+                },
+            }}
+        >
+            <Text><ReactMarkdown>{messageModel.sql}</ReactMarkdown></Text>
+        </Box>}
         {messageModel.table && <Text mt="5"><ReactMarkdown remarkPlugins={[remarkGfm]}>{messageModel.table}</ReactMarkdown></Text>}
     </Message>
 }

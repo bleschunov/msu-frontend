@@ -1,13 +1,24 @@
 import {ReactNode} from "react";
+import moment from "moment";
 
-export const getBaseUrl = (): string => {
+const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {
-        return "https://msu-backend-master.fly.dev"
+        return process.env.REACT_APP_BACKEND_URI ?? "https://msu-backend-dev.fly.dev/api/v1"
     }
 
     return "http://localhost:8080/api/v1"
 }
 
-export const getLastN = (n: number, arr: ReactNode[]) => {
+const getLastN = (n: number, arr: ReactNode[]) => {
     return arr.slice(Math.max(arr.length - n, 0))
+}
+
+const formatDate = (date: Date): string => {
+    return moment(date).calendar()
+}
+
+export {
+    getBaseUrl,
+    getLastN,
+    formatDate
 }

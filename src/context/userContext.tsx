@@ -17,7 +17,7 @@ const UserContextProvider: FC<UserContextProviderProps> = ({children}) => {
 
     if (!user || !isSuccess) {
         return (
-            <Grid placeItems="center">
+            <Grid h="100vh" w="100vw" placeItems="center">
                 <Spinner />
             </Grid>
         )

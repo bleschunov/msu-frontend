@@ -13,9 +13,9 @@ const Header = () => {
     }
 
     return (
-        <HStack bg="gray.100" h="50px" flexShrink="0" justify="space-between" px="10" py="5">
+        <HStack bg="gray.100" h="100px" flexShrink="0" justify="space-between" px="10" py="5">
             <Logo />
-            <Button colorScheme="blue" onClick={handleSignOut}>Выйти</Button>
+            <Button colorScheme="blue" variant="outline" onClick={handleSignOut}>Выйти</Button>
         </HStack>
     );
 };

@@ -79,7 +79,7 @@ function Chat() {
     return (
         <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
             {chat && chat.message?.length > lastN
-                && <Button colorScheme="blue" onClick={handleShowMore}>Показать больше</Button>}
+                && <Button colorScheme="blue" onClick={handleShowMore}>Предыдущие сообщения</Button>}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
                 {chat && getLastN(lastN, chat.message.map((message) => createMessage(message)))}
             </Flex>

@@ -23,10 +23,9 @@ const InputGroup: FC<IInputGroup> = ({
         <Flex direction="column" gap="5">
             <HStack>
                 <Input
-                    // ref={inputRef}
                     value={value}
                     onChange={handleChange}
-                    placeholder={"Print your query"}
+                    placeholder="Напишите ваш запрос"
                     disabled={disabled}
                 />
                 <Button
@@ -35,7 +34,7 @@ const InputGroup: FC<IInputGroup> = ({
                     isLoading={disabled}
                     isDisabled={value === ""}
                 >
-                    Send
+                    Отправить
                 </Button>
             </HStack>
         </Flex>

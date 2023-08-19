@@ -41,6 +41,18 @@ const Auth: FC<IAuth> = ({ children }) => {
                                 anchor: {display: "none"}
                             }
                         }}
+                        localization={{
+                            variables: {
+                                sign_in: {
+                                    email_label: "Почта",
+                                    password_label: "Пароль",
+                                    email_input_placeholder: "",
+                                    password_input_placeholder: "",
+                                    button_label: "Войти",
+                                    loading_button_label: "Пожалуйста, подождите...",
+                                },
+                            },
+                        }}
                         providers={[]}
                     />
                 </Container>
