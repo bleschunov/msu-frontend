@@ -3,10 +3,10 @@ import moment from "moment";
 
 const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {
-        return process.env.REACT_APP_BACKEND_URI ?? "https://msu-backend-dev.fly.dev/api/v1"
+        return "https://msu-backend-dev.fly.dev/api/v1"
     }
 
-    return "http://localhost:8080/api/v1"
+    return "http://0.0.0.0:8080/api/v1"
 }
 
 const getLastN = (n: number, arr: ReactNode[]) => {
