@@ -1,5 +1,6 @@
 import {ReactNode} from "react";
-import moment from "moment";
+import {formatRelative, subDays} from 'date-fns'
+import { ru } from 'date-fns/locale'
 
 const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {
@@ -13,12 +14,12 @@ const getLastN = (n: number, arr: ReactNode[]) => {
     return arr.slice(Math.max(arr.length - n, 0))
 }
 
-const formatDate = (date: Date): string => {
-    return moment(date).calendar()
+const formatRelativeDate = (date: Date): string => {
+    return formatRelative(subDays(new Date(), 2), new Date(), { locale: ru })
 }
 
 export {
     getBaseUrl,
     getLastN,
-    formatDate
+    formatRelativeDate
 }
