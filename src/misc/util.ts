@@ -15,7 +15,7 @@ const getLastN = (n: number, arr: ReactNode[]) => {
     return arr.slice(Math.max(arr.length - n, 0))
 }
 
-const formatDate = (date: Date): any => {
+const formatDate = (date: Date): string => {
     return moment(date).locale("ru").calendar()
 }
 
