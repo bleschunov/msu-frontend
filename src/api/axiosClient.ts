@@ -13,8 +13,6 @@ axiosClient.interceptors.request.use(async config => {
         config.headers["Authorization"] = `Bearer ${session.access_token}`
     }
 
-    console.log(session)
-
     return config
 })
 
