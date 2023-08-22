@@ -1,12 +1,14 @@
 import {ReactNode} from "react";
 import moment from "moment";
+import 'moment/locale/ru'
+ 
 
 const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {
         return "https://msu-backend-dev.fly.dev/api/v1"
     }
 
-    return "http://0.0.0.0:8080/api/v1"
+    return "https://msu-backend-dev.fly.dev/api/v1"
 }
 
 const getLastN = (n: number, arr: ReactNode[]) => {
@@ -14,7 +16,7 @@ const getLastN = (n: number, arr: ReactNode[]) => {
 }
 
 const formatDate = (date: Date): string => {
-    return moment(date).calendar()
+    return moment(date).locale("ru").calendar()
 }
 
 export {
