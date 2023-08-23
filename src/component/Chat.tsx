@@ -54,7 +54,7 @@ function Chat() {
 
     useEffect(() => {
         window.scroll({ top: chatRef.current?.offsetHeight, behavior: 'smooth' });
-    }, [chat])
+    }, [chat?.message.length])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value)
