@@ -1,4 +1,4 @@
-import { createClient, User } from "@supabase/supabase-js"
+import { User, createClient } from "@supabase/supabase-js"
 
 const supabase = createClient(
     "https://jkhlwowgrekoqgvfruhq.supabase.co",

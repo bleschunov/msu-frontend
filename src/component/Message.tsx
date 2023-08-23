@@ -1,12 +1,12 @@
 import { Box, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
 import { FC, ReactNode } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import Avatar from "./Avatar"
 import Callback from "./Callback"
 import MessageModel from "../model/MessageModel"
 import { ReviewModelRead } from "../model/ReviewModel"
 import MarkModel from "../model/MarkModel"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import { formatDate } from "../misc/util"
 
 

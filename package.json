@@ -42,17 +42,44 @@
     "deploy:master": "fly deploy -a msu-frontend"
   },
   "eslintConfig": {
-    "extends": ["react-app"],
+    "extends": [
+      "react-app"
+    ],
     "rules": {
-      "indent": ["warn", 4],
+      "indent": [
+        "warn",
+        4
+      ],
       "no-console": "warn",
-      "semi": ["warn", "never"],
-      "object-curly-spacing": ["warn", "always"],
-      "quotes": ["warn", "double"]
+      "semi": [
+        "warn",
+        "never"
+      ],
+      "object-curly-spacing": [
+        "warn",
+        "always"
+      ],
+      "quotes": [
+        "warn",
+        "double"
+      ],
+      "import/order": [1, {
+          "groups": [
+            "external",
+            "builtin",
+            "internal",
+            "sibling",
+            "parent",
+            "index"
+          ]
+        }
+      ]
     },
     "overrides": [
       {
-        "files": ["**/*.ts?(x)"]
+        "files": [
+          "**/*.ts?(x)"
+        ]
       }
     ]
   },
@@ -67,5 +94,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-plugin-import": "^2.28.1"
   }
 }

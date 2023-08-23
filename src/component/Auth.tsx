@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect, useState } from "react"
-import { createClient, Session } from "@supabase/supabase-js"
+import { Session, createClient } from "@supabase/supabase-js"
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react"
 import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { Center, Container, Grid } from "@chakra-ui/react"

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios"
-import { getBaseUrl } from "../misc/util"
 import { supabase } from "./supabase"
+import { getBaseUrl } from "../misc/util"
 
 const axiosClient: AxiosInstance = axios.create({
     baseURL: getBaseUrl()
