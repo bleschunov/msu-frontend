@@ -1,5 +1,5 @@
-import {ReviewModelRead} from "./ReviewModel";
-import MarkModel from "./MarkModel";
+import { ReviewModelRead } from './ReviewModel'
+import MarkModel from './MarkModel'
 
 interface MessageModel {
     id: number
@@ -9,8 +9,8 @@ interface MessageModel {
     sql?: string
     table?: string
     exception?: string
-    review: ReviewModelRead[]
-    mark: MarkModel[]
+    review?: ReviewModelRead[]
+    mark?: MarkModel[]
     created_at: Date
 }
 

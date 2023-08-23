@@ -1,19 +1,25 @@
-import {useMutation, useQuery, useQueryClient} from 'react-query';
-import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
-import {getPrediction} from "../api/client";
-import {Button, Flex} from "@chakra-ui/react";
-import InputGroup from "./InputGroup";
-import {getLastN} from "../misc/util";
-import ChatModel from "../model/ChatModel";
-import {createMessage} from "./Message";
-import {createMessage as createMessageApi} from "../api/messageApi"
-import {getOrCreateChat} from "../api/chatApi";
-import {UserContext} from "../context/userContext";
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react'
+import { getPrediction } from '../api/client'
+import { Button, Flex } from '@chakra-ui/react'
+import InputGroup from './InputGroup'
+import { getLastN } from '../misc/util'
+import ChatModel from '../model/ChatModel'
+import { createMessage } from './Message'
+import { createMessage as createMessageApi } from '../api/messageApi'
+import { getOrCreateChat } from '../api/chatApi'
+import { UserContext } from '../context/userContext'
+import MessageModel from '../model/MessageModel'
 
+
+const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
+    previousChat.message.push(newMessage)
+    return previousChat
+}
 
 function Chat() {
     const [lastN, setLastN] = useState<number>(20)
-    const messageWindowRef = useRef<HTMLDivElement>(null);
+    const messageWindowRef = useRef<HTMLDivElement>(null)
     const [query, setQuery] = useState("")
     const queryClient = useQueryClient()
     const chatRef = useRef<HTMLDivElement>(null)
@@ -23,10 +29,27 @@ function Chat() {
         return getOrCreateChat(user.id)
     })
 
+    // TODO: Как сделать, что тип аргументов createMessageApi подтягивался в useMutation?
     const messageCreateMutation = useMutation(createMessageApi, {
         onSuccess: () => {
             queryClient.invalidateQueries("chat")
-        }
+        },
+        onMutate: async (newMessage: MessageModel) => {
+            await queryClient.cancelQueries("message")
+            const previousChat = queryClient.getQueryData<ChatModel>("chat")
+            if (previousChat) {
+                queryClient.setQueriesData<ChatModel>("chat", updateMessagesInChat(previousChat, newMessage))
+            }
+            return {
+                previousChat,
+            }
+        },
+        onError: (_error, _currentMark, context) => {
+            queryClient.setQueriesData("chat", context?.previousChat)
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries("chat")
+        },
     })
 
     const predictionMutation = useMutation(getPrediction, {
@@ -35,8 +58,8 @@ function Chat() {
                 chat_id,
                 answer,
                 sql,
-                table
-            })
+                table,
+            } as MessageModel)
         },
         onError: ({response: {data}}, {chat_id}) => {
             const exception = typeof data.detail === "object"
@@ -48,12 +71,12 @@ function Chat() {
                 chat_id,
                 exception,
                 answer: message
-            })
+            } as MessageModel)
         }
     })
 
     useEffect(() => {
-        window.scroll({ top: chatRef.current?.offsetHeight, behavior: 'smooth' });
+        window.scroll({top: chatRef.current?.offsetHeight, behavior: 'smooth'})
     }, [chat?.message.length])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +85,7 @@ function Chat() {
 
     const handleSubmit = () => {
         if (query !== "" && chat) {
-            messageCreateMutation.mutate({chat_id: chat.id, query})
+            messageCreateMutation.mutate({chat_id: chat.id, query} as MessageModel)
             predictionMutation.mutate({query, chat_id: chat.id})
             setQuery("")
         }

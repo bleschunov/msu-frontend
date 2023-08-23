@@ -1,39 +1,63 @@
-import React, {ChangeEvent, FC, useContext, useState} from 'react';
-import {Button, HStack, Text, Textarea, VStack} from "@chakra-ui/react";
-import {useMutation, useQueryClient} from "react-query";
-import MarkModel from "../model/MarkModel";
-import {createMark} from "../api/markApi";
-import {UserContext} from "../context/userContext";
-import {User} from "@supabase/supabase-js";
-import {createReview} from "../api/reviewApi";
+import React, { ChangeEvent, FC, useContext, useState } from 'react'
+import { Button, HStack, Text, Textarea, VStack } from '@chakra-ui/react'
+import { useMutation, useQueryClient } from 'react-query'
+import MarkModel from '../model/MarkModel'
+import { createMark } from '../api/markApi'
+import { UserContext } from '../context/userContext'
+import { User } from '@supabase/supabase-js'
+import { createReview } from '../api/reviewApi'
+import ChatModel from '../model/ChatModel'
 
 interface CallbackProps {
-    messageId: number
-    markModel?: MarkModel
+  messageId: number;
+  markModel?: MarkModel;
 }
 
-const Callback: FC<CallbackProps> = ({
-    messageId,
-    markModel,
-}) => {
+const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
+    oldChat.message.forEach((message) => {
+        if (message.id === messageId) {
+            message.mark = [newMark]
+        }
+    })
+    return oldChat
+}
+
+const Callback: FC<CallbackProps> = ({messageId, markModel}) => {
     const [commentary, setCommentary] = useState<string>("")
     const queryClient = useQueryClient()
 
     const user = useContext<User>(UserContext)
     const createMarkMutation = useMutation(createMark, {
-        onSuccess: () => {
+        onMutate: async (newMark: MarkModel) => {
+            await queryClient.cancelQueries("chat")
+            const previousChat = queryClient.getQueryData<ChatModel>("chat")
+            if (previousChat) {
+                queryClient.setQueriesData<ChatModel>("chat", updateMarkInChat(previousChat, messageId, newMark))
+            }
+            return {
+                previousChat,
+            }
+        },
+        onError: (_error, _currentMark, context) => {
+            queryClient.setQueriesData("chat", context?.previousChat)
+        },
+        onSettled: () => {
             queryClient.invalidateQueries("chat")
-        }
+        },
     })
 
     const reviewMutation = useMutation(createReview, {
         onSuccess: () => {
             queryClient.invalidateQueries("chat")
-        }
+        },
     })
 
     const handleMarkButton = (mark: number) => {
-        createMarkMutation.mutate({mark, created_by: user.id, message_id: messageId})
+        createMarkMutation.mutate({
+            mark,
+            created_by: user.id,
+            message_id: messageId,
+        } as MarkModel)
     }
 
     const handleChangeCommentary = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -41,13 +65,20 @@ const Callback: FC<CallbackProps> = ({
     }
 
     const handleSubmitCommentary = () => {
-        reviewMutation.mutate({commentary, message_id: messageId, created_by: user.id})
+        reviewMutation.mutate({
+            commentary,
+            message_id: messageId,
+            created_by: user.id,
+        })
         setCommentary("")
     }
 
     return (
         <VStack align="left" mt="10">
-            <Text fontWeight="bold">Поставьте оценку и напишите комментарий, что понравилось в ответе, а что — нет:</Text>
+            <Text fontWeight="bold">
+        Поставьте оценку и напишите комментарий, что понравилось в ответе, а что
+        — нет:
+            </Text>
             <HStack gap="3">
                 <Button
                     colorScheme="blue"
@@ -76,11 +107,11 @@ const Callback: FC<CallbackProps> = ({
                     onClick={handleSubmitCommentary}
                     isLoading={reviewMutation.isLoading}
                 >
-                    Отправить
+          Отправить
                 </Button>
             </HStack>
         </VStack>
-    );
-};
+    )
+}
 
-export default Callback;
+export default Callback
