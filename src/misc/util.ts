@@ -1,7 +1,7 @@
-import {ReactNode} from "react";
-import moment from "moment";
+import { ReactNode } from 'react'
+import moment from 'moment'
 import 'moment/locale/ru'
- 
+
 
 const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {

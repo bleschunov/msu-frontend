@@ -44,9 +44,8 @@
   "eslintConfig": {
     "extends": ["react-app"],
     "rules": {
-      "object-curly-spacing": ["error", "never"],
       "indent": ["error", 4],
-      "no-console": "error",
+      "no-console": "warn",
       "semi": ["error", "never"]
     },
     "overrides": [

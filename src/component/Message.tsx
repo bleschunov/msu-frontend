@@ -1,13 +1,13 @@
-import {Box, Card, CardBody, Flex, Text, VStack} from "@chakra-ui/react";
-import {FC, ReactNode} from "react";
-import Avatar from "./Avatar";
-import Callback from "./Callback";
-import MessageModel from "../model/MessageModel";
-import {ReviewModelRead} from "../model/ReviewModel";
-import MarkModel from "../model/MarkModel";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import {formatDate} from "../misc/util";
+import { Box, Card, CardBody, Flex, Text, VStack } from '@chakra-ui/react'
+import { FC, ReactNode } from 'react'
+import Avatar from './Avatar'
+import Callback from './Callback'
+import MessageModel from '../model/MessageModel'
+import { ReviewModelRead } from '../model/ReviewModel'
+import MarkModel from '../model/MarkModel'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { formatDate } from '../misc/util'
 
 
 interface MessageProps {
@@ -15,7 +15,7 @@ interface MessageProps {
     src: string
     children: ReactNode
     direction: "incoming" | "outgoing"
-    reviewModels: ReviewModelRead[]
+    reviewModels?: ReviewModelRead[]
     markModel?: MarkModel
 }
 
@@ -57,7 +57,7 @@ export const Message: FC<MessageProps> = ({
                         <>
                             <Box mt="5"><Callback markModel={markModel} messageId={messageId} /></Box>
                             <VStack align="start">
-                                {reviewModels.length !== 0 &&
+                                {reviewModels && reviewModels.length !== 0 &&
                                     <>
                                         <Text fontWeight="bold" mt="5">Комментарии</Text>
                                         {reviewModels.map(({commentary, id, created_at}, index) => (
@@ -92,8 +92,8 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
     }
 
     return <Message
-        reviewModels={messageModel.review}
-        markModel={messageModel.mark.length === 0 ? undefined : messageModel.mark[0]}
+        reviewModels={messageModel?.review}
+        markModel={messageModel.mark && (messageModel.mark.length === 0 ? undefined : messageModel.mark[0])}
         src={src}
         messageId={messageModel.id}
         direction={messageModel.answer ? "incoming" : "outgoing"}

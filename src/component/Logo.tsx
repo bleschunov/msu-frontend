@@ -1,9 +1,9 @@
-import {Image} from "@chakra-ui/react";
+import { Image } from '@chakra-ui/react'
 
 const Logo = () => {
     return (
         <Image src="/image/logo.svg" alt="мсу" />
-    );
-};
+    )
+}
 
-export default Logo;
+export default Logo
