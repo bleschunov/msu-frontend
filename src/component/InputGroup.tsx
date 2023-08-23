@@ -1,6 +1,6 @@
-import React, { ChangeEvent, FC, LegacyRef } from 'react'
-import { Button, Flex, HStack, Input } from '@chakra-ui/react'
-import useKeypress from 'react-use-keypress'
+import React, { ChangeEvent, FC, LegacyRef } from "react"
+import { Button, Flex, HStack, Input } from "@chakra-ui/react"
+import useKeypress from "react-use-keypress"
 
 interface IInputGroup {
     inputRef?: LegacyRef<HTMLInputElement>

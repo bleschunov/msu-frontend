@@ -1,8 +1,8 @@
-import { createContext, FC, ReactNode } from 'react'
-import { useQuery } from 'react-query'
-import { getUser } from '../api/supabase'
-import { User } from '@supabase/supabase-js'
-import { Grid, Spinner } from '@chakra-ui/react'
+import { createContext, FC, ReactNode } from "react"
+import { useQuery } from "react-query"
+import { getUser } from "../api/supabase"
+import { User } from "@supabase/supabase-js"
+import { Grid, Spinner } from "@chakra-ui/react"
 
 const UserContext = createContext<User>({} as User)
 
@@ -10,8 +10,8 @@ interface UserContextProviderProps {
     children: ReactNode
 }
 
-const UserContextProvider: FC<UserContextProviderProps> = ({children}) => {
-    const {data: user, isSuccess} = useQuery<User>("user", getUser, {
+const UserContextProvider: FC<UserContextProviderProps> = ({ children }) => {
+    const { data: user, isSuccess } = useQuery<User>("user", getUser, {
         cacheTime: 0
     })
 

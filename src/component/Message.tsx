@@ -1,13 +1,13 @@
-import { Box, Card, CardBody, Flex, Text, VStack } from '@chakra-ui/react'
-import { FC, ReactNode } from 'react'
-import Avatar from './Avatar'
-import Callback from './Callback'
-import MessageModel from '../model/MessageModel'
-import { ReviewModelRead } from '../model/ReviewModel'
-import MarkModel from '../model/MarkModel'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { formatDate } from '../misc/util'
+import { Box, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
+import { FC, ReactNode } from "react"
+import Avatar from "./Avatar"
+import Callback from "./Callback"
+import MessageModel from "../model/MessageModel"
+import { ReviewModelRead } from "../model/ReviewModel"
+import MarkModel from "../model/MarkModel"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import { formatDate } from "../misc/util"
 
 
 interface MessageProps {
@@ -60,7 +60,7 @@ export const Message: FC<MessageProps> = ({
                                 {reviewModels && reviewModels.length !== 0 &&
                                     <>
                                         <Text fontWeight="bold" mt="5">Комментарии</Text>
-                                        {reviewModels.map(({commentary, id, created_at}, index) => (
+                                        {reviewModels.map(({ commentary, id, created_at }, index) => (
                                             <VStack align="left" mt={index === 0 ? 0 : 4} spacing={0}>
                                                 <Text color="gray.500" fontSize="15">{formatDate(created_at)}</Text>
                                                 <Text key={id}>{commentary}</Text>
@@ -110,7 +110,7 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
             fontWeight="bold"
             overflowX="scroll"
             css={{
-                '&::-webkit-scrollbar': {
+                "&::-webkit-scrollbar": {
                     display: "none",
                 },
             }}

@@ -1,12 +1,12 @@
-import React, { ChangeEvent, FC, useContext, useState } from 'react'
-import { Button, HStack, Text, Textarea, VStack } from '@chakra-ui/react'
-import { useMutation, useQueryClient } from 'react-query'
-import MarkModel from '../model/MarkModel'
-import { createMark } from '../api/markApi'
-import { UserContext } from '../context/userContext'
-import { User } from '@supabase/supabase-js'
-import { createReview } from '../api/reviewApi'
-import ChatModel from '../model/ChatModel'
+import React, { ChangeEvent, FC, useContext, useState } from "react"
+import { Button, HStack, Text, Textarea, VStack } from "@chakra-ui/react"
+import { useMutation, useQueryClient } from "react-query"
+import MarkModel from "../model/MarkModel"
+import { createMark } from "../api/markApi"
+import { UserContext } from "../context/userContext"
+import { User } from "@supabase/supabase-js"
+import { createReview } from "../api/reviewApi"
+import ChatModel from "../model/ChatModel"
 
 interface CallbackProps {
   messageId: number;
@@ -22,7 +22,7 @@ const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkMo
     return oldChat
 }
 
-const Callback: FC<CallbackProps> = ({messageId, markModel}) => {
+const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
     const [commentary, setCommentary] = useState<string>("")
     const queryClient = useQueryClient()
 

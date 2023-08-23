@@ -1,9 +1,9 @@
-import { FC, ReactNode, useEffect, useState } from 'react'
-import { createClient, Session } from '@supabase/supabase-js'
-import { Auth as SupabaseAuth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
-import { Center, Container, Grid } from '@chakra-ui/react'
-import Logo from './Logo'
+import { FC, ReactNode, useEffect, useState } from "react"
+import { createClient, Session } from "@supabase/supabase-js"
+import { Auth as SupabaseAuth } from "@supabase/auth-ui-react"
+import { ThemeSupa } from "@supabase/auth-ui-shared"
+import { Center, Container, Grid } from "@chakra-ui/react"
+import Logo from "./Logo"
 
 interface IAuth {
     children: ReactNode
@@ -11,16 +11,16 @@ interface IAuth {
 
 const supabase = createClient("https://jkhlwowgrekoqgvfruhq.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpraGx3b3dncmVrb3FndmZydWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTA0NTcwMzQsImV4cCI6MjAwNjAzMzAzNH0.5PLTJ0CaG1n9EdWC-M3B2-p9WK6VCdxTr7eNnPON4oU")
 
-const Auth: FC<IAuth> = ({children}) => {
+const Auth: FC<IAuth> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null)
 
     useEffect(() => {
-        supabase.auth.getSession().then(({data: {session}}) => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session)
         })
 
         const {
-            data: {subscription},
+            data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
         })
@@ -38,7 +38,7 @@ const Auth: FC<IAuth> = ({children}) => {
                         appearance={{
                             theme: ThemeSupa,
                             style: {
-                                anchor: {display: "none"}
+                                anchor: { display: "none" }
                             }
                         }}
                         localization={{

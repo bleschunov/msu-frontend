@@ -1,15 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react'
-import { getPrediction } from '../api/client'
-import { Button, Flex } from '@chakra-ui/react'
-import InputGroup from './InputGroup'
-import { getLastN } from '../misc/util'
-import ChatModel from '../model/ChatModel'
-import { createMessage } from './Message'
-import { createMessage as createMessageApi } from '../api/messageApi'
-import { getOrCreateChat } from '../api/chatApi'
-import { UserContext } from '../context/userContext'
-import MessageModel from '../model/MessageModel'
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react"
+import { getPrediction } from "../api/client"
+import { Button, Flex } from "@chakra-ui/react"
+import InputGroup from "./InputGroup"
+import { getLastN } from "../misc/util"
+import ChatModel from "../model/ChatModel"
+import { createMessage } from "./Message"
+import { createMessage as createMessageApi } from "../api/messageApi"
+import { getOrCreateChat } from "../api/chatApi"
+import { UserContext } from "../context/userContext"
+import MessageModel from "../model/MessageModel"
 
 
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
@@ -25,7 +25,7 @@ function Chat() {
     const chatRef = useRef<HTMLDivElement>(null)
     const user = useContext(UserContext)
 
-    const {data: chat, status} = useQuery<ChatModel>("chat", () => {
+    const { data: chat, status } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
 
@@ -53,7 +53,7 @@ function Chat() {
     })
 
     const predictionMutation = useMutation(getPrediction, {
-        onSuccess: ({data: {answer, sql, table}}, {chat_id}) => {
+        onSuccess: ({ data: { answer, sql, table } }, { chat_id }) => {
             messageCreateMutation.mutate({
                 chat_id,
                 answer,
@@ -61,7 +61,7 @@ function Chat() {
                 table,
             } as MessageModel)
         },
-        onError: ({response: {data}}, {chat_id}) => {
+        onError: ({ response: { data } }, { chat_id }) => {
             const exception = typeof data.detail === "object"
                 ? JSON.stringify(data.detail)
                 : data.detail
@@ -76,7 +76,7 @@ function Chat() {
     })
 
     useEffect(() => {
-        window.scroll({top: chatRef.current?.offsetHeight, behavior: 'smooth'})
+        window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
     }, [chat?.message.length])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +85,8 @@ function Chat() {
 
     const handleSubmit = () => {
         if (query !== "" && chat) {
-            messageCreateMutation.mutate({chat_id: chat.id, query} as MessageModel)
-            predictionMutation.mutate({query, chat_id: chat.id})
+            messageCreateMutation.mutate({ chat_id: chat.id, query } as MessageModel)
+            predictionMutation.mutate({ query, chat_id: chat.id })
             setQuery("")
         }
     }
