@@ -101,7 +101,7 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         markModel={messageModel.mark && (messageModel.mark.length === 0 ? undefined : messageModel.mark[0])}
         src={src}
         messageId={messageModel.id}
-        direction={messageModel.answer ? "incoming" : "outgoing"}
+        direction={messageModel.answer !== null ? "incoming" : "outgoing"}
         key={messageModel.id}
     >
         <Text>{messageContent}</Text>

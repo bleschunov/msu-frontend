@@ -45,6 +45,7 @@ function Chat() {
             queryClient.setQueriesData("chat", context?.previousChat)
         },
         onSettled: () => {
+            setLastN(lastN => lastN + 1)
             queryClient.invalidateQueries("chat")
         },
     })
