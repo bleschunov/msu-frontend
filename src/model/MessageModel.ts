@@ -11,7 +11,7 @@ interface MessageModel {
     exception?: string
     review?: ReviewModelRead[]
     mark?: MarkModel[]
-    created_at: Date
+    created_at: string
 }
 
 export default MessageModel

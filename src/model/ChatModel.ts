@@ -4,7 +4,7 @@ interface ChatModel {
     id: number
     user_id: string
     message: MessageModel[]
-    created_at: Date
+    created_at: string
 }
 
 export default ChatModel

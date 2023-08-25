@@ -2,7 +2,7 @@ interface ReviewModelBase {
     id: number
     message_id: number
     commentary: string
-    created_at: Date
+    created_at: string
 }
 
 interface ReviewModelCreate extends ReviewModelBase {

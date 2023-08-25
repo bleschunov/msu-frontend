@@ -1,6 +1,7 @@
 import { AxiosError } from "axios"
 import axiosClient from "./axiosClient"
 import ChatModel from "../model/ChatModel"
+import { sortDate } from "../misc/util"
 
 const getChat = async (userId: string): Promise<ChatModel> => {
     const { data: chatModel } = await axiosClient.get(`/chat/${userId}`)
@@ -14,7 +15,11 @@ const createChat = async (body: Omit<ChatModel, "id" | "created_at" | "message">
 
 const getOrCreateChat = async (userId: string): Promise<ChatModel> => {
     try {
-        return await getChat(userId)
+        const chat = await getChat(userId)
+        chat.message.sort(
+            (messageA, messageB) => sortDate(messageA.created_at, messageB.created_at, false)
+        )
+        return chat
     } catch (e) {
         if (e instanceof AxiosError && e.response?.status === 404) {
             return await createChat({ user_id: userId })

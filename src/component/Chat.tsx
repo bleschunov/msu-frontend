@@ -31,9 +31,6 @@ function Chat() {
 
     // TODO: Как сделать, что тип аргументов createMessageApi подтягивался в useMutation?
     const messageCreateMutation = useMutation(createMessageApi, {
-        onSuccess: () => {
-            queryClient.invalidateQueries("chat")
-        },
         onMutate: async (newMessage: MessageModel) => {
             await queryClient.cancelQueries("message")
             const previousChat = queryClient.getQueryData<ChatModel>("chat")
@@ -65,7 +62,7 @@ function Chat() {
             const exception = typeof data.detail === "object"
                 ? JSON.stringify(data.detail)
                 : data.detail
-            const message = "Произошла ошибка"
+            const message = "Произошла ошибка. Попробуйте другой запрос."
 
             messageCreateMutation.mutate({
                 chat_id,
