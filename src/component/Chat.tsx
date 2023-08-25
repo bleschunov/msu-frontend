@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react"
 import { Button, Flex } from "@chakra-ui/react"
 import InputGroup from "./InputGroup"
-import { createMessage } from "./Message"
+import { createMessage, Message } from "./Message"
 import { getPrediction } from "../api/client"
 import { getLastN } from "../misc/util"
 import ChatModel from "../model/ChatModel"
@@ -13,12 +13,12 @@ import MessageModel from "../model/MessageModel"
 
 
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
-    previousChat.message.push(newMessage)
+    previousChat.message?.push(newMessage)
     return previousChat
 }
 
 function Chat() {
-    const [lastN, setLastN] = useState<number>(20)
+    const [lastN, setLastN] = useState<number>(2)
     const messageWindowRef = useRef<HTMLDivElement>(null)
     const [query, setQuery] = useState("")
     const queryClient = useQueryClient()
@@ -74,7 +74,7 @@ function Chat() {
 
     useEffect(() => {
         window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
-    }, [chat?.message.length])
+    }, [chat?.message?.length])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value)
@@ -98,11 +98,15 @@ function Chat() {
 
     return (
         <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
-            {chat && chat.message?.length > lastN
-                && <Button colorScheme="blue" onClick={handleShowMore}>Предыдущие сообщения</Button>}
+            {chat && !!chat.message?.length && chat.message.length > lastN
+                && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {chat && getLastN(lastN, chat.message.map((message) => createMessage(message)))}
+                {chat && !!chat.message?.length && getLastN(lastN, chat.message.map((message) => createMessage(message)))}
             </Flex>
+            {chat && !chat.message?.length &&
+                <Message direction='incoming' messageId={-1} src={"/image/avatar/bot.png"} callback={false}>
+                    Какой у вас запрос?
+                </Message>}
             <InputGroup
                 disabled={isLoading}
                 value={query}

@@ -17,15 +17,20 @@ interface MessageProps {
     direction: "incoming" | "outgoing"
     reviewModels?: ReviewModelRead[]
     markModel?: MarkModel
+    callback?: boolean
 }
 
+// # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
+//  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
+// # TODO: Сделать на беке в сообщении указание, сообщение от человека или от робота и убрать логику определения этого с фронта.
 export const Message: FC<MessageProps> = ({
     messageId,
     src,
     direction,
     children,
     reviewModels,
-    markModel
+    markModel,
+    callback = true
 }) => {
     let justify, flexDirection, name = ""
 
@@ -53,7 +58,7 @@ export const Message: FC<MessageProps> = ({
                 <CardBody>
                     {children}
 
-                    {direction === "incoming" &&
+                    {direction === "incoming" && callback &&
                         <>
                             <Box mt="5"><Callback markModel={markModel} messageId={messageId} /></Box>
                             <VStack align="start">

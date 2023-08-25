@@ -14,7 +14,7 @@ interface CallbackProps {
 }
 
 const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
-    oldChat.message.forEach((message) => {
+    oldChat.message?.forEach((message) => {
         if (message.id === messageId) {
             message.mark = [newMark]
         }

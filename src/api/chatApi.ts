@@ -16,7 +16,7 @@ const createChat = async (body: Omit<ChatModel, "id" | "created_at" | "message">
 const getOrCreateChat = async (userId: string): Promise<ChatModel> => {
     try {
         const chat = await getChat(userId)
-        chat.message.sort(
+        chat.message?.sort(
             (messageA, messageB) => sortDate(messageA.created_at, messageB.created_at, false)
         )
         return chat
