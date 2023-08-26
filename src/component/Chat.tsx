@@ -10,6 +10,8 @@ import { createMessage as createMessageApi } from "../api/messageApi"
 import { getOrCreateChat } from "../api/chatApi"
 import { UserContext } from "../context/userContext"
 import MessageModel from "../model/MessageModel"
+import { AxiosError } from "axios"
+import { signOut } from "../api/supabase"
 
 
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
@@ -25,9 +27,17 @@ function Chat() {
     const chatRef = useRef<HTMLDivElement>(null)
     const user = useContext(UserContext)
 
-    const { data: chat, status } = useQuery<ChatModel>("chat", () => {
+    const { data: chat, status, error } = useQuery<ChatModel, AxiosError>("chat", () => {
         return getOrCreateChat(user.id)
     })
+
+
+    if(error?.message === "Request: 401! Введите логин и пароль заново"){
+        signOut()
+        queryClient.clear()
+
+
+    }
 
     // TODO: Как сделать, что тип аргументов createMessageApi подтягивался в useMutation?
     const messageCreateMutation = useMutation(createMessageApi, {

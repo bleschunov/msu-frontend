@@ -7,8 +7,13 @@ const axiosClient: AxiosInstance = axios.create({
 })
 
 axiosClient.interceptors.request.use(async config => {
-    const { data: { session } } = await supabase.auth.getSession()
 
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+
+    if (error?.status === 401) {
+        throw Error("Request: 401! Введите логин и пароль заново");
+    }
     if (session?.access_token) {
         config.headers["Authorization"] = `Bearer ${session.access_token}`
     }
@@ -17,6 +22,7 @@ axiosClient.interceptors.request.use(async config => {
 })
 
 axiosClient.interceptors.response.use(response => response, e => {
+    console.log("Твой session!");
     throw e
 })
 
