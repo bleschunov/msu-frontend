@@ -11,7 +11,6 @@ import { getOrCreateChat } from "../api/chatApi"
 import { UserContext } from "../context/userContext"
 import MessageModel from "../model/MessageModel"
 
-
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
     previousChat.message?.push(newMessage)
     return previousChat
