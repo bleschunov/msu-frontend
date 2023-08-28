@@ -11,8 +11,10 @@ import { getOrCreateChat } from "../api/chatApi"
 import { UserContext } from "../context/userContext"
 import MessageModel from "../model/MessageModel"
 
-
-const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
+const updateMessagesInChat = (
+    previousChat: ChatModel,
+    newMessage: MessageModel
+) => {
     previousChat.message?.push(newMessage)
     return previousChat
 }
@@ -24,6 +26,7 @@ function Chat() {
     const queryClient = useQueryClient()
     const chatRef = useRef<HTMLDivElement>(null)
     const user = useContext(UserContext)
+    const [isFocus, setIsFocus] = useState(false)
 
     const { data: chat, status } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
@@ -35,7 +38,10 @@ function Chat() {
             await queryClient.cancelQueries("message")
             const previousChat = queryClient.getQueryData<ChatModel>("chat")
             if (previousChat) {
-                queryClient.setQueriesData<ChatModel>("chat", updateMessagesInChat(previousChat, newMessage))
+                queryClient.setQueriesData<ChatModel>(
+                    "chat",
+                    updateMessagesInChat(previousChat, newMessage)
+                )
             }
             return {
                 previousChat,
@@ -45,7 +51,7 @@ function Chat() {
             queryClient.setQueriesData("chat", context?.previousChat)
         },
         onSettled: () => {
-            setLastN(lastN => lastN + 1)
+            setLastN((lastN) => lastN + 1)
             queryClient.invalidateQueries("chat")
         },
     })
@@ -60,17 +66,18 @@ function Chat() {
             } as MessageModel)
         },
         onError: ({ response: { data } }, { chat_id }) => {
-            const exception = typeof data.detail === "object"
-                ? JSON.stringify(data.detail)
-                : data.detail
+            const exception =
+        typeof data.detail === "object"
+            ? JSON.stringify(data.detail)
+            : data.detail
             const message = "Произошла ошибка. Попробуйте другой запрос."
 
             messageCreateMutation.mutate({
                 chat_id,
                 exception,
-                answer: message
+                answer: message,
             } as MessageModel)
-        }
+        },
     })
 
     useEffect(() => {
@@ -82,37 +89,56 @@ function Chat() {
     }
 
     const handleSubmit = () => {
-        if (query !== "" && chat) {
+        if (query !== "" && chat && isFocus) {
             messageCreateMutation.mutate({ chat_id: chat.id, query } as MessageModel)
             predictionMutation.mutate({ query, chat_id: chat.id })
             setQuery("")
+        } else {
+            return
         }
     }
 
     const handleShowMore = () => {
-        setLastN(lastN => lastN + 10)
+        setLastN((lastN) => lastN + 10)
     }
 
-    const isLoading = predictionMutation.isLoading
-        || messageCreateMutation.isLoading
-        || status === "loading"
+    const isLoading =
+    predictionMutation.isLoading ||
+    messageCreateMutation.isLoading ||
+    status === "loading"
 
     return (
         <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
-            {chat && !!chat.message?.length && chat.message.length > lastN
-                && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
+            {chat && !!chat.message?.length && chat.message.length > lastN && (
+                <Button colorScheme="blue" variant="link" onClick={handleShowMore}>
+          Предыдущие сообщения
+                </Button>
+            )}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {chat && !!chat.message?.length && getLastN(lastN, chat.message.map((message) => createMessage(message)))}
+                {chat &&
+          !!chat.message?.length &&
+          getLastN(
+              lastN,
+              chat.message.map((message) => createMessage(message))
+          )}
             </Flex>
-            {chat && !chat.message?.length &&
-                <Message direction='incoming' messageId={-1} src={"/image/avatar/bot.png"} callback={false}>
-                    Какой у вас запрос?
-                </Message>}
+            {chat && !chat.message?.length && (
+                <Message
+                    direction="incoming"
+                    messageId={-1}
+                    src={"/image/avatar/bot.png"}
+                    callback={false}
+                >
+          Какой у вас запрос?
+                </Message>
+            )}
             <InputGroup
                 disabled={isLoading}
                 value={query}
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
+                isFocus={isFocus}
+                setIsFocus={setIsFocus}
             />
         </Flex>
     )

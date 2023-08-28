@@ -3,11 +3,13 @@ import { Button, Flex, HStack, Input } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
 
 interface IInputGroup {
-    inputRef?: LegacyRef<HTMLInputElement>
-    value: string
-    handleChange: (event: ChangeEvent<HTMLInputElement>) => void
-    handleSubmit: () => void
-    disabled: boolean
+    inputRef?: LegacyRef<HTMLInputElement>;
+    value: string;
+    handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    handleSubmit: () => void;
+    disabled: boolean;
+    setIsFocus: Function,
+    isFocus: boolean
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -15,7 +17,9 @@ const InputGroup: FC<IInputGroup> = ({
     value,
     handleChange,
     handleSubmit,
-    disabled
+    disabled,
+    setIsFocus,
+    isFocus
 }) => {
     useKeypress("Enter", handleSubmit)
 
@@ -27,12 +31,14 @@ const InputGroup: FC<IInputGroup> = ({
                     onChange={handleChange}
                     placeholder="Напишите ваш запрос"
                     disabled={disabled}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
                 />
                 <Button
                     colorScheme="blue"
                     onClick={handleSubmit}
                     isLoading={disabled}
-                    isDisabled={value === ""}
+                    isDisabled={value === "" || !isFocus}
                 >
                     Отправить
                 </Button>
