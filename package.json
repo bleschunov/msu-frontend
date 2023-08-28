@@ -74,7 +74,7 @@
           ]
         }
       ],
-      "no-multiple-empty-lines": ["warning", { "max": 1, "maxBOF": 1, "maxEOF": 1 }]
+      "no-multiple-empty-lines": ["warn", { "max": 1, "maxBOF": 1, "maxEOF": 1 }]
     },
     "overrides": [
       {
