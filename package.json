@@ -39,7 +39,8 @@
     "docker:build": "docker build -t msu-frontend:dev .",
     "docker:run": "docker run --rm -it -p 3000:3000 msu-frontend:dev",
     "deploy:dev": "fly deploy -a msu-frontend-dev",
-    "deploy:master": "fly deploy -a msu-frontend"
+    "deploy:master": "fly deploy -a msu-frontend",
+    "deploy:mock": "fly deploy -a datastep-frontend-mock --config fly.mock.toml"
   },
   "eslintConfig": {
     "extends": [
