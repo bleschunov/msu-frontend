@@ -122,6 +122,15 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         >
             <Text><ReactMarkdown>{messageModel.sql}</ReactMarkdown></Text>
         </Box>}
-        {messageModel.table && <Text mt="5"><ReactMarkdown remarkPlugins={[remarkGfm]}>{messageModel.table}</ReactMarkdown></Text>}
+        {<Box
+            overflowX="scroll"
+            css={{
+                "&::-webkit-scrollbar": {
+                    display: "none",
+                },
+            }}
+        >
+            {messageModel.table && <Text mt="5"><ReactMarkdown remarkPlugins={[remarkGfm]}>{messageModel.table}</ReactMarkdown></Text>}
+        </Box>}
     </Message>
 }
