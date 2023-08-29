@@ -9,7 +9,6 @@ import { ReviewModelRead } from "../model/ReviewModel"
 import MarkModel from "../model/MarkModel"
 import { formatDate } from "../misc/util"
 
-
 interface MessageProps {
     messageId: number
     src: string
@@ -39,7 +38,6 @@ export const Message: FC<MessageProps> = ({
         flexDirection = "row" as const
         name = "bot"
     }
-
 
     if (direction === "outgoing") {
         justify = "end" as const
@@ -91,8 +89,8 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         src = "/image/avatar/user.png"
     }
 
-    if (messageModel.answer) {
-        messageContent = messageModel.answer
+    if (messageModel.answer || messageModel.sql || messageModel.table) {
+        messageContent = messageModel.answer ?? ""
         src = "/image/avatar/bot.png"
     }
 

@@ -3,7 +3,7 @@ import { ChangeEvent, useContext, useEffect, useRef, useState } from "react"
 import { Button, Flex } from "@chakra-ui/react"
 import InputGroup from "./InputGroup"
 import { createMessage, Message } from "./Message"
-import { getPrediction } from "../api/client"
+import { getChatPdfPrediction, getDatastepPrediction } from "../api/predictionApi"
 import { getLastN } from "../misc/util"
 import ChatModel from "../model/ChatModel"
 import { createMessage as createMessageApi } from "../api/messageApi"
@@ -11,13 +11,13 @@ import { getOrCreateChat } from "../api/chatApi"
 import { UserContext } from "../context/userContext"
 import MessageModel from "../model/MessageModel"
 
-
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
     previousChat.message?.push(newMessage)
     return previousChat
 }
 
 function Chat() {
+    const [mode, setMode] = useState<string>("datastep")
     const [lastN, setLastN] = useState<number>(2)
     const messageWindowRef = useRef<HTMLDivElement>(null)
     const [query, setQuery] = useState("")
@@ -50,14 +50,23 @@ function Chat() {
         },
     })
 
-    const predictionMutation = useMutation(getPrediction, {
-        onSuccess: ({ data: { answer, sql, table } }, { chat_id }) => {
-            messageCreateMutation.mutate({
-                chat_id,
-                answer,
-                sql,
-                table,
-            } as MessageModel)
+    const predictionFunc = mode === "datastep" ? getDatastepPrediction : getChatPdfPrediction
+
+    const predictionMutation = useMutation(predictionFunc, {
+        onSuccess: ({ data }, { chat_id }) => {
+            if (mode === "datastep") {
+                messageCreateMutation.mutate({
+                    chat_id,
+                    answer: data.answer,
+                    sql: data.sql,
+                    table: data.table
+                } as MessageModel)
+            } else {
+                messageCreateMutation.mutate({
+                    chat_id,
+                    answer: data
+                } as MessageModel)
+            }
         },
         onError: ({ response: { data } }, { chat_id }) => {
             const exception = typeof data.detail === "object"
@@ -113,6 +122,7 @@ function Chat() {
                 value={query}
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
+                setMode={setMode}
             />
         </Flex>
     )

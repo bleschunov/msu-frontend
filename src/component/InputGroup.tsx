@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC, LegacyRef } from "react"
-import { Button, Flex, HStack, Input } from "@chakra-ui/react"
+import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
 
 interface IInputGroup {
@@ -7,7 +7,8 @@ interface IInputGroup {
     value: string
     handleChange: (event: ChangeEvent<HTMLInputElement>) => void
     handleSubmit: () => void
-    disabled: boolean
+    disabled: boolean,
+    setMode: Function
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -15,9 +16,14 @@ const InputGroup: FC<IInputGroup> = ({
     value,
     handleChange,
     handleSubmit,
-    disabled
+    disabled,
+    setMode
 }) => {
     useKeypress("Enter", handleSubmit)
+
+    const handleSwitchMode = () => {
+        setMode((mode: string) => mode === "datastep" ? "pdf" : "datastep")
+    }
 
     return (
         <Flex direction="column" gap="5">
@@ -37,6 +43,12 @@ const InputGroup: FC<IInputGroup> = ({
                     Отправить
                 </Button>
             </HStack>
+            <FormControl display='flex' alignItems='center'>
+                <FormLabel htmlFor='email-alerts' mb='0'>
+                    Режим работы по документам
+                </FormLabel>
+                <Switch onChange={handleSwitchMode} id='email-alerts' />
+            </FormControl>
         </Flex>
     )
 }
