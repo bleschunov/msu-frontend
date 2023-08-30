@@ -24,6 +24,7 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
     "react-query": "^3.39.3",
+    "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "react-use-keypress": "^1.3.1",
@@ -87,9 +88,14 @@
           "maxEOF": 1
         }
       ],
-      "no-restricted-imports": ["warn", {
-        "patterns": [".*"]
-      }]
+      "no-restricted-imports": [
+        "warn",
+        {
+          "patterns": [
+            ".*"
+          ]
+        }
+      ]
     },
     "overrides": [
       {

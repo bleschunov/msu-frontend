@@ -7,6 +7,7 @@ import Footer from "component/Footer"
 import Auth from "component/Auth"
 import queryClient from "api/queryClient"
 import { UserContextProvider } from "context/userContext"
+import { BrowserRouter } from "react-router-dom"
 
 function App() {
     return (
@@ -14,15 +15,17 @@ function App() {
             <Auth>
                 <QueryClientProvider client={queryClient}>
                     <UserContextProvider>
-                        <div className="App">
-                            <Flex direction="column" h="100vh">
-                                <Header />
-                                <Container maxW="3xl" flexGrow="1">
-                                    <Chat></Chat>
-                                </Container>
-                                <Footer />
-                            </Flex>
-                        </div>
+                        <BrowserRouter>
+                            <div className="App">
+                                <Flex direction="column" h="100vh">
+                                    <Header />
+                                    <Container maxW="3xl" flexGrow="1">
+                                        <Chat></Chat>
+                                    </Container>
+                                    <Footer />
+                                </Flex>
+                            </div>
+                        </BrowserRouter>
                     </UserContextProvider>
                 </QueryClientProvider>
             </Auth>

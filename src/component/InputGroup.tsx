@@ -1,6 +1,8 @@
 import React, { ChangeEvent, FC, LegacyRef } from "react"
 import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
+import { useQuery } from "misc/util"
+import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 interface IInputGroup {
     inputRef?: LegacyRef<HTMLInputElement>
@@ -19,6 +21,7 @@ const InputGroup: FC<IInputGroup> = ({
     disabled,
     setMode
 }) => {
+    const query = useQuery()
     useKeypress("Enter", handleSubmit)
 
     const handleSwitchMode = () => {
@@ -43,12 +46,14 @@ const InputGroup: FC<IInputGroup> = ({
                     Отправить
                 </Button>
             </HStack>
-            <FormControl display='flex' alignItems='center'>
-                <FormLabel htmlFor='email-alerts' mb='0'>
-                    Режим работы по документам
-                </FormLabel>
-                <Switch onChange={handleSwitchMode} id='email-alerts' />
-            </FormControl>
+            {String(query.get(FF_CHAT_PDF)).toLowerCase() === "true" &&
+                <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='email-alerts' mb='0'>
+                        Режим работы по документам
+                    </FormLabel>
+                    <Switch onChange={handleSwitchMode} id='email-alerts' />
+                </FormControl>
+            }
         </Flex>
     )
 }
