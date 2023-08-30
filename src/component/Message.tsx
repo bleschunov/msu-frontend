@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import Avatar from "./Avatar"
 import Callback from "./Callback"
+import Code from "./Code"
 import MessageModel from "../model/MessageModel"
 import { ReviewModelRead } from "../model/ReviewModel"
 import MarkModel from "../model/MarkModel"
@@ -103,23 +104,7 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         key={messageModel.id}
     >
         <Text>{messageContent}</Text>
-        { messageModel.sql &&
-        <Box
-            mt="5"
-            bg="blue.900"
-            color="blue.300"
-            borderRadius="5"
-            padding="5"
-            fontWeight="bold"
-            overflowX="scroll"
-            css={{
-                "&::-webkit-scrollbar": {
-                    display: "none",
-                },
-            }}
-        >
-            <Text><ReactMarkdown>{messageModel.sql}</ReactMarkdown></Text>
-        </Box>}
+        { messageModel.sql && <Code>{messageModel.sql}</Code> }
         {<Box
             overflowX="scroll"
             css={{
