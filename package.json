@@ -86,7 +86,10 @@
           "maxBOF": 1,
           "maxEOF": 1
         }
-      ]
+      ],
+      "no-restricted-imports": ["warn", {
+        "patterns": [".*"]
+      }]
     },
     "overrides": [
       {

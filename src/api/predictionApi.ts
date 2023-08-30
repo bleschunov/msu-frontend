@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient"
+import axiosClient from "api/axiosClient"
 
 const getDatastepPrediction = (body: {query: string, chat_id: number}) => {
     return axiosClient.post("/assistant/prediction", body)

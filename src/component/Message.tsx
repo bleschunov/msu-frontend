@@ -1,13 +1,13 @@
 import { Box, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
 import { FC, ReactNode } from "react"
-import Avatar from "./Avatar"
-import Callback from "./Callback"
-import Code from "./Code"
-import Markdown from "./Markdown"
-import MessageModel from "../model/MessageModel"
-import { ReviewModelRead } from "../model/ReviewModel"
-import MarkModel from "../model/MarkModel"
-import { formatDate } from "../misc/util"
+import Avatar from "component/Avatar"
+import Callback from "component/Callback"
+import Code from "component/Code"
+import Markdown from "component/Markdown"
+import MessageModel from "model/MessageModel"
+import { ReviewModelRead } from "model/ReviewModel"
+import MarkModel from "model/MarkModel"
+import { formatDate } from "misc/util"
 
 interface MessageProps {
     messageId: number
