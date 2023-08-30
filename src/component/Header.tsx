@@ -1,8 +1,8 @@
 import React from "react"
 import { Button, HStack } from "@chakra-ui/react"
 import { useQueryClient } from "react-query"
-import Logo from "./Logo"
-import { signOut } from "../api/supabase"
+import Logo from "component/Logo"
+import { signOut } from "api/supabase"
 
 const Header = () => {
     const queryClient = useQueryClient()

@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
-import { signOut, supabase } from "./supabase"
-import { getBaseUrl } from "../misc/util"
+import { signOut, supabase } from "api/supabase"
+import { getBaseUrl } from "misc/util"
 
 const axiosClient: AxiosInstance = axios.create({
     baseURL: getBaseUrl()

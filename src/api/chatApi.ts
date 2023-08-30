@@ -1,7 +1,7 @@
 import { AxiosError } from "axios"
-import axiosClient from "./axiosClient"
-import ChatModel from "../model/ChatModel"
-import { sortDate } from "../misc/util"
+import axiosClient from "api/axiosClient"
+import ChatModel from "model/ChatModel"
+import { sortDate } from "misc/util"
 
 const getChat = async (userId: string): Promise<ChatModel> => {
     const { data: chatModel } = await axiosClient.get(`/chat/${userId}`)

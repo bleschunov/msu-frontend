@@ -1,23 +1,38 @@
-import React, { ChangeEvent, FC, LegacyRef } from "react"
-import { Button, Flex, HStack, Input } from "@chakra-ui/react"
+import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext } from "react"
+import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
+import { useQuery } from "misc/util"
+import { FF_CHAT_PDF } from "types/FeatureFlags"
+import { ModeContext, ModeContextI, ModeT } from "context/modeContext"
 
 interface IInputGroup {
-    inputRef?: LegacyRef<HTMLInputElement>
     value: string
-    handleChange: (event: ChangeEvent<HTMLInputElement>) => void
+    setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
-    disabled: boolean
+    disabled: boolean,
 }
 
 const InputGroup: FC<IInputGroup> = ({
-    // inputRef,
     value,
-    handleChange,
+    setValue,
     handleSubmit,
-    disabled
+    disabled,
 }) => {
+    const query = useQuery()
     useKeypress("Enter", handleSubmit)
+    const { setMode } = useContext<ModeContextI>(ModeContext)
+
+    const handleSwitchMode = () => {
+        setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
+    }
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value)
+    }
+
+    const handleClick = () => {
+        setValue(value => value + " Не учитывай NULL.")
+    }
 
     return (
         <Flex direction="column" gap="5">
@@ -37,6 +52,15 @@ const InputGroup: FC<IInputGroup> = ({
                     Отправить
                 </Button>
             </HStack>
+            <Button onClick={handleClick}>Не учитывать NULL</Button>
+            {String(query.get(FF_CHAT_PDF)).toLowerCase() === "true" &&
+                <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='email-alerts' mb='0'>
+                        Режим работы по документам
+                    </FormLabel>
+                    <Switch onChange={handleSwitchMode} id='email-alerts' />
+                </FormControl>
+            }
         </Flex>
     )
 }

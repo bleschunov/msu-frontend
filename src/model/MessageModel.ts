@@ -1,5 +1,5 @@
-import { ReviewModelRead } from "./ReviewModel"
-import MarkModel from "./MarkModel"
+import { ReviewModelRead } from "model/ReviewModel"
+import MarkModel from "model/MarkModel"
 
 interface MessageModel {
     id: number

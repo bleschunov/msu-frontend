@@ -1,95 +1,52 @@
-import { useMutation, useQuery, useQueryClient } from "react-query"
-import { ChangeEvent, useContext, useEffect, useRef, useState } from "react"
+import { useQuery } from "react-query"
+import { useContext, useEffect, useRef, useState } from "react"
 import { Button, Flex } from "@chakra-ui/react"
-import InputGroup from "./InputGroup"
-import { createMessage, Message } from "./Message"
-import { getPrediction } from "../api/client"
-import { getLastN } from "../misc/util"
-import ChatModel from "../model/ChatModel"
-import { createMessage as createMessageApi } from "../api/messageApi"
-import { getOrCreateChat } from "../api/chatApi"
-import { UserContext } from "../context/userContext"
-import MessageModel from "../model/MessageModel"
-
-const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
-    previousChat.message?.push(newMessage)
-    return previousChat
-}
+import InputGroup from "component/InputGroup"
+import { createMessage, Message } from "component/Message"
+import { getLastN } from "misc/util"
+import ChatModel from "model/ChatModel"
+import { getOrCreateChat } from "api/chatApi"
+import { UserContext } from "context/userContext"
+import MessageModel from "model/MessageModel"
+import { ModeContext, ModeContextI } from "context/modeContext"
+import { useCreateMessage } from "service/messageService"
+import { usePrediction } from "service/predictionService"
 
 function Chat() {
-    const [lastN, setLastN] = useState<number>(2)
-    const messageWindowRef = useRef<HTMLDivElement>(null)
+    const messageWindowRef = useRef<HTMLDivElement | null>(null)
+    const chatRef = useRef<HTMLDivElement | null>(null)
     const [query, setQuery] = useState("")
-    const queryClient = useQueryClient()
-    const chatRef = useRef<HTMLDivElement>(null)
     const user = useContext(UserContext)
+    const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
 
     const { data: chat, status } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
 
-    // TODO: Как сделать, что тип аргументов createMessageApi подтягивался в useMutation?
-    const messageCreateMutation = useMutation(createMessageApi, {
-        onMutate: async (newMessage: MessageModel) => {
-            await queryClient.cancelQueries("message")
-            const previousChat = queryClient.getQueryData<ChatModel>("chat")
-            if (previousChat) {
-                queryClient.setQueriesData<ChatModel>("chat", updateMessagesInChat(previousChat, newMessage))
-            }
-            return {
-                previousChat,
-            }
-        },
-        onError: (_error, _currentMark, context) => {
-            queryClient.setQueriesData("chat", context?.previousChat)
-        },
-        onSettled: () => {
-            setLastN(lastN => lastN + 1)
-            queryClient.invalidateQueries("chat")
-        },
-    })
-
-    const predictionMutation = useMutation(getPrediction, {
-        onSuccess: ({ data: { answer, sql, table } }, { chat_id }) => {
-            messageCreateMutation.mutate({
-                chat_id,
-                answer,
-                sql,
-                table,
-            } as MessageModel)
-        },
-        onError: ({ response: { data } }, { chat_id }) => {
-            const exception = typeof data.detail === "object"
-                ? JSON.stringify(data.detail)
-                : data.detail
-            const message = "Произошла ошибка. Попробуйте другой запрос."
-
-            messageCreateMutation.mutate({
-                chat_id,
-                exception,
-                answer: message
-            } as MessageModel)
-        }
-    })
+    const messageCreateMutation = useCreateMessage()
+    const predictionMutation = usePrediction()
 
     useEffect(() => {
         window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
     }, [chat?.message?.length])
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setQuery(event.target.value)
-    }
-
     const handleSubmit = () => {
         if (query !== "" && chat) {
-            messageCreateMutation.mutate({ chat_id: chat.id, query } as MessageModel)
-            predictionMutation.mutate({ query, chat_id: chat.id })
+            messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
+            predictionMutation.mutateAsync({ query }).then(({ answer, sql, table }) => {
+                messageCreateMutation.mutate({
+                    chat_id: chat.id,
+                    answer: answer,
+                    sql: sql,
+                    table: table
+                } as MessageModel)
+            })
             setQuery("")
         }
     }
 
     const handleShowMore = () => {
-        setLastN(lastN => lastN + 10)
+        setShownMessageCount(lastN => lastN + 10)
     }
 
     const isLoading = predictionMutation.isLoading
@@ -98,10 +55,10 @@ function Chat() {
 
     return (
         <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
-            {chat && !!chat.message?.length && chat.message.length > lastN
+            {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {chat && !!chat.message?.length && getLastN(lastN, chat.message.map((message) => createMessage(message)))}
+                {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
             </Flex>
             {chat && !chat.message?.length &&
                 <Message direction='incoming' messageId={-1} src={"/image/avatar/bot.png"} callback={false}>
@@ -110,7 +67,7 @@ function Chat() {
             <InputGroup
                 disabled={isLoading}
                 value={query}
-                handleChange={handleChange}
+                setValue={setQuery}
                 handleSubmit={handleSubmit}
             />
         </Flex>

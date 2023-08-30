@@ -1,13 +1,13 @@
 import { Box, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
 import { FC, ReactNode } from "react"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import Avatar from "./Avatar"
-import Callback from "./Callback"
-import MessageModel from "../model/MessageModel"
-import { ReviewModelRead } from "../model/ReviewModel"
-import MarkModel from "../model/MarkModel"
-import { formatDate } from "../misc/util"
+import Avatar from "component/Avatar"
+import Callback from "component/Callback"
+import Code from "component/Code"
+import Markdown from "component/Markdown"
+import MessageModel from "model/MessageModel"
+import { ReviewModelRead } from "model/ReviewModel"
+import MarkModel from "model/MarkModel"
+import { formatDate } from "misc/util"
 
 interface MessageProps {
     messageId: number
@@ -89,8 +89,8 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         src = "/image/avatar/user.png"
     }
 
-    if (messageModel.answer) {
-        messageContent = messageModel.answer
+    if (messageModel.answer || messageModel.sql || messageModel.table) {
+        messageContent = messageModel.answer ?? ""
         src = "/image/avatar/bot.png"
     }
 
@@ -102,15 +102,9 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         direction={messageModel.answer != undefined ? "incoming" : "outgoing"} // eslint-disable-line
         key={messageModel.id}
     >
-        <Text>{messageContent}</Text>
-        { messageModel.sql &&
-        <Box
-            mt="5"
-            bg="blue.900"
-            color="blue.300"
-            borderRadius="5"
-            padding="5"
-            fontWeight="bold"
+        <Markdown>{messageContent}</Markdown>
+        { messageModel.sql && <Code>{messageModel.sql}</Code> }
+        {<Box
             overflowX="scroll"
             css={{
                 "&::-webkit-scrollbar": {
@@ -118,8 +112,7 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
                 },
             }}
         >
-            <Text><ReactMarkdown>{messageModel.sql}</ReactMarkdown></Text>
+            {messageModel.table && <Text mt="5"><Markdown>{messageModel.table}</Markdown></Text>}
         </Box>}
-        {messageModel.table && <Text mt="5"><ReactMarkdown remarkPlugins={[remarkGfm]}>{messageModel.table}</ReactMarkdown></Text>}
     </Message>
 }
