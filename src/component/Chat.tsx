@@ -36,8 +36,15 @@ function Chat() {
 
     const handleSubmit = () => {
         if (query !== "" && chat) {
-            messageCreateMutation.mutate({ chat_id: chat.id, query } as MessageModel)
-            predictionMutation.mutate({ query })
+            messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
+            predictionMutation.mutateAsync({ query }).then(({ answer, sql, table }) => {
+                messageCreateMutation.mutate({
+                    chat_id: chat.id,
+                    answer: answer,
+                    sql: sql,
+                    table: table
+                } as MessageModel)
+            })
             setQuery("")
         }
     }
