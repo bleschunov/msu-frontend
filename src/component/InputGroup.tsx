@@ -1,31 +1,29 @@
-import React, { ChangeEvent, Dispatch, FC, LegacyRef, SetStateAction } from "react"
+import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext } from "react"
 import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
 import { useQuery } from "misc/util"
 import { FF_CHAT_PDF } from "types/FeatureFlags"
+import { ModeContext, ModeContextI, ModeT } from "context/modeContext"
 
 interface IInputGroup {
-    inputRef?: LegacyRef<HTMLInputElement>
     value: string
     setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     disabled: boolean,
-    setMode: Function
 }
 
 const InputGroup: FC<IInputGroup> = ({
-    // inputRef,
     value,
     setValue,
     handleSubmit,
     disabled,
-    setMode
 }) => {
     const query = useQuery()
     useKeypress("Enter", handleSubmit)
+    const { setMode } = useContext<ModeContextI>(ModeContext)
 
     const handleSwitchMode = () => {
-        setMode((mode: string) => mode === "datastep" ? "pdf" : "datastep")
+        setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
     }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

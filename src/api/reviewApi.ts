@@ -1,8 +1,8 @@
 import axiosClient from "api/axiosClient"
-import { ReviewModelCreate } from "model/ReviewModel"
+import { ReviewModelCreate, ReviewModelRead } from "model/ReviewModel"
 
-const createReview = (body: Omit<ReviewModelCreate, "id" | "created_at">): Promise<ReviewModelCreate> => {
-    return axiosClient.post("/review", body)
+const createReview = (body: Omit<ReviewModelCreate, "id" | "created_at">): Promise<ReviewModelRead> => {
+    return axiosClient.post("/review", body).then(response => response.data)
 }
 
 export {
