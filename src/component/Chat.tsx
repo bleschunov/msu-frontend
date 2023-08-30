@@ -30,17 +30,17 @@ function Chat() {
         window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
     }, [chat?.message?.length])
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (query !== "" && chat) {
-            messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
-            predictionMutation.mutateAsync({ query }).then(({ answer, sql, table }) => {
-                messageCreateMutation.mutate({
-                    chat_id: chat.id,
-                    answer: answer,
-                    sql: sql,
-                    table: table
-                } as MessageModel)
-            })
+            const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
+            const { answer, sql, table } = await predictionMutation.mutateAsync({ query })
+            messageCreateMutation.mutate({
+                chat_id: chat.id,
+                answer: answer,
+                sql: sql,
+                table: table,
+                connected_message_id: queryMessage
+            } as MessageModel)
             setQuery("")
         }
     }

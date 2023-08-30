@@ -12,6 +12,7 @@ interface MessageModel {
     review?: ReviewModelRead[]
     mark?: MarkModel[]
     created_at: string
+    connected_message_id?: number
 }
 
 export default MessageModel
