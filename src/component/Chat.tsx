@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { ChangeEvent, useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { Button, Flex } from "@chakra-ui/react"
 import InputGroup from "component/InputGroup"
 import { createMessage, Message } from "component/Message"
@@ -86,10 +86,6 @@ function Chat() {
         window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
     }, [chat?.message?.length])
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setQuery(event.target.value)
-    }
-
     const handleSubmit = () => {
         if (query !== "" && chat) {
             messageCreateMutation.mutate({ chat_id: chat.id, query } as MessageModel)
@@ -120,7 +116,7 @@ function Chat() {
             <InputGroup
                 disabled={isLoading}
                 value={query}
-                handleChange={handleChange}
+                setValue={setQuery}
                 handleSubmit={handleSubmit}
                 setMode={setMode}
             />

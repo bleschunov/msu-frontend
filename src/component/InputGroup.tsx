@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, LegacyRef } from "react"
+import React, { ChangeEvent, Dispatch, FC, LegacyRef, SetStateAction } from "react"
 import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
 import { useQuery } from "misc/util"
@@ -7,7 +7,7 @@ import { FF_CHAT_PDF } from "types/FeatureFlags"
 interface IInputGroup {
     inputRef?: LegacyRef<HTMLInputElement>
     value: string
-    handleChange: (event: ChangeEvent<HTMLInputElement>) => void
+    setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     disabled: boolean,
     setMode: Function
@@ -16,7 +16,7 @@ interface IInputGroup {
 const InputGroup: FC<IInputGroup> = ({
     // inputRef,
     value,
-    handleChange,
+    setValue,
     handleSubmit,
     disabled,
     setMode
@@ -26,6 +26,14 @@ const InputGroup: FC<IInputGroup> = ({
 
     const handleSwitchMode = () => {
         setMode((mode: string) => mode === "datastep" ? "pdf" : "datastep")
+    }
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value)
+    }
+
+    const handleClick = () => {
+        setValue(value => value + " Не учитывай NULL.")
     }
 
     return (
@@ -46,6 +54,7 @@ const InputGroup: FC<IInputGroup> = ({
                     Отправить
                 </Button>
             </HStack>
+            <Button onClick={handleClick}>Не учитывать NULL</Button>
             {String(query.get(FF_CHAT_PDF)).toLowerCase() === "true" &&
                 <FormControl display='flex' alignItems='center'>
                     <FormLabel htmlFor='email-alerts' mb='0'>
