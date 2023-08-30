@@ -1,6 +1,7 @@
-import React, { ChangeEvent, FC, LegacyRef } from "react"
+import React, { ChangeEvent, FC, LegacyRef, useContext } from "react"
 import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
 import useKeypress from "react-use-keypress"
+import { ModeContext, ModeContextI, ModeT } from "../context/modeContext"
 
 interface IInputGroup {
     inputRef?: LegacyRef<HTMLInputElement>
@@ -8,7 +9,6 @@ interface IInputGroup {
     handleChange: (event: ChangeEvent<HTMLInputElement>) => void
     handleSubmit: () => void
     disabled: boolean,
-    setMode: Function
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -17,12 +17,12 @@ const InputGroup: FC<IInputGroup> = ({
     handleChange,
     handleSubmit,
     disabled,
-    setMode
 }) => {
     useKeypress("Enter", handleSubmit)
+    const { setMode } = useContext<ModeContextI>(ModeContext)
 
     const handleSwitchMode = () => {
-        setMode((mode: string) => mode === "datastep" ? "pdf" : "datastep")
+        setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
     }
 
     return (

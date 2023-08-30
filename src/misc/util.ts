@@ -2,10 +2,9 @@ import { ReactNode } from "react"
 import moment from "moment"
 import "moment/locale/ru"
 
-
 const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {
-        return "https://msu-backend-dev.fly.dev/api/v1"
+        return "https://datastep-backend-mock.fly.dev/api/v1"
     }
 
     return "http://0.0.0.0:8080/api/v1"

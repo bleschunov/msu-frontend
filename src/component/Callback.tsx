@@ -28,6 +28,7 @@ const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
 
     const user = useContext<User>(UserContext)
     const createMarkMutation = useMutation(createMark, {
+        onSuccess: (a, b) => {},
         onMutate: async (newMark: MarkModel) => {
             await queryClient.cancelQueries("chat")
             const previousChat = queryClient.getQueryData<ChatModel>("chat")
