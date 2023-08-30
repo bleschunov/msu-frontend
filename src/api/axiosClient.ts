@@ -1,5 +1,5 @@
-import axios, { AxiosInstance } from "axios"
-import { supabase } from "api/supabase"
+import axios, { AxiosError, AxiosInstance } from "axios"
+import { signOut, supabase } from "api/supabase"
 import { getBaseUrl } from "misc/util"
 
 const axiosClient: AxiosInstance = axios.create({
@@ -16,7 +16,12 @@ axiosClient.interceptors.request.use(async config => {
     return config
 })
 
-axiosClient.interceptors.response.use(response => response, e => {
+axiosClient.interceptors.response.use(response => response, (e: AxiosError) => {
+    if (e.response?.status === 401) {
+        signOut()
+        return
+    }
+
     throw e
 })
 

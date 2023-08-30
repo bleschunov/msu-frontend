@@ -14,7 +14,6 @@ const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel)
 const useCreateMessage = () => {
     const { setShownMessageCount } = useContext<ModeContextI>(ModeContext)
 
-    // TODO: Как сделать, что тип аргументов createMessageApi подтягивался в useMutation?
     return useMutation(createMessageApi, {
         onMutate: async (newMessage: MessageModel) => {
             await queryClient.cancelQueries("message")
