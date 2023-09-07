@@ -23,5 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # enviromental variables
-.env
+.env.development
+.env.production
 .idea

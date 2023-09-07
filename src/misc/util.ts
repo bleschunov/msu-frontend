@@ -1,14 +1,14 @@
-import { ReactNode, useMemo } from "react"
 import moment from "moment"
 import "moment/locale/ru"
+import { ReactNode, useMemo } from "react"
 import { useLocation } from "react-router-dom"
 
 const getBaseUrl = (): string => {
-    if (process.env.NODE_ENV === "production") {
-        return "https://msu-backend-dev.fly.dev/api"
+    const backend_url = process.env["REACT_APP_BACKEND_URL"]
+    if (!backend_url) {
+        throw Error("REACT_APP_BACKEND_URL must be passed in .env.development or .env.production")
     }
-
-    return "http://0.0.0.0:8080/api"
+    return backend_url
 }
 
 const getLastN = (n: number, arr: ReactNode[]) => {
@@ -25,15 +25,13 @@ const sortDate = (dateA: string, dateB: string, descending: boolean) => {
 }
 
 // Взял этот хук здесь https://v5.reactrouter.com/web/example/query-parameters
-const useQuery = () => {
+const useSearchQuery = () => {
     const { search } = useLocation()
     return useMemo(() => new URLSearchParams(search), [search])
 }
 
 export {
-    getBaseUrl,
-    getLastN,
-    formatDate,
-    sortDate,
-    useQuery
+    formatDate, getBaseUrl,
+    getLastN, sortDate,
+    useSearchQuery
 }
