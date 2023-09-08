@@ -8,7 +8,7 @@ import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
 import MessageModel from "model/MessageModel"
-import { MouseEvent, useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
@@ -56,8 +56,7 @@ function Chat() {
 
     const { mode, setMode } = useContext<ModeContextI>(ModeContext)
     
-    const handleSwitchMode = (e: MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
+    const handleSwitchMode = () => {
         setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
     }
 

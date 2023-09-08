@@ -1,5 +1,5 @@
 import { Flex, IconButton, Text, Tooltip } from "@chakra-ui/react"
-import { FC, MouseEvent, useState } from "react"
+import { FC, useState } from "react"
 import { FileUploader } from "react-drag-drop-files"
 import { AiFillFileText, AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 import { MdCloudUpload } from "react-icons/md"
@@ -7,13 +7,13 @@ import { MdCloudUpload } from "react-icons/md"
 interface IFilesUpload {
   multiple?: boolean
   disabled?: boolean
-  handleSwitchMode?: (e: MouseEvent<HTMLButtonElement>) => void
+  handleSwitchMode?: () => void
 }
 
 const FilesUpload: FC<IFilesUpload> = (props) => {
     const {
         multiple = false,
-        disabled = false,
+        disabled = true,
         handleSwitchMode = () => {}
     } = props
 

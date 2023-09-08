@@ -1,5 +1,5 @@
 import { Button, Flex, HStack, IconButton, Input } from "@chakra-ui/react"
-import { ChangeEvent, Dispatch, FC, MouseEvent, SetStateAction } from "react"
+import { ChangeEvent, Dispatch, FC, SetStateAction } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
 
@@ -8,7 +8,7 @@ interface IInputGroup {
     setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     disabled: boolean
-    handleSwitchMode?: (e: MouseEvent<HTMLButtonElement>) => void
+    handleSwitchMode?: () => void
 }
 
 const InputGroup: FC<IInputGroup> = ({
