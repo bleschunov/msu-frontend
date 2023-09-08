@@ -1,6 +1,7 @@
-import { Button, Flex } from "@chakra-ui/react"
+import { Button, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
-import FilesUpload from "component/FilesUpload"
+import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
+// import FilesUploadZone from "component/FilesUploadZone"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
 import { ModeContext, ModeContextI, ModeT } from "context/modeContext"
@@ -54,11 +55,13 @@ function Chat() {
         || messageCreateMutation.isLoading
         || status === "loading"
 
-    const { mode, setMode } = useContext<ModeContextI>(ModeContext)
+    const { setMode } = useContext<ModeContextI>(ModeContext)
     
     const handleSwitchMode = () => {
         setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
     }
+
+    const [files, setFiles] = useState<FileList | null>(null)
 
     return (
         <Flex
@@ -80,7 +83,27 @@ function Chat() {
                 {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
             </Flex>
 
-            <FilesUpload disabled={mode !== "pdf"} handleSwitchMode={handleSwitchMode} />
+            {/* <FilesUploadZone disabled={mode !== "pdf"} handleSwitchMode={handleSwitchMode} /> */}
+            {files && (
+                <Flex direction="column">
+                    <Flex direction="row" alignItems="center" gap={2}>
+                        <IconButton
+                            variant="link"
+                            minWidth="fit-content"
+                            aria-label="удалить загруженный файл"
+                            icon={<AiOutlineClose size={16} />}
+                            onClick={() => setFiles(null)}
+                        />
+                        <Text>{files?.item(0)?.name}</Text>
+                        <Tooltip label="Поиск будет происходить по загруженному файлу" placement="right">
+                            {/* Add span because we use react-icons */}
+                            <span>
+                                <AiOutlineQuestionCircle size={18} />
+                            </span>
+                        </Tooltip>
+                    </Flex>
+                </Flex>
+            )}
 
             {chat && !chat.message?.length &&
                 <Message
@@ -97,7 +120,8 @@ function Chat() {
                 value={query}
                 setValue={setQuery}
                 handleSubmit={handleSubmit}
-                handleSwitchMode={handleSwitchMode}
+                uploadFiles={setFiles}
+                multipleFilesEnabled={false}
             />
         </Flex>
     )

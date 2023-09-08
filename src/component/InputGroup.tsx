@@ -1,5 +1,5 @@
 import { Button, Flex, HStack, IconButton, Input, Tooltip } from "@chakra-ui/react"
-import { ChangeEvent, Dispatch, FC, SetStateAction } from "react"
+import { ChangeEvent, Dispatch, FC, SetStateAction, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
 
@@ -8,7 +8,8 @@ interface IInputGroup {
     setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     disabled: boolean
-    handleSwitchMode?: () => void
+    uploadFiles?: Dispatch<SetStateAction<FileList | null>>
+    multipleFilesEnabled?: boolean
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -16,8 +17,10 @@ const InputGroup: FC<IInputGroup> = ({
     setValue,
     handleSubmit,
     disabled,
-    handleSwitchMode
+    uploadFiles = () => {},
+    multipleFilesEnabled = false
 }) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
     useKeypress("Enter", handleSubmit)
     
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -32,17 +35,24 @@ const InputGroup: FC<IInputGroup> = ({
         <Flex direction="column" gap="5">
             <HStack>
                 <Tooltip label="Загрузить файл">
-                    {/* Add span because we use react-icons */}
-                    <span>
-                        <IconButton
-                            colorScheme="gray"
-                            onClick={handleSwitchMode}
-                            isLoading={disabled}
-                            icon={<FaFileUpload />}
-                            aria-label="загрузить файл"
-                        />
-                    </span>
+                    <IconButton
+                        colorScheme="gray"
+                        onClick={() => fileInputRef.current?.click()}
+                        isLoading={disabled}
+                        icon={<FaFileUpload />}
+                        aria-label="загрузить файл"
+                    >
+                            
+                    </IconButton>
                 </Tooltip>
+                <Input
+                    hidden
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf"
+                    multiple={multipleFilesEnabled}
+                    onChange={(e) => uploadFiles(e.target.files)}
+                />
                 <Input
                     value={value}
                     onChange={handleChange}
