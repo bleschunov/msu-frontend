@@ -1,4 +1,4 @@
-import { Button, Flex, HStack, IconButton, Input } from "@chakra-ui/react"
+import { Button, Flex, HStack, IconButton, Input, Tooltip } from "@chakra-ui/react"
 import { ChangeEvent, Dispatch, FC, SetStateAction } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
@@ -31,13 +31,18 @@ const InputGroup: FC<IInputGroup> = ({
     return (
         <Flex direction="column" gap="5">
             <HStack>
-                <IconButton
-                    colorScheme="gray"
-                    onClick={handleSwitchMode}
-                    isLoading={disabled}
-                    icon={<FaFileUpload />}
-                    aria-label="загрузить файл"
-                />
+                <Tooltip label="Загрузить файл">
+                    {/* Add span because we use react-icons */}
+                    <span>
+                        <IconButton
+                            colorScheme="gray"
+                            onClick={handleSwitchMode}
+                            isLoading={disabled}
+                            icon={<FaFileUpload />}
+                            aria-label="загрузить файл"
+                        />
+                    </span>
+                </Tooltip>
                 <Input
                     value={value}
                     onChange={handleChange}
