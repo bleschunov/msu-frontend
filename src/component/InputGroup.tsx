@@ -1,15 +1,14 @@
-import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext } from "react"
-import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
+import { Button, Flex, HStack, IconButton, Input } from "@chakra-ui/react"
+import { ChangeEvent, Dispatch, FC, MouseEvent, SetStateAction } from "react"
+import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
-import { useQuery } from "misc/util"
-import { FF_CHAT_PDF } from "types/FeatureFlags"
-import { ModeContext, ModeContextI, ModeT } from "context/modeContext"
 
 interface IInputGroup {
     value: string
     setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
-    disabled: boolean,
+    disabled: boolean
+    handleSwitchMode?: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -17,15 +16,10 @@ const InputGroup: FC<IInputGroup> = ({
     setValue,
     handleSubmit,
     disabled,
+    handleSwitchMode
 }) => {
-    const query = useQuery()
     useKeypress("Enter", handleSubmit)
-    const { setMode } = useContext<ModeContextI>(ModeContext)
-
-    const handleSwitchMode = () => {
-        setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
-    }
-
+    
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value)
     }
@@ -37,10 +31,17 @@ const InputGroup: FC<IInputGroup> = ({
     return (
         <Flex direction="column" gap="5">
             <HStack>
+                <IconButton
+                    colorScheme="gray"
+                    onClick={handleSwitchMode}
+                    isLoading={disabled}
+                    icon={<FaFileUpload />}
+                    aria-label="загрузить файл"
+                />
                 <Input
                     value={value}
                     onChange={handleChange}
-                    placeholder="Напишите ваш запрос"
+                    placeholder="Напишите ваш запрос или загрузите файл"
                     disabled={disabled}
                 />
                 <Button
@@ -52,15 +53,8 @@ const InputGroup: FC<IInputGroup> = ({
                     Отправить
                 </Button>
             </HStack>
+            
             <Button onClick={handleClick}>Не учитывать NULL</Button>
-            {String(query.get(FF_CHAT_PDF)).toLowerCase() === "true" &&
-                <FormControl display='flex' alignItems='center'>
-                    <FormLabel htmlFor='email-alerts' mb='0'>
-                        Режим работы по документам
-                    </FormLabel>
-                    <Switch onChange={handleSwitchMode} id='email-alerts' />
-                </FormControl>
-            }
         </Flex>
     )
 }
