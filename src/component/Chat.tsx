@@ -80,7 +80,7 @@ function Chat() {
                 {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
             </Flex>
 
-            <FilesUpload disabled={mode === "pdf"} handleSwitchMode={handleSwitchMode} />
+            <FilesUpload disabled={mode !== "pdf"} handleSwitchMode={handleSwitchMode} />
 
             {chat && !chat.message?.length &&
                 <Message
