@@ -4,13 +4,13 @@ import { FileUploader } from "react-drag-drop-files"
 import { AiFillFileText, AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 import { MdCloudUpload } from "react-icons/md"
 
-interface IFilesUpload {
+interface IFilesUploadZone {
   multiple?: boolean
   disabled?: boolean
   handleSwitchMode?: () => void
 }
 
-const FilesUpload: FC<IFilesUpload> = (props) => {
+const FilesUploadZone: FC<IFilesUploadZone> = (props) => {
     const {
         multiple = false,
         disabled = true,
@@ -78,4 +78,4 @@ const FilesUpload: FC<IFilesUpload> = (props) => {
     )
 }
 
-export default FilesUpload
+export default FilesUploadZone
