@@ -4,7 +4,7 @@ import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 // import FilesUploadZone from "component/FilesUploadZone"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
-import { ModeContext, ModeContextI, ModeT } from "context/modeContext"
+import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
@@ -20,6 +20,7 @@ function Chat() {
     const [query, setQuery] = useState("")
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
+    const [files, setFiles] = useState<FileList | null>(null)
 
     const { data: chat, status } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
@@ -35,13 +36,13 @@ function Chat() {
     const handleSubmit = async () => {
         if (query !== "" && chat) {
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
-            const { answer, sql, table } = await predictionMutation.mutateAsync({ query })
+            const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files === null ? null : files.item(0) })
             messageCreateMutation.mutate({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
                 table: table,
-                connected_message_id: queryMessage
+                connected_message_id: queryMessage,
             } as MessageModel)
             setQuery("")
         }
@@ -56,12 +57,14 @@ function Chat() {
         || status === "loading"
 
     const { setMode } = useContext<ModeContextI>(ModeContext)
-    
-    const handleSwitchMode = () => {
-        setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
-    }
 
-    const [files, setFiles] = useState<FileList | null>(null)
+    useEffect(() => {
+        if (files !== null) {
+            setMode("pdf")
+        } else {
+            setMode("datastep")
+        }
+    }, [files, setMode])
 
     return (
         <Flex
@@ -83,7 +86,9 @@ function Chat() {
                 {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
             </Flex>
 
+            {/* TODO: add drag&drop zone visible when dragging file into chat */}
             {/* <FilesUploadZone disabled={mode !== "pdf"} handleSwitchMode={handleSwitchMode} /> */}
+
             {files && (
                 <Flex direction="column">
                     <Flex direction="row" alignItems="center" gap={2}>
