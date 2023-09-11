@@ -1,14 +1,12 @@
-import { Avatar, Button, Flex, HStack, Menu, MenuButton, MenuGroup, MenuItem, MenuList, useToast } from "@chakra-ui/react"
-import { User } from "@supabase/supabase-js"
+import { Avatar, Button, Flex, HStack, Menu, MenuButton, MenuGroup, MenuItem, MenuList, UseToastOptions, useToast } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
-import { getUser, signOut } from "api/supabase"
+import { signOut } from "api/supabase"
 import Logo from "component/Logo"
 import { UserContext } from "context/userContext"
 import ChatModel from "model/ChatModel"
 import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQuery, useQueryClient } from "react-query"
-import { useClearMessage } from "service/messageService"
 
 const Header = () => {
     const queryClient = useQueryClient()
@@ -21,46 +19,36 @@ const Header = () => {
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
-    const [seconds, setSeconds] = useState<number>(0)
     const [isTimerActive, setTimerActive] = useState(false)
+    const [seconds, setSeconds] = useState<number>(5)
 
-    function addSuccefullToast() {
-        toastIdRef.current = toast({
-            title: "Чат успешно очищен",
-            description: "Все сообщения из чата удалены",
-            status: "success",
-            position: "bottom-right",
-            isClosable: true
-        })
+    const handleClear = async () => {  
+        await queryClient.cancelQueries("message")
+        const previousChat = queryClient.getQueryData<ChatModel>("chat")
+        if (previousChat) {
+            previousChat.message = []
+            queryClient.setQueriesData<ChatModel>("chat", previousChat)
+        }
     }
 
-    useEffect(() => {
-        if (!seconds) {
-            if (isTimerActive) {
-                addSuccefullToast()
-                setTimerActive(false)
-            }
-            return
-        }
+    const handleCancel = () => {
+        queryClient.invalidateQueries("chat")
+    }
 
-        const intervalId = setInterval(() => {
-            setSeconds(seconds - 1)
-        }, 1000)
-
-        return () => clearInterval(intervalId)
-    }, [seconds, addSuccefullToast])
-
-    function addWarningToast() {
-        toastIdRef.current = toast({ 
-            title: "Очистка чата",
-            description:
+    const warningToastOptions:UseToastOptions = { 
+        title: "Очистка чата",
+        status: "warning",
+        position: "bottom-right",
+        isClosable: false,
+        duration: 5000,
+        description:
             <Flex direction="column">
                 Вы решили удалить все сообщения из чата
                 <Button 
                     onClick={() => {
-                        setSeconds(0)
                         setTimerActive(false)
                         toast.close(toastIdRef.current!)
+                        handleCancel()
                     }}
                     alignSelf="flex-end"
                     style={{
@@ -70,29 +58,46 @@ const Header = () => {
                     variant="link"
                     colorScheme="black"
                 >
-                    Отменить
+                    {seconds} Отменить
                 </Button>
-            </Flex>,
-            status: "warning",
-            position: "bottom-right",
-            isClosable: false,
-            duration: 5000, })
+            </Flex>
     }
 
-    const clearMessagesMutation = useClearMessage()
+    useEffect(() => {
+        if (isTimerActive) {
+            if (seconds < 0) {
+                toast.close(toastIdRef.current!)
+                showSuccefullToast()
+                setTimerActive(false)
+            }
+            const intervalId = setInterval(() => {
+                setSeconds(seconds - 1)
+                showWarningToast()
+            }, 1000)
+
+            return () => clearInterval(intervalId) 
+        }}, [seconds, showSuccefullToast])
+
+    function showSuccefullToast() {
+        toastIdRef.current = toast({
+            title: "Чат успешно очищен",
+            description: "Все сообщения из чата удалены",
+            status: "success",
+            position: "bottom-right",
+            isClosable: true
+        })
+    }  
+
+    function showWarningToast() {
+        if (toastIdRef.current) {
+            toast.update(toastIdRef.current, warningToastOptions)
+        }
+        else toastIdRef.current = toast(warningToastOptions)
+    } 
+
     const { data: chat } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
-
-    const handleClear = async () => {
-        if (chat) {
-            clearMessagesMutation.mutate({
-                id: chat.id,
-                user_id: chat.user_id,
-            } as ChatModel)
-        }
-    }
-
 
     return (
         <HStack bg="gray.100" h="100px" flexShrink="0" justify="space-between" px="10" py="5" position="sticky" w="100%">
@@ -102,7 +107,7 @@ const Header = () => {
                     variant="outline" 
                     colorScheme="blue"
                     onClick={() => {
-                        addWarningToast()
+                        showWarningToast()
                         setTimerActive(true)
                         setSeconds(5)
                         handleClear()
