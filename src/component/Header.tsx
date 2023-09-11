@@ -49,6 +49,8 @@ const Header = () => {
                         setTimerActive(false)
                         toast.close(toastIdRef.current!)
                         handleCancel()
+                        toastIdRef.current = undefined
+                        setSeconds(5)
                     }}
                     alignSelf="flex-end"
                     style={{
@@ -69,6 +71,8 @@ const Header = () => {
                 toast.close(toastIdRef.current!)
                 showSuccefullToast()
                 setTimerActive(false)
+                toastIdRef.current = undefined
+                setSeconds(5)
             }
             const intervalId = setInterval(() => {
                 setSeconds(seconds - 1)
@@ -109,7 +113,6 @@ const Header = () => {
                     onClick={() => {
                         showWarningToast()
                         setTimerActive(true)
-                        setSeconds(5)
                         handleClear()
                     }}
                 >
