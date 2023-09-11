@@ -7,7 +7,7 @@ import React, { useContext, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQueryClient } from "react-query"
 import { useClearMessage } from "service/messageService"
-import { ModeContext } from 'context/modeContext'
+import { ModeContext } from "context/modeContext"
 
 const Header = () => {
     const queryClient = useQueryClient()
@@ -95,7 +95,6 @@ const Header = () => {
         addWarningToast()
         handleClear()
     }
-
 
     return (
         <HStack bg="gray.100" h="100px" flexShrink="0" justify="space-between" px="10" py="5" position="sticky" w="100%">
