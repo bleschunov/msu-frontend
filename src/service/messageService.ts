@@ -37,27 +37,8 @@ const useCreateMessage = () => {
 }
 
 const useClearMessage = () => {
-    const { setShownMessageCount } = useContext<ModeContextI>(ModeContext)
-
     return useMutation(clearMessagesApi, {
-        onMutate: async () => {
-            await queryClient.cancelQueries("message")
-            const previousChat = queryClient.getQueryData<ChatModel>("chat")
-            if (previousChat) {
-                previousChat.message = []
-                queryClient.setQueriesData<ChatModel>("chat", previousChat)
-            }
-            return {
-                previousChat,
-            }
-        },
-        onError: (_error, _currentMark, context) => {
-            queryClient.setQueriesData("chat", context?.previousChat)
-        },
-        onSettled: () => {
-            setShownMessageCount(0)
-            queryClient.invalidateQueries("chat")
-        },
+        // onSuccess, onError и другие. Оптимистичный апдейт здесь ни к чему
     })
 }
 

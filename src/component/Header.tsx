@@ -1,18 +1,18 @@
-import { Avatar, Button, Flex, HStack, Menu, MenuButton, MenuGroup, MenuItem, MenuList, useToast } from "@chakra-ui/react"
-import { User } from "@supabase/supabase-js"
-import { getOrCreateChat } from "api/chatApi"
-import { getUser, signOut } from "api/supabase"
+import { Avatar, Button, Flex, HStack, Menu, MenuButton, MenuGroup, MenuItem, MenuList, useToast, ToastId } from "@chakra-ui/react"
+import { signOut } from "api/supabase"
 import Logo from "component/Logo"
 import { UserContext } from "context/userContext"
 import ChatModel from "model/ChatModel"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
-import { useQuery, useQueryClient } from "react-query"
+import { useQueryClient } from "react-query"
 import { useClearMessage } from "service/messageService"
+import { ModeContext } from 'context/modeContext'
 
 const Header = () => {
     const queryClient = useQueryClient()
     const user = useContext(UserContext)
+    const { setShownMessageCount } = useContext(ModeContext)
 
     const handleSignOut = () => {
         signOut()
@@ -20,9 +20,9 @@ const Header = () => {
     }
 
     const toast = useToast()
-    const toastIdRef = React.useRef<string | number | undefined>()
-    const [seconds, setSeconds] = useState<number>(0)
-    const [isTimerActive, setTimerActive] = useState(false)
+    const toastIdRef = React.useRef<ToastId>()
+
+    const [timerId, setTimerId] = useState<number>()
 
     function addSuccefullToast() {
         toastIdRef.current = toast({
@@ -34,34 +34,23 @@ const Header = () => {
         })
     }
 
-    useEffect(() => {
-        if (!seconds) {
-            if (isTimerActive) {
-                addSuccefullToast()
-                setTimerActive(false)
+    function addWarningToast() {
+        const handleCancellation = () => {
+            clearTimeout(timerId)
+            setTimerId(undefined)
+            queryClient.invalidateQueries("chat")
+            if (toastIdRef.current) {
+                toast.close(toastIdRef.current)
             }
-            return
         }
 
-        const intervalId = setInterval(() => {
-            setSeconds(seconds - 1)
-        }, 1000)
-
-        return () => clearInterval(intervalId)
-    }, [seconds, addSuccefullToast])
-
-    function addWarningToast() {
-        toastIdRef.current = toast({ 
+        toastIdRef.current = toast({
             title: "Очистка чата",
             description:
             <Flex direction="column">
                 Вы решили удалить все сообщения из чата
                 <Button 
-                    onClick={() => {
-                        setSeconds(0)
-                        setTimerActive(false)
-                        toast.close(toastIdRef.current!)
-                    }}
+                    onClick={handleCancellation}
                     alignSelf="flex-end"
                     style={{
                         marginLeft: 150
@@ -80,17 +69,31 @@ const Header = () => {
     }
 
     const clearMessagesMutation = useClearMessage()
-    const { data: chat } = useQuery<ChatModel>("chat", () => {
-        return getOrCreateChat(user.id)
-    })
 
     const handleClear = async () => {
-        if (chat) {
-            clearMessagesMutation.mutate({
-                id: chat.id,
-                user_id: chat.user_id,
-            } as ChatModel)
+        // Отправляет запрос на бек, чтобы очистить чат
+
+        // Очищаю чат
+        // await clearMessagesMutation.asyncMutate(...)
+        // addSuccefullToast()
+        // setShownMessageCount(5) Цифру 5 взять в константу, потому что она в компоненте чата фигурирует
+    }
+
+    const hideMessages = (chat: ChatModel): ChatModel => {
+        chat.message = []
+        return chat
+    }
+
+    const handleClearButtonClick = () => {
+        const previousChat = queryClient.getQueryData<ChatModel>("chat")
+        if (previousChat) {
+            queryClient.setQueriesData<ChatModel>("chat", hideMessages(previousChat))
         }
+
+        const timerId = window.setTimeout(handleClear, 5000)
+        setTimerId(timerId)
+        addWarningToast()
+        handleClear()
     }
 
 
@@ -101,12 +104,7 @@ const Header = () => {
                 <Button 
                     variant="outline" 
                     colorScheme="blue"
-                    onClick={() => {
-                        addWarningToast()
-                        setTimerActive(true)
-                        setSeconds(5)
-                        handleClear()
-                    }}
+                    onClick={handleClearButtonClick}
                 >
                     Очистить чат
                 </Button>
