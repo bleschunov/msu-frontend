@@ -1,7 +1,6 @@
 import { Button, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
-// import FilesUploadZone from "component/FilesUploadZone"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
 import { ModeContext, ModeContextI } from "context/modeContext"
@@ -86,8 +85,7 @@ function Chat() {
                 {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
             </Flex>
 
-            {/* TODO: add drag&drop zone visible when dragging file into chat */}
-            {/* <FilesUploadZone disabled={mode !== "pdf"} handleSwitchMode={handleSwitchMode} /> */}
+            {/* TODO: add drag&drop zone when dragging file into chat */}
 
             {files && (
                 <Flex direction="column">
