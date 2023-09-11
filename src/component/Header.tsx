@@ -33,6 +33,8 @@ const Header = () => {
 
     const handleCancel = () => {
         queryClient.invalidateQueries("chat")
+        toastIdRef.current = undefined
+        setSeconds(5)
     }
 
     const warningToastOptions:UseToastOptions = { 
@@ -49,8 +51,7 @@ const Header = () => {
                         setTimerActive(false)
                         toast.close(toastIdRef.current!)
                         handleCancel()
-                        toastIdRef.current = undefined
-                        setSeconds(5)
+                        
                     }}
                     alignSelf="flex-end"
                     style={{
@@ -111,8 +112,8 @@ const Header = () => {
                     variant="outline" 
                     colorScheme="blue"
                     onClick={() => {
-                        showWarningToast()
                         setTimerActive(true)
+                        showWarningToast()
                         handleClear()
                     }}
                 >
