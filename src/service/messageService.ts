@@ -1,6 +1,7 @@
 import { useMutation } from "react-query"
 import { useContext } from "react"
 import { createMessage as createMessageApi } from "api/messageApi"
+import { clearMessages as clearMessagesApi } from "api/messageApi"
 import MessageModel from "model/MessageModel"
 import ChatModel from "model/ChatModel"
 import queryClient from "api/queryClient"
@@ -35,6 +36,32 @@ const useCreateMessage = () => {
     })
 }
 
+const useClearMessage = () => {
+    const { setShownMessageCount } = useContext<ModeContextI>(ModeContext)
+
+    return useMutation(clearMessagesApi, {
+        onMutate: async () => {
+            await queryClient.cancelQueries("message")
+            const previousChat = queryClient.getQueryData<ChatModel>("chat")
+            if (previousChat) {
+                previousChat.message = []
+                queryClient.setQueriesData<ChatModel>("chat", previousChat)
+            }
+            return {
+                previousChat,
+            }
+        },
+        onError: (_error, _currentMark, context) => {
+            queryClient.setQueriesData("chat", context?.previousChat)
+        },
+        onSettled: () => {
+            setShownMessageCount(0)
+            queryClient.invalidateQueries("chat")
+        },
+    })
+}
+
 export {
-    useCreateMessage
+    useCreateMessage,
+    useClearMessage 
 }

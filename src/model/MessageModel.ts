@@ -13,6 +13,7 @@ interface MessageModel {
     mark?: MarkModel[]
     created_at: string
     connected_message_id?: number
+    is_deleted: boolean
 }
 
 export default MessageModel
