@@ -1,6 +1,5 @@
 import { Button, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
-import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
 import { ModeContext, ModeContextI } from "context/modeContext"
@@ -9,6 +8,7 @@ import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
 import MessageModel from "model/MessageModel"
 import { useContext, useEffect, useRef, useState } from "react"
+import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
@@ -35,7 +35,7 @@ function Chat() {
     const handleSubmit = async () => {
         if (query !== "" && chat) {
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
-            const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files === null ? null : files.item(0) })
+            const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files ? files.item(0) : null })
             messageCreateMutation.mutate({
                 chat_id: chat.id,
                 answer: answer,
