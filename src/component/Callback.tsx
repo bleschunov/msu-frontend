@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useContext, useState } from "react"
+import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
 import { Button, HStack, Text, Textarea, VStack } from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "react-query"
 import { User } from "@supabase/supabase-js"
@@ -25,6 +25,12 @@ const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkMo
 const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
     const [commentary, setCommentary] = useState<string>("")
     const queryClient = useQueryClient()
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            handleSubmitCommentary()
+        }
+    }
 
     const user = useContext<User>(UserContext)
     const createMarkMutation = useMutation(createMark, {
@@ -98,6 +104,7 @@ const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
             <HStack mt="2" gap="3" alignItems="top">
                 <Textarea
                     value={commentary}
+                    onKeyDown={handleKeyDown}
                     onChange={handleChangeCommentary}
                     placeholder="Ваш комментарий..."
                     disabled={reviewMutation.isLoading}

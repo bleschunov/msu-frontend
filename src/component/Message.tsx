@@ -8,6 +8,7 @@ import MessageModel from "model/MessageModel"
 import { ReviewModelRead } from "model/ReviewModel"
 import MarkModel from "model/MarkModel"
 import { formatDate } from "misc/util"
+import ReactMarkdown from "react-markdown"
 
 interface MessageProps {
     messageId: number
@@ -66,7 +67,7 @@ export const Message: FC<MessageProps> = ({
                                         {reviewModels.map(({ commentary, id, created_at }, index) => (
                                             <VStack align="left" mt={index === 0 ? 0 : 4} spacing={0}>
                                                 <Text color="gray.500" fontSize="15">{formatDate(created_at)}</Text>
-                                                <Text key={id}>{commentary}</Text>
+                                                <ReactMarkdown key={id}>{commentary}</ReactMarkdown>
                                             </VStack>
                                         ))}
                                     </>

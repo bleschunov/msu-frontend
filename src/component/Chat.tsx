@@ -31,7 +31,7 @@ function Chat() {
     }, [chat?.message?.length])
 
     const handleSubmit = async () => {
-        if (query !== "" && chat) {
+        if (query.trim() !== "" && chat) {
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({ query })
             messageCreateMutation.mutate({
