@@ -1,6 +1,5 @@
-import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext } from "react"
-import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch } from "@chakra-ui/react"
-import useKeypress from "react-use-keypress"
+import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext, KeyboardEvent } from "react"
+import { Button, Flex, FormControl, FormLabel, HStack, Switch, Textarea } from "@chakra-ui/react"
 import { useQuery } from "misc/util"
 import { FF_CHAT_PDF } from "types/FeatureFlags"
 import { ModeContext, ModeContextI, ModeT } from "context/modeContext"
@@ -19,14 +18,19 @@ const InputGroup: FC<IInputGroup> = ({
     disabled,
 }) => {
     const query = useQuery()
-    useKeypress("Enter", handleSubmit)
     const { setMode } = useContext<ModeContextI>(ModeContext)
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            handleSubmit()
+        }
+    }
 
     const handleSwitchMode = () => {
         setMode((mode: ModeT) => mode === "datastep" ? "pdf" : "datastep")
     }
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setValue(event.target.value)
     }
 
@@ -36,10 +40,11 @@ const InputGroup: FC<IInputGroup> = ({
 
     return (
         <Flex direction="column" gap="5">
-            <HStack>
-                <Input
+            <HStack alignItems="start">
+                <Textarea
                     value={value}
                     onChange={handleChange}
+                    onKeyDown={handleKeyDown}
                     placeholder="Напишите ваш запрос"
                     disabled={disabled}
                 />
@@ -47,7 +52,7 @@ const InputGroup: FC<IInputGroup> = ({
                     colorScheme="blue"
                     onClick={handleSubmit}
                     isLoading={disabled}
-                    isDisabled={value === ""}
+                    isDisabled={value.trim() === ""}
                 >
                     Отправить
                 </Button>
