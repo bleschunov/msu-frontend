@@ -11,6 +11,7 @@ import MessageModel from "model/MessageModel"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
+import SkeletonMessage from "component/SkeletonMessage"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -19,7 +20,7 @@ function Chat() {
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
 
-    const { data: chat, status } = useQuery<ChatModel>("chat", () => {
+    const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
 
@@ -51,15 +52,25 @@ function Chat() {
 
     const isLoading = predictionMutation.isLoading
         || messageCreateMutation.isLoading
-        || status === "loading"
+        || chatQueryStatus === "loading"
 
     return (
         <Flex direction="column" p="10" h="full" gap={10} ref={chatRef}>
             {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
-            <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
-            </Flex>
+            {chatQueryStatus !== "loading" ?
+                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                    {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
+                </Flex> :
+                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                    <SkeletonMessage direction="outgoing" width="35%" height="60px" />
+                    <SkeletonMessage direction="incoming" width="65%" height="95px" />
+                    <SkeletonMessage direction="outgoing" width="30%" height="55px" />
+                    <SkeletonMessage direction="incoming" width="68%" height="75px" />
+                    <SkeletonMessage direction="outgoing" width="45%" height="65px" />
+                    <SkeletonMessage direction="incoming" width="63%" height="105px" />
+                </Flex>
+            }
             {chat && !chat.message?.length &&
                 <Message direction='incoming' messageId={-1} src={"/image/avatar/bot.png"} callback={false}>
                     Какой у вас запрос?
