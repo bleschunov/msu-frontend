@@ -4,12 +4,12 @@ import ChatModel from "model/ChatModel"
 import { sortDate } from "misc/util"
 
 const getChat = async (userId: string): Promise<ChatModel> => {
-    const { data: chatModel } = await axiosClient.get(`/chat/${userId}`)
+    const { data: chatModel } = await axiosClient.get(`/v1/chat/${userId}`)
     return chatModel
 }
 
 const createChat = async (body: Omit<ChatModel, "id" | "created_at" | "message">): Promise<ChatModel> => {
-    const { data: chatModel } = await axiosClient.post("/chat", body)
+    const { data: chatModel } = await axiosClient.post("/v1/chat", body)
     return chatModel
 }
 

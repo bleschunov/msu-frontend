@@ -10,21 +10,25 @@ import { UserContext } from "context/userContext"
 import MessageModel from "model/MessageModel"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { useCreateMessage } from "service/messageService"
-import { usePrediction } from "service/predictionService"
+import { useChatPdfPrediction, useDatastepPrediction } from "service/predictionService"
+import { useQuery as useParamsQuery } from "misc/util"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [query, setQuery] = useState("")
     const user = useContext(UserContext)
+    const { mode } = useContext<ModeContextI>(ModeContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
+    const queryParams = useParamsQuery()
 
     const { data: chat, status } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
 
     const messageCreateMutation = useCreateMessage()
-    const predictionMutation = usePrediction()
+    const datastepPrediction = useDatastepPrediction()
+    const chatPdfPrediction = useChatPdfPrediction()
 
     useEffect(() => {
         window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
@@ -33,7 +37,17 @@ function Chat() {
     const handleSubmit = async () => {
         if (query !== "" && chat) {
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
-            const { answer, sql, table } = await predictionMutation.mutateAsync({ query })
+            const version = queryParams.get("v") ?? "v1"
+
+            let prediction
+            if (mode === "datastep") {
+                prediction = await datastepPrediction.mutateAsync({ body: { query }, version })
+            } else {
+                prediction = await chatPdfPrediction.mutateAsync({ query })
+            }
+
+            const { answer, sql, table } = prediction
+
             messageCreateMutation.mutate({
                 chat_id: chat.id,
                 answer: answer,
@@ -49,7 +63,8 @@ function Chat() {
         setShownMessageCount(lastN => lastN + 10)
     }
 
-    const isLoading = predictionMutation.isLoading
+    const isLoading = datastepPrediction.isLoading
+        || chatPdfPrediction.isLoading
         || messageCreateMutation.isLoading
         || status === "loading"
 

@@ -5,10 +5,10 @@ import { useLocation } from "react-router-dom"
 
 const getBaseUrl = (): string => {
     if (process.env.NODE_ENV === "production") {
-        return "https://msu-backend-dev.fly.dev/api/v1"
+        return "https://msu-backend-dev.fly.dev/api"
     }
 
-    return "http://0.0.0.0:8080/api/v1"
+    return "http://0.0.0.0:8080/api"
 }
 
 const getLastN = (n: number, arr: ReactNode[]) => {
