@@ -1,8 +1,6 @@
-import { Button, Flex, HStack, IconButton, Input, Tooltip } from "@chakra-ui/react"
-import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext, KeyboardEvent } from "react"
-import { Button, Flex, FormControl, FormLabel, HStack, Switch, Textarea } from "@chakra-ui/react"
+import { Button, Flex, HStack, IconButton, Input, Textarea, Tooltip } from "@chakra-ui/react"
 import { useQuery } from "misc/util"
-import { ChangeEvent, Dispatch, FC, SetStateAction, useRef } from "react"
+import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
 import { FF_CHAT_PDF } from "types/FeatureFlags"
@@ -28,8 +26,6 @@ const InputGroup: FC<IInputGroup> = ({
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     useKeypress("Enter", handleSubmit)
     
-    const { setMode } = useContext<ModeContextI>(ModeContext)
-
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             handleSubmit()
@@ -48,26 +44,35 @@ const InputGroup: FC<IInputGroup> = ({
 
     return (
         <Flex direction="column" gap="5">
-            <HStack>
+            <HStack alignItems="flex-start">
                 {filesEnabled && (
-                    <Tooltip label="Загрузить файл">
-                        <IconButton
-                            colorScheme="gray"
-                            onClick={() => fileInputRef.current?.click()}
-                            isLoading={isLoading}
-                            icon={<FaFileUpload />}
-                            aria-label="загрузить файл"
-                        >
-                            
-                        </IconButton>
-                    </Tooltip>
+                    <>
+                        <Tooltip label="Загрузить файл">
+                            <IconButton
+                                colorScheme="gray"
+                                onClick={() => fileInputRef.current?.click()}
+                                isLoading={isLoading}
+                                icon={<FaFileUpload />}
+                                aria-label="загрузить файл"
+                            >
+                            </IconButton>
+                        </Tooltip>
+                        <Input
+                            hidden
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".pdf"
+                            multiple={multipleFilesEnabled}
+                            onChange={(e) => uploadFiles(e.target.files)}
+                        />
+                    </>
                 )}
                 <Textarea
                     value={value}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Напишите ваш запрос"
-                    disabled={disabled}
+                    disabled={isLoading}
                 />
                 <Button
                     colorScheme="blue"
