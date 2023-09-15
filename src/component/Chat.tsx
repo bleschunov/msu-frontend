@@ -119,7 +119,7 @@ function Chat() {
                 </Message>}
 
             <InputGroup
-                disabled={isLoading}
+                isLoading={isLoading}
                 value={query}
                 setValue={setQuery}
                 handleSubmit={handleSubmit}
