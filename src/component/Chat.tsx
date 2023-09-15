@@ -32,7 +32,8 @@ function Chat() {
     }, [chat?.message?.length])
 
     const handleSubmit = async () => {
-        if (query !== "" && chat) {
+        if (query.trim() !== "" && chat) {
+            setQuery("")
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({ query })
             messageCreateMutation.mutate({
@@ -42,7 +43,6 @@ function Chat() {
                 table: table,
                 connected_message_id: queryMessage
             } as MessageModel)
-            setQuery("")
         }
     }
 
@@ -60,7 +60,7 @@ function Chat() {
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
             {chatQueryStatus !== "loading" ?
                 <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                    {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
+                    {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
                 </Flex> :
                 <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
                     <SkeletonMessage direction="outgoing" width="35%" height="60px" />
