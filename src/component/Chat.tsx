@@ -12,6 +12,7 @@ import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
+import SkeletonMessage from "component/SkeletonMessage"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -21,7 +22,7 @@ function Chat() {
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
     const [files, setFiles] = useState<FileList | null>(null)
 
-    const { data: chat, status } = useQuery<ChatModel>("chat", () => {
+    const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
 
@@ -33,7 +34,8 @@ function Chat() {
     }, [chat?.message?.length])
 
     const handleSubmit = async () => {
-        if (query !== "" && chat) {
+        if (query.trim() !== "" && chat) {
+            setQuery("")
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files ? files.item(0) : null })
             messageCreateMutation.mutate({
@@ -43,7 +45,6 @@ function Chat() {
                 table: table,
                 connected_message_id: queryMessage,
             } as MessageModel)
-            setQuery("")
         }
     }
 
@@ -53,7 +54,7 @@ function Chat() {
 
     const isLoading = predictionMutation.isLoading
         || messageCreateMutation.isLoading
-        || status === "loading"
+        || chatQueryStatus === "loading"
 
     const { setMode } = useContext<ModeContextI>(ModeContext)
 
@@ -75,15 +76,20 @@ function Chat() {
         >
             {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
-            <Flex
-                id="sdfsd"
-                ref={messageWindowRef}
-                direction="column"
-                gap="5"
-                flexGrow="1"
-            >
-                {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
-            </Flex>
+
+            {chatQueryStatus !== "loading" ?
+                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                    {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
+                </Flex> :
+                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                    <SkeletonMessage direction="outgoing" width="35%" height="60px" />
+                    <SkeletonMessage direction="incoming" width="65%" height="95px" />
+                    <SkeletonMessage direction="outgoing" width="30%" height="55px" />
+                    <SkeletonMessage direction="incoming" width="68%" height="75px" />
+                    <SkeletonMessage direction="outgoing" width="45%" height="65px" />
+                    <SkeletonMessage direction="incoming" width="63%" height="105px" />
+                </Flex>
+            }
 
             {/* TODO: add drag&drop zone when dragging file into chat */}
 

@@ -1,4 +1,6 @@
 import { Button, Flex, HStack, IconButton, Input, Tooltip } from "@chakra-ui/react"
+import React, { ChangeEvent, Dispatch, FC, SetStateAction, useContext, KeyboardEvent } from "react"
+import { Button, Flex, FormControl, FormLabel, HStack, Switch, Textarea } from "@chakra-ui/react"
 import { useQuery } from "misc/util"
 import { ChangeEvent, Dispatch, FC, SetStateAction, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
@@ -26,7 +28,15 @@ const InputGroup: FC<IInputGroup> = ({
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     useKeypress("Enter", handleSubmit)
     
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { setMode } = useContext<ModeContextI>(ModeContext)
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            handleSubmit()
+        }
+    }
+
+    const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setValue(event.target.value)
     }
 
@@ -52,25 +62,18 @@ const InputGroup: FC<IInputGroup> = ({
                         </IconButton>
                     </Tooltip>
                 )}
-                <Input
-                    hidden
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf"
-                    multiple={multipleFilesEnabled}
-                    onChange={(e) => uploadFiles(e.target.files)}
-                />
-                <Input
+                <Textarea
                     value={value}
                     onChange={handleChange}
-                    placeholder="Напишите ваш запрос или загрузите файл"
-                    disabled={isLoading}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Напишите ваш запрос"
+                    disabled={disabled}
                 />
                 <Button
                     colorScheme="blue"
                     onClick={handleSubmit}
                     isLoading={isLoading}
-                    isDisabled={value === ""}
+                    isDisabled={value.trim() === ""}
                 >
                     Отправить
                 </Button>
