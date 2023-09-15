@@ -58,7 +58,7 @@ function Chat() {
             {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
             <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message) => createMessage(message)))}
+                {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
             </Flex>
             {chat && !chat.message?.length &&
                 <Message direction='incoming' messageId={-1} src={"/image/avatar/bot.png"} callback={false}>

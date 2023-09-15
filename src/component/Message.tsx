@@ -81,7 +81,7 @@ export const Message: FC<MessageProps> = ({
     )
 }
 
-export const createMessage = (messageModel: MessageModel): ReactNode => {
+export const createMessage = (messageModel: MessageModel, key: number): ReactNode => {
     let messageContent = ""
     let src = ""
 
@@ -101,7 +101,7 @@ export const createMessage = (messageModel: MessageModel): ReactNode => {
         src={src}
         messageId={messageModel.id}
         direction={messageModel.answer != undefined ? "incoming" : "outgoing"} // eslint-disable-line
-        key={messageModel.id}
+        key={key}
     >
         <Markdown>{messageContent}</Markdown>
         { messageModel.sql && <Code>{messageModel.sql}</Code> }
