@@ -30,8 +30,7 @@ const useCreateMessage = () => {
         },
         onSettled: () => {
             setShownMessageCount((lastN: number) => lastN + 1)
-            queryClient.invalidateQueries("chat")
-        },
+        }
     })
 }
 
