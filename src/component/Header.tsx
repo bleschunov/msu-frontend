@@ -84,7 +84,7 @@ const Header = () => {
             }, 1000)
 
             return () => clearInterval(intervalId) 
-        }}, [seconds, showSuccefullToast, isTimerActive, showWarningToast, toast, queryClient])
+        }}, [seconds, showSuccefullToast, isTimerActive, showWarningToast, toast, queryClient, clearMessagesMutation])
 
     function showSuccefullToast() {
         toastIdRef.current = toast({
