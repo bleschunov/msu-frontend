@@ -1,16 +1,17 @@
 import { Avatar, Button, Flex, HStack, Menu, MenuButton, MenuGroup, MenuItem, MenuList, UseToastOptions, useToast } from "@chakra-ui/react"
-import { getOrCreateChat } from "api/chatApi"
 import { signOut } from "api/supabase"
 import Logo from "component/Logo"
 import { UserContext } from "context/userContext"
 import ChatModel from "model/ChatModel"
 import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
-import { useQuery, useQueryClient } from "react-query"
+import { useQueryClient } from "react-query"
+import { useClearMessages } from "service/messageService"
 
 const Header = () => {
     const queryClient = useQueryClient()
     const user = useContext(UserContext)
+    const clearMessagesMutation = useClearMessages()
 
     const handleSignOut = () => {
         signOut()
@@ -37,12 +38,12 @@ const Header = () => {
         setSeconds(5)
     }
 
-    const warningToastOptions:UseToastOptions = { 
+    const warningToastOptions: UseToastOptions = { 
         title: "Очистка чата",
         status: "warning",
         position: "bottom-right",
         isClosable: false,
-        duration: 5000,
+        duration: 8000,
         description:
             <Flex direction="column">
                 Вы решили удалить все сообщения из чата
@@ -74,6 +75,8 @@ const Header = () => {
                 setTimerActive(false)
                 toastIdRef.current = undefined
                 setSeconds(5)
+                const chat = queryClient.getQueryData<ChatModel>("chat")
+                clearMessagesMutation.mutateAsync(chat!.id)
             }
             const intervalId = setInterval(() => {
                 setSeconds(seconds - 1)
@@ -81,7 +84,7 @@ const Header = () => {
             }, 1000)
 
             return () => clearInterval(intervalId) 
-        }}, [seconds, showSuccefullToast])
+        }}, [seconds, showSuccefullToast, isTimerActive, showWarningToast, toast, queryClient])
 
     function showSuccefullToast() {
         toastIdRef.current = toast({
@@ -99,10 +102,6 @@ const Header = () => {
         }
         else toastIdRef.current = toast(warningToastOptions)
     } 
-
-    const { data: chat } = useQuery<ChatModel>("chat", () => {
-        return getOrCreateChat(user.id)
-    })
 
     return (
         <HStack bg="gray.100" h="100px" flexShrink="0" justify="space-between" px="10" py="5" position="sticky" w="100%">
