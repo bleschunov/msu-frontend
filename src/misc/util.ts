@@ -1,6 +1,6 @@
-import { ReactNode, useMemo } from "react"
 import moment from "moment"
 import "moment/locale/ru"
+import { ReactNode, useMemo } from "react"
 import { useLocation } from "react-router-dom"
 
 const getBaseUrl = (): string => {
@@ -25,15 +25,13 @@ const sortDate = (dateA: string, dateB: string, descending: boolean) => {
 }
 
 // Взял этот хук здесь https://v5.reactrouter.com/web/example/query-parameters
-const useQuery = () => {
+const useSearchQuery = () => {
     const { search } = useLocation()
     return useMemo(() => new URLSearchParams(search), [search])
 }
 
 export {
-    getBaseUrl,
-    getLastN,
-    formatDate,
-    sortDate,
-    useQuery
+    formatDate, getBaseUrl,
+    getLastN, sortDate,
+    useSearchQuery
 }

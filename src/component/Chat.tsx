@@ -6,7 +6,7 @@ import { Message, createMessage } from "component/Message"
 import SkeletonMessage from "component/SkeletonMessage"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
-import { getLastN } from "misc/util"
+import { getLastN, useSearchQuery } from "misc/util"
 import ChatModel from "model/ChatModel"
 import MessageModel from "model/MessageModel"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -14,8 +14,10 @@ import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
+import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 function Chat() {
+    const searchQuery = useSearchQuery()
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [query, setQuery] = useState("")
@@ -32,6 +34,8 @@ function Chat() {
     const isFilesMode = mode === "pdf"
     const curFile = files?.item(0)
     const [isUploadingFile, setIsUploadingFile] = useState<boolean>(false)
+
+    const isFilesEnabled = String(searchQuery.get(FF_CHAT_PDF)).toLowerCase() === "true"
 
     const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
@@ -138,14 +142,17 @@ function Chat() {
                 mode={mode}
                 setMode={setMode}
                 isSourcesExist={isSourcesExist}
+                isFilesEnabled={isFilesEnabled}
             />
 
-            {isFilesMode ? isSourcesExist ? (
-                <Text color="black">{lastSource?.file_name}</Text>
-            ) : (
-                <Text color="gray" fontStyle="italic">Загрузите файл</Text>
-            ) : isSourcesExist && (
-                <Text color="gray">{lastSource?.file_name}</Text>
+            {isFilesEnabled && (
+                isFilesMode ? isSourcesExist ? (
+                    <Text color="black">{lastSource?.file_name}</Text>
+                ) : (
+                    <Text color="gray" fontStyle="italic">Загрузите файл</Text>
+                ) : isSourcesExist && (
+                    <Text color="gray">{lastSource?.file_name}</Text>
+                )
             )}
         </Flex>
     )

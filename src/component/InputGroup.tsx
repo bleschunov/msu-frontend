@@ -1,10 +1,8 @@
 import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch, Textarea, VStack } from "@chakra-ui/react"
 import { ModeT } from "context/modeContext"
-import { useQuery } from "misc/util"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
-import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 interface IInputGroup {
     value: string
@@ -17,6 +15,7 @@ interface IInputGroup {
     setMode: Dispatch<SetStateAction<ModeT>>
     isSourcesExist: boolean
     isUploadingFile: boolean
+    isFilesEnabled: boolean
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -29,9 +28,9 @@ const InputGroup: FC<IInputGroup> = ({
     mode,
     setMode,
     isSourcesExist,
-    isUploadingFile
+    isUploadingFile,
+    isFilesEnabled
 }) => {
-    const query = useQuery()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     useKeypress("Enter", handleSubmit)
     
@@ -52,8 +51,6 @@ const InputGroup: FC<IInputGroup> = ({
     const handleSwitchMode = () => {
         setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
     }
-
-    const isFilesEnabled = String(query.get(FF_CHAT_PDF)).toLowerCase() === "true"
 
     const isValueExists = value.trim() === ""
 
