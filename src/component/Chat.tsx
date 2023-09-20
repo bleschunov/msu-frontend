@@ -30,7 +30,10 @@ function Chat() {
     const predictionMutation = usePrediction()
 
     useEffect(() => {
-        window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
+        window.scroll({
+            top: chatRef.current?.offsetHeight,
+            behavior: "smooth",
+        })
     }, [chat?.message?.length])
 
     const handleSubmit = async () => {
@@ -38,6 +41,7 @@ function Chat() {
             setQuery("")
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files ? files.item(0) : null })
+
             messageCreateMutation.mutate({
                 chat_id: chat.id,
                 answer: answer,
@@ -49,7 +53,7 @@ function Chat() {
     }
 
     const handleShowMore = () => {
-        setShownMessageCount(lastN => lastN + 10)
+        setShownMessageCount((lastN) => lastN + 10)
     }
 
     const isLoading = predictionMutation.isLoading
