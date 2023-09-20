@@ -6,7 +6,7 @@ const createMessage = (body: Omit<MessageModel, "id" | "created_at" | "mark" | "
 }
 
 const clearMessages = (chat_id: number): Promise<MessageModel[]> => {
-    return axiosClient.post(`/message/${chat_id}`).then((response) => response.data)
+    return axiosClient.delete(`/message/${chat_id}`).then((response) => response.data)
 }
 
 export {
