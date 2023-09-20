@@ -65,9 +65,9 @@ export const Message: FC<MessageProps> = ({
                                     <>
                                         <Text fontWeight="bold" mt="5">Комментарии</Text>
                                         {reviewModels.map(({ commentary, id, created_at }, index) => (
-                                            <VStack align="left" mt={index === 0 ? 0 : 4} spacing={0}>
+                                            <VStack align="left" mt={index === 0 ? 0 : 4} spacing={0} key={id}>
                                                 <Text color="gray.500" fontSize="15">{formatDate(created_at)}</Text>
-                                                <ReactMarkdown key={id}>{commentary}</ReactMarkdown>
+                                                <ReactMarkdown>{commentary}</ReactMarkdown>
                                             </VStack>
                                         ))}
                                     </>
