@@ -1,10 +1,10 @@
-import { useMutation } from "react-query"
-import { useContext } from "react"
-import { createMessage as createMessageApi } from "api/messageApi"
-import MessageModel from "model/MessageModel"
-import ChatModel from "model/ChatModel"
+import { clearMessages as clearMessagesApi, createMessage as createMessageApi } from "api/messageApi"
 import queryClient from "api/queryClient"
-import { ModeContext, ModeContextI } from "context/modeContext"
+import { InitialMessageCount, ModeContext, ModeContextI } from "context/modeContext"
+import ChatModel from "model/ChatModel"
+import MessageModel from "model/MessageModel"
+import { useContext } from "react"
+import { useMutation } from "react-query"
 
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
     previousChat.message?.push(newMessage)
@@ -34,6 +34,17 @@ const useCreateMessage = () => {
     })
 }
 
+const useClearMessages = () => {
+    const { setShownMessageCount } = useContext<ModeContextI>(ModeContext)
+
+    return useMutation(clearMessagesApi, {
+        onSettled: () => {
+            setShownMessageCount(InitialMessageCount)
+        },
+    })
+}
+
 export {
+    useClearMessages,
     useCreateMessage
 }

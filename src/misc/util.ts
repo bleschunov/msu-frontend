@@ -8,7 +8,7 @@ const getBaseUrl = (): string => {
         return "https://msu-backend-dev.fly.dev/api/v1"
     }
 
-    return "http://0.0.0.0:8080/api/v1"
+    return "http://localhost:8080/api/v1"
 }
 
 const getLastN = (n: number, arr: ReactNode[]) => {

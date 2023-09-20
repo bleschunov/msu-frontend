@@ -45,7 +45,10 @@ function Chat() {
         || chatQueryStatus === "loading"
 
     useEffect(() => {
-        window.scroll({ top: chatRef.current?.offsetHeight, behavior: "smooth" })
+        window.scroll({
+            top: chatRef.current?.offsetHeight,
+            behavior: "smooth",
+        })
     }, [chat?.message?.length])
 
     const handleSubmit = async () => {
@@ -70,7 +73,7 @@ function Chat() {
     }
 
     const handleShowMore = () => {
-        setShownMessageCount(lastN => lastN + 10)
+        setShownMessageCount((lastN) => lastN + 10)
     }
 
     useEffect(() => {
