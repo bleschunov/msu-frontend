@@ -1,7 +1,7 @@
 interface QueryModel {
     chat_id: number,
     query: string,
-    file: File | null
+    source_id: string
 }
 
 export default QueryModel
