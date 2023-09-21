@@ -1,11 +1,11 @@
 import queryClient from "api/queryClient"
-import { saveSource as saveSourceApi } from "api/sourceApi"
+import { uploadSource as uploadSourceApi } from "api/sourceApi"
 import { useMutation } from "react-query"
 
 const useSource = () => {
-    return useMutation(saveSourceApi, {
+    return useMutation(uploadSourceApi, {
         onSuccess: () => {
-            queryClient.invalidateQueries("chat")
+            queryClient.invalidateQueries("currentSource")
         },
     })
 }
