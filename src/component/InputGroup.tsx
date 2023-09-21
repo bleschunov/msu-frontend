@@ -1,4 +1,4 @@
-import { Button, Flex, HStack, IconButton, Input, Textarea, Tooltip } from "@chakra-ui/react"
+import { Button, Flex, HStack, IconButton, Input, Select, Textarea, Tooltip, VStack } from '@chakra-ui/react'
 import { useQuery } from "misc/util"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
@@ -7,6 +7,7 @@ import { FF_CHAT_PDF } from "types/FeatureFlags"
 interface IInputGroup {
     value: string
     setValue: Dispatch<SetStateAction<string>>
+    setTable: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     isLoading: boolean
     uploadFiles?: Dispatch<SetStateAction<FileList | null>>
@@ -20,9 +21,14 @@ const InputGroup: FC<IInputGroup> = ({
     isLoading,
     uploadFiles = () => {},
     multipleFilesEnabled = false,
+    setTable
 }) => {
     const query = useQuery()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+    const handleTableSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setTable(event.target.value)
+    }
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
@@ -72,14 +78,21 @@ const InputGroup: FC<IInputGroup> = ({
                     placeholder="Напишите ваш запрос"
                     disabled={isLoading}
                 />
-                <Button
-                    colorScheme="blue"
-                    onClick={handleSubmit}
-                    isLoading={isLoading}
-                    isDisabled={value.trim() === ""}
-                >
-                    Отправить
-                </Button>
+                <VStack>
+                    <Button
+                        w="full"
+                        colorScheme="blue"
+                        onClick={handleSubmit}
+                        isLoading={isLoading}
+                        isDisabled={value.trim() === ""}
+                    >
+                        Отправить
+                    </Button>
+                    <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
+                        <option value='платежи' selected>Платежи</option>
+                        <option value='сотрудники'>Сотрудники</option>
+                    </Select>
+                </VStack>
             </HStack>
             
             <Button onClick={handleClick}>Не учитывать NULL</Button>
