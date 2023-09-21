@@ -13,6 +13,7 @@ import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import SkeletonMessage from "component/SkeletonMessage"
+import queryClient from "api/queryClient"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -42,13 +43,15 @@ function Chat() {
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files ? files.item(0) : null })
 
-            messageCreateMutation.mutate({
+            await messageCreateMutation.mutateAsync({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
                 table: table,
                 connected_message_id: queryMessage,
             } as MessageModel)
+
+            queryClient.invalidateQueries("chat")
         }
     }
 
