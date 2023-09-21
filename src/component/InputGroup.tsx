@@ -1,10 +1,8 @@
-import { Button, Flex, FormControl, FormLabel, HStack, IconButton, Input, Switch, Select, Textarea, Tooltip, VStack } from "@chakra-ui/react"
+import { Button, Flex, FormControl, FormLabel, HStack, Input, Select, Switch, Textarea, VStack } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
-import useKeypress from "react-use-keypress"
-import { useQuery } from "misc/util"
 import { FaFileUpload } from "react-icons/fa"
-import { FF_CHAT_PDF } from "types/FeatureFlags"
+import useKeypress from "react-use-keypress"
 
 interface IInputGroup {
     value: string

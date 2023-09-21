@@ -65,7 +65,7 @@ function Chat() {
                 query,
                 chat_id: chat.id
             } as MessageModel)
-            const { answer, sql, table } = await predictionMutation.mutateAsync({
+            const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
                 query,
                 source_id: currentSource?.source_id,
                 tables: [table]
@@ -75,7 +75,7 @@ function Chat() {
                 answer: answer,
                 sql: sql,
                 table: markdownTable,
-                connected_message_id: queryMessage,
+                connected_message_id: queryMessageId,
             } as MessageModel)
         }
     }
