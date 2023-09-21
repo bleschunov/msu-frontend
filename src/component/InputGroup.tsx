@@ -2,7 +2,6 @@ import { Button, Flex, HStack, IconButton, Input, Textarea, Tooltip } from "@cha
 import { useQuery } from "misc/util"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import useKeypress from "react-use-keypress"
 import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 interface IInputGroup {
@@ -24,8 +23,7 @@ const InputGroup: FC<IInputGroup> = ({
 }) => {
     const query = useQuery()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
-    useKeypress("Enter", handleSubmit)
-    
+
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             handleSubmit()
