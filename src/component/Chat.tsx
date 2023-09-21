@@ -19,7 +19,8 @@ import { useSource } from "service/sourceService"
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
-    const [query, setQuery] = useState("")
+    const [query, setQuery] = useState<string>("")
+    const [table, setTable] = useState<string>("")
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
@@ -66,14 +67,15 @@ function Chat() {
             } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({
                 query,
-                source_id: currentSource?.source_id
+                source_id: currentSource?.source_id,
+                tables: [table]
             })
             messageCreateMutation.mutate({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
-                table: table,
-                connected_message_id: queryMessageId,
+                table: markdownTable,
+                connected_message_id: queryMessage,
             } as MessageModel)
         }
     }
@@ -131,6 +133,7 @@ function Chat() {
                 isUploadingFile={isUploadingFile}
                 value={query}
                 setValue={setQuery}
+                setTable={setTable}
                 handleSubmit={handleSubmit}
                 onUploadFiles={onUploadFiles}
                 multipleFilesEnabled={false}

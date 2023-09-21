@@ -1,12 +1,15 @@
-import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch, Textarea, VStack } from "@chakra-ui/react"
+import { Button, Flex, FormControl, FormLabel, HStack, IconButton, Input, Switch, Select, Textarea, Tooltip, VStack } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
-import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
+import { useQuery } from "misc/util"
+import { FaFileUpload } from "react-icons/fa"
+import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 interface IInputGroup {
     value: string
     setValue: Dispatch<SetStateAction<string>>
+    setTable: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     isLoading: boolean
     onUploadFiles: (files: FileList) => void
@@ -24,12 +27,17 @@ const InputGroup: FC<IInputGroup> = ({
     multipleFilesEnabled = false,
     isSourcesExist,
     isUploadingFile,
+    setTable
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     useKeypress("Enter", handleSubmit)
 
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
-    
+
+    const handleTableSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setTable(event.target.value)
+    }
+
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             handleSubmit()
@@ -77,6 +85,10 @@ const InputGroup: FC<IInputGroup> = ({
                     >
                         Отправить
                     </Button>
+                    <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
+                        <option value='платежи' selected>Платежи</option>
+                        <option value='сотрудники'>Сотрудники</option>
+                    </Select>
 
                     {isFilesEnabled && (
                         <>
