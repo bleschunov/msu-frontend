@@ -1,6 +1,6 @@
 import { Button, Flex, FormControl, FormLabel, HStack, Input, Switch, Textarea, VStack } from "@chakra-ui/react"
-import { ModeT } from "context/modeContext"
-import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useRef } from "react"
+import { ModeContext, ModeContextI } from "context/modeContext"
+import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import useKeypress from "react-use-keypress"
 
@@ -9,13 +9,10 @@ interface IInputGroup {
     setValue: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     isLoading: boolean
-    setFiles?: Dispatch<SetStateAction<FileList | null>>
+    onUploadFiles: (files: FileList) => void
     multipleFilesEnabled?: boolean
-    mode: ModeT
-    setMode: Dispatch<SetStateAction<ModeT>>
     isSourcesExist: boolean
     isUploadingFile: boolean
-    isFilesEnabled: boolean
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -23,16 +20,15 @@ const InputGroup: FC<IInputGroup> = ({
     setValue,
     handleSubmit,
     isLoading,
-    setFiles = () => {},
+    onUploadFiles,
     multipleFilesEnabled = false,
-    mode,
-    setMode,
     isSourcesExist,
     isUploadingFile,
-    isFilesEnabled
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     useKeypress("Enter", handleSubmit)
+
+    const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
@@ -103,8 +99,9 @@ const InputGroup: FC<IInputGroup> = ({
                                 accept=".pdf"
                                 multiple={multipleFilesEnabled}
                                 onChange={(e) => {
-                                    setFiles(e.target.files)
-                                    setMode("pdf")
+                                    const files = e.target.files
+                                    if (files)
+                                        onUploadFiles(files)
                                 }}
                             />
                         </>

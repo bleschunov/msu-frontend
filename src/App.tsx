@@ -1,24 +1,23 @@
-import React from "react"
-import { QueryClientProvider } from "react-query"
 import { ChakraProvider, Container, Flex } from "@chakra-ui/react"
-import Chat from "component/Chat"
-import Header from "component/Header"
-import Footer from "component/Footer"
-import Auth from "component/Auth"
 import queryClient from "api/queryClient"
-import { UserContextProvider } from "context/userContext"
-import { ModeContextProvider } from "context/modeContext"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Auth from "component/Auth"
+import Chat from "component/Chat"
 import EditPromptForm from "component/EditPromptForm"
+import Footer from "component/Footer"
+import Header from "component/Header"
+import { ModeContextProvider } from "context/modeContext"
+import { UserContextProvider } from "context/userContext"
+import { QueryClientProvider } from "react-query"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 
 function App() {
     return (
-        <ChakraProvider>
-            <Auth>
-                <QueryClientProvider client={queryClient}>
-                    <UserContextProvider>
-                        <ModeContextProvider>
-                            <BrowserRouter>
+        <BrowserRouter>
+            <ChakraProvider>
+                <Auth>
+                    <QueryClientProvider client={queryClient}>
+                        <UserContextProvider>
+                            <ModeContextProvider>
                                 <div className="App">
                                     <Flex direction="column" h="100vh">
                                         <Header />
@@ -31,12 +30,12 @@ function App() {
                                         <Footer />
                                     </Flex>
                                 </div>
-                            </BrowserRouter>
-                        </ModeContextProvider>
-                    </UserContextProvider>
-                </QueryClientProvider>
-            </Auth>
-        </ChakraProvider>
+                            </ModeContextProvider>
+                        </UserContextProvider>
+                    </QueryClientProvider>
+                </Auth>
+            </ChakraProvider>
+        </BrowserRouter>
     )
 }
 
