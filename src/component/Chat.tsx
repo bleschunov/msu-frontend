@@ -1,52 +1,54 @@
 import { Button, Flex, Text } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
-import { uploadFile } from "api/fileApi"
+import { getLastSource } from "api/sourceApi"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
 import SkeletonMessage from "component/SkeletonMessage"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
-import { getLastN, useSearchQuery } from "misc/util"
+import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
 import MessageModel from "model/MessageModel"
+import SourceModel from "model/SourceModel"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
-import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 function Chat() {
-    const searchQuery = useSearchQuery()
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [query, setQuery] = useState("")
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
-    const { mode, setMode } = useContext<ModeContextI>(ModeContext)
-    const [sourceId, setSourceId] = useState<string>()
+    const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     
     const messageCreateMutation = useCreateMessage()
     const predictionMutation = usePrediction()
     const sourceMutation = useSource()
     
-    const [files, setFiles] = useState<FileList | null>(null)
     const isFilesMode = mode === "pdf"
-    const curFile = files?.item(0)
-    const [isUploadingFile, setIsUploadingFile] = useState<boolean>(false)
-
-    const isFilesEnabled = String(searchQuery.get(FF_CHAT_PDF)).toLowerCase() === "true"
 
     const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
-    const sourcesList = chat?.source
-    const lastSource = sourcesList ? sourcesList[sourcesList.length - 1] : undefined
-    const isSourcesExist = sourcesList ? sourcesList.length > 0 : false
+
+    const { data: currentSource, status: currentSourceQueryStatus } = useQuery<SourceModel>(
+        "currentSource",
+        () => { return getLastSource(chat!.id) },
+        { enabled: !!chat?.id }
+    )
+    const isSourcesExist = Boolean(currentSource)
 
     const isLoading = predictionMutation.isLoading
         || messageCreateMutation.isLoading
+        // TODO start: move checking queries loading status to func
         || chatQueryStatus === "loading"
+        || currentSourceQueryStatus === "loading"
+        // TODO end
+
+    const isUploadingFile = sourceMutation.isLoading
 
     useEffect(() => {
         window.scroll({
@@ -64,7 +66,7 @@ function Chat() {
             } as MessageModel)
             const { answer, sql, table } = await predictionMutation.mutateAsync({
                 query,
-                source_id: sourceId!
+                source_id: currentSource?.source_id
             })
             messageCreateMutation.mutate({
                 chat_id: chat.id,
@@ -79,22 +81,15 @@ function Chat() {
     const handleShowMore = () => {
         setShownMessageCount((lastN) => lastN + 10)
     }
-
-    useEffect(() => {
-        if (curFile) {
-            setIsUploadingFile(true)
-            uploadFile(curFile!).then(async (sourceId) => {
-                setSourceId(sourceId)
-                await sourceMutation.mutateAsync({
-                    source_id: sourceId,
-                    file_name: curFile.name,
-                    chat_id: chat!.id
-                })
-                setIsUploadingFile(false)
-            })
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [files])
+    
+    const onUploadFiles = (files: FileList) => {
+        const file = files.item(0)
+        setMode("pdf")
+        sourceMutation.mutateAsync({
+            chat_id: chat!.id,
+            file: file!
+        })
+    }
 
     return (
         <Flex
@@ -137,21 +132,18 @@ function Chat() {
                 value={query}
                 setValue={setQuery}
                 handleSubmit={handleSubmit}
-                setFiles={setFiles}
+                onUploadFiles={onUploadFiles}
                 multipleFilesEnabled={false}
-                mode={mode}
-                setMode={setMode}
                 isSourcesExist={isSourcesExist}
-                isFilesEnabled={isFilesEnabled}
             />
 
             {isFilesEnabled && (
                 isFilesMode ? isSourcesExist ? (
-                    <Text color="black">{lastSource?.file_name}</Text>
+                    <Text color="black">{currentSource?.file_name}</Text>
                 ) : (
                     <Text color="gray" fontStyle="italic">Загрузите файл</Text>
                 ) : isSourcesExist && (
-                    <Text color="gray">{lastSource?.file_name}</Text>
+                    <Text color="gray">{currentSource?.file_name}</Text>
                 )
             )}
         </Flex>
