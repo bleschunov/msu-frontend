@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, HStack, Input, Select, Switch, Textarea, VStack } from "@chakra-ui/react"
+import { Button, Flex, FormControl, FormLabel, HStack, Input, Select, Switch, Textarea, VStack, Text } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
@@ -13,6 +13,7 @@ interface IInputGroup {
     multipleFilesEnabled?: boolean
     isSourcesExist: boolean
     isUploadingFile: boolean
+    errorMessage: string | undefined
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -24,7 +25,8 @@ const InputGroup: FC<IInputGroup> = ({
     multipleFilesEnabled = false,
     isSourcesExist,
     isUploadingFile,
-    setTable
+    setTable,
+    errorMessage
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -63,14 +65,17 @@ const InputGroup: FC<IInputGroup> = ({
     return (
         <Flex direction="column" gap="5">
             <HStack alignItems="flex-start">
-                <Textarea
-                    height="100%"
-                    value={value}
-                    onChange={handleChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Напишите ваш запрос"
-                    disabled={isTextAreaDisable}
-                />
+                <VStack w="full" alignItems="start">
+                    <Textarea
+                        height="100%"
+                        value={value}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Напишите ваш запрос"
+                        disabled={isTextAreaDisable}
+                    />
+                    {errorMessage && <Text color="red">{errorMessage}</Text>}
+                </VStack>
                 <VStack alignItems="flex-start">
                     <Button
                         width="100%"

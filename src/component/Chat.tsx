@@ -50,6 +50,8 @@ function Chat() {
         || currentSourceQueryStatus === "loading"
         // TODO end
 
+    const errorMessage = predictionMutation.isError ? "Произошла ошибка. Попробуйте ещё раз" : undefined
+
     const isUploadingFile = sourceMutation.isLoading
 
     useEffect(() => {
@@ -141,6 +143,7 @@ function Chat() {
                 onUploadFiles={onUploadFiles}
                 multipleFilesEnabled={false}
                 isSourcesExist={isSourcesExist}
+                errorMessage={errorMessage}
             />
 
             {isFilesEnabled && (
