@@ -1,4 +1,3 @@
-import React from "react"
 import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react"
 
 interface SkeletonMessageI {
