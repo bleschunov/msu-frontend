@@ -80,7 +80,7 @@ const SourcesList: FC<ISourcesList> = ({
                                 </Text>
                             </Flex>
                             {currentSource?.id === sourceItem.id ? (
-                                <BsCheck size={20}/>
+                                <BsCheck size={24}/>
                             ) : (
                                 <Button
                                     colorScheme="blue"
