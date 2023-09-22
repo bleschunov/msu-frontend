@@ -18,7 +18,8 @@ import queryClient from "api/queryClient"
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
-    const [query, setQuery] = useState("")
+    const [query, setQuery] = useState<string>("")
+    const [table, setTable] = useState<string>("")
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
     const [files, setFiles] = useState<FileList | null>(null)
@@ -41,13 +42,17 @@ function Chat() {
         if (query.trim() !== "" && chat) {
             setQuery("")
             const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
-            const { answer, sql, table } = await predictionMutation.mutateAsync({ query, file: files ? files.item(0) : null })
+            const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
+                query,
+                file: files ? files.item(0) : null,
+                tables: [table]
+            })
 
             await messageCreateMutation.mutateAsync({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
-                table: table,
+                table: markdownTable,
                 connected_message_id: queryMessage,
             } as MessageModel)
 
@@ -135,6 +140,7 @@ function Chat() {
                 isLoading={isLoading}
                 value={query}
                 setValue={setQuery}
+                setTable={setTable}
                 handleSubmit={handleSubmit}
                 uploadFiles={setFiles}
                 multipleFilesEnabled={false}

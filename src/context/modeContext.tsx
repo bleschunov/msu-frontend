@@ -32,8 +32,6 @@ const ModeContextProvider: FC<ModeContextProviderProps> = ({ children }) => {
 
 const InitialMessageCount: number = 2
 
-
-
 export {
     ModeContextProvider,
     ModeContext,
