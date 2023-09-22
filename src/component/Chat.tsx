@@ -103,6 +103,7 @@ function Chat() {
             ref={chatRef}
             direction="column"
             p="10"
+            pt="100"
             h="full"
             gap={10}
         >
