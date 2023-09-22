@@ -21,7 +21,7 @@ function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [query, setQuery] = useState<string>("")
-    const [table, setTable] = useState<string>("")
+    const [table, setTable] = useState<string>("платежи")
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
