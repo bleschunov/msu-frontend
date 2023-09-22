@@ -15,6 +15,7 @@ import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
+import queryClient from "api/queryClient"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -70,20 +71,22 @@ function Chat() {
                 source_id: currentSource?.source_id,
                 tables: [table]
             })
-            messageCreateMutation.mutate({
+            await messageCreateMutation.mutateAsync({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
                 table: markdownTable,
                 connected_message_id: queryMessageId,
             } as MessageModel)
+
+            queryClient.invalidateQueries("chat")
         }
     }
 
     const handleShowMore = () => {
         setShownMessageCount((lastN) => lastN + 10)
     }
-    
+
     const onUploadFiles = (files: FileList) => {
         const file = files.item(0)
         setMode("pdf")
