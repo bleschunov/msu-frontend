@@ -1,18 +1,20 @@
-import { Button, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react"
+import { Button, Flex, Text } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
+import { getLastSource } from "api/sourceApi"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
+import SkeletonMessage from "component/SkeletonMessage"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
 import MessageModel from "model/MessageModel"
+import SourceModel from "model/SourceModel"
 import { useContext, useEffect, useRef, useState } from "react"
-import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
-import SkeletonMessage from "component/SkeletonMessage"
+import { useSource } from "service/sourceService"
 import queryClient from "api/queryClient"
 
 function Chat() {
@@ -22,14 +24,33 @@ function Chat() {
     const [table, setTable] = useState<string>("")
     const user = useContext(UserContext)
     const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
-    const [files, setFiles] = useState<FileList | null>(null)
+    const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
+    
+    const messageCreateMutation = useCreateMessage()
+    const predictionMutation = usePrediction()
+    const sourceMutation = useSource()
+    
+    const isFilesMode = mode === "pdf"
 
     const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
 
-    const messageCreateMutation = useCreateMessage()
-    const predictionMutation = usePrediction()
+    const { data: currentSource, status: currentSourceQueryStatus } = useQuery<SourceModel>(
+        "currentSource",
+        () => { return getLastSource(chat!.id) },
+        { enabled: !!chat?.id }
+    )
+    const isSourcesExist = Boolean(currentSource)
+
+    const isLoading = predictionMutation.isLoading
+        || messageCreateMutation.isLoading
+        // TODO start: move checking queries loading status to func
+        || chatQueryStatus === "loading"
+        || currentSourceQueryStatus === "loading"
+        // TODO end
+
+    const isUploadingFile = sourceMutation.isLoading
 
     useEffect(() => {
         window.scroll({
@@ -41,19 +62,21 @@ function Chat() {
     const handleSubmit = async () => {
         if (query.trim() !== "" && chat) {
             setQuery("")
-            const { id: queryMessage } = await messageCreateMutation.mutateAsync({ chat_id: chat.id, query } as MessageModel)
+            const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
+                query,
+                chat_id: chat.id
+            } as MessageModel)
             const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
                 query,
-                file: files ? files.item(0) : null,
+                source_id: currentSource?.source_id,
                 tables: [table]
             })
-
             await messageCreateMutation.mutateAsync({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
                 table: markdownTable,
-                connected_message_id: queryMessage,
+                connected_message_id: queryMessageId,
             } as MessageModel)
 
             queryClient.invalidateQueries("chat")
@@ -64,19 +87,14 @@ function Chat() {
         setShownMessageCount((lastN) => lastN + 10)
     }
 
-    const isLoading = predictionMutation.isLoading
-        || messageCreateMutation.isLoading
-        || chatQueryStatus === "loading"
-
-    const { setMode } = useContext<ModeContextI>(ModeContext)
-
-    useEffect(() => {
-        if (files !== null) {
-            setMode("pdf")
-        } else {
-            setMode("datastep")
-        }
-    }, [files, setMode])
+    const onUploadFiles = (files: FileList) => {
+        const file = files.item(0)
+        setMode("pdf")
+        sourceMutation.mutateAsync({
+            chat_id: chat!.id,
+            file: file!
+        })
+    }
 
     return (
         <Flex
@@ -103,29 +121,6 @@ function Chat() {
                 </Flex>
             }
 
-            {/* TODO: add drag&drop zone when dragging file into chat */}
-
-            {files && (
-                <Flex direction="column">
-                    <Flex direction="row" alignItems="center" gap={2}>
-                        <IconButton
-                            variant="link"
-                            minWidth="fit-content"
-                            aria-label="удалить загруженный файл"
-                            icon={<AiOutlineClose size={16} />}
-                            onClick={() => setFiles(null)}
-                        />
-                        <Text>{files?.item(0)?.name}</Text>
-                        <Tooltip label="Поиск будет происходить по загруженному файлу" placement="right">
-                            {/* Add span because we use react-icons */}
-                            <span>
-                                <AiOutlineQuestionCircle size={18} />
-                            </span>
-                        </Tooltip>
-                    </Flex>
-                </Flex>
-            )}
-
             {chat && !chat.message?.length &&
                 <Message
                     direction='incoming'
@@ -138,13 +133,25 @@ function Chat() {
 
             <InputGroup
                 isLoading={isLoading}
+                isUploadingFile={isUploadingFile}
                 value={query}
                 setValue={setQuery}
                 setTable={setTable}
                 handleSubmit={handleSubmit}
-                uploadFiles={setFiles}
+                onUploadFiles={onUploadFiles}
                 multipleFilesEnabled={false}
+                isSourcesExist={isSourcesExist}
             />
+
+            {isFilesEnabled && (
+                isFilesMode ? isSourcesExist ? (
+                    <Text color="black">{currentSource?.file_name}</Text>
+                ) : (
+                    <Text color="gray" fontStyle="italic">Загрузите файл</Text>
+                ) : isSourcesExist && (
+                    <Text color="gray">{currentSource?.file_name}</Text>
+                )
+            )}
         </Flex>
     )
 }

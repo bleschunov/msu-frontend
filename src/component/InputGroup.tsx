@@ -1,8 +1,7 @@
-import { Button, Flex, HStack, IconButton, Input, Select, Textarea, Tooltip, VStack } from "@chakra-ui/react"
-import { useQuery } from "misc/util"
-import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useRef } from "react"
+import { Button, Flex, FormControl, FormLabel, HStack, Input, Select, Switch, Textarea, VStack } from "@chakra-ui/react"
+import { ModeContext, ModeContextI } from "context/modeContext"
+import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import { FF_CHAT_PDF } from "types/FeatureFlags"
 
 interface IInputGroup {
     value: string
@@ -10,8 +9,10 @@ interface IInputGroup {
     setTable: Dispatch<SetStateAction<string>>
     handleSubmit: () => void
     isLoading: boolean
-    uploadFiles?: Dispatch<SetStateAction<FileList | null>>
+    onUploadFiles: (files: FileList) => void
     multipleFilesEnabled?: boolean
+    isSourcesExist: boolean
+    isUploadingFile: boolean
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -19,12 +20,15 @@ const InputGroup: FC<IInputGroup> = ({
     setValue,
     handleSubmit,
     isLoading,
-    uploadFiles = () => {},
+    onUploadFiles,
     multipleFilesEnabled = false,
+    isSourcesExist,
+    isUploadingFile,
     setTable
 }) => {
-    const query = useQuery()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+    const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
 
     const handleTableSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
         setTable(event.target.value)
@@ -44,47 +48,36 @@ const InputGroup: FC<IInputGroup> = ({
         setValue(value => value + " Не учитывай NULL.")
     }
 
-    const filesEnabled = String(query.get(FF_CHAT_PDF)).toLowerCase() === "true"
+    const handleSwitchMode = () => {
+        setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
+    }
+
+    const isValueExists = value.trim() === ""
+
+    const isTextAreaDisable = isFilesEnabled ? isLoading || isUploadingFile || !isSourcesExist : isLoading
+    const isSubmitBtnDisable = isFilesEnabled ? isValueExists || isUploadingFile || !isSourcesExist : isValueExists
+
+    const submitBtnIsLoading = isFilesEnabled ? isLoading || isUploadingFile : isLoading
+    const uploadFileBtnIsLoading = isFilesEnabled ? isLoading || isUploadingFile : isLoading
 
     return (
         <Flex direction="column" gap="5">
             <HStack alignItems="flex-start">
-                {filesEnabled && (
-                    <>
-                        <Tooltip label="Загрузить файл">
-                            <IconButton
-                                colorScheme="gray"
-                                onClick={() => fileInputRef.current?.click()}
-                                isLoading={isLoading}
-                                icon={<FaFileUpload />}
-                                aria-label="загрузить файл"
-                            >
-                            </IconButton>
-                        </Tooltip>
-                        <Input
-                            hidden
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".pdf"
-                            multiple={multipleFilesEnabled}
-                            onChange={(e) => uploadFiles(e.target.files)}
-                        />
-                    </>
-                )}
                 <Textarea
+                    height="100%"
                     value={value}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Напишите ваш запрос"
-                    disabled={isLoading}
+                    disabled={isTextAreaDisable}
                 />
-                <VStack>
+                <VStack alignItems="flex-start">
                     <Button
-                        w="full"
+                        width="100%"
                         colorScheme="blue"
                         onClick={handleSubmit}
-                        isLoading={isLoading}
-                        isDisabled={value.trim() === ""}
+                        isLoading={submitBtnIsLoading}
+                        isDisabled={isSubmitBtnDisable}
                     >
                         Отправить
                     </Button>
@@ -92,10 +85,54 @@ const InputGroup: FC<IInputGroup> = ({
                         <option value='платежи' selected>Платежи</option>
                         <option value='сотрудники'>Сотрудники</option>
                     </Select>
+
+                    {isFilesEnabled && (
+                        <>
+                            <Button
+                                colorScheme="gray"
+                                onClick={() => {
+                                    fileInputRef.current?.click()
+                                }}
+                                isLoading={uploadFileBtnIsLoading}
+                                fontWeight="normal"
+                                gap={2}
+                            >
+                                <FaFileUpload />
+                                Загрузить файл
+                            </Button>
+                            <Input
+                                hidden
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf"
+                                multiple={multipleFilesEnabled}
+                                onChange={(e) => {
+                                    const files = e.target.files
+                                    if (files)
+                                        onUploadFiles(files)
+                                }}
+                            />
+                        </>
+                    )}
                 </VStack>
             </HStack>
             
             <Button onClick={handleClick}>Не учитывать NULL</Button>
+
+            {/* Toggle for files */}
+            {isFilesEnabled && (
+                <FormControl display='flex' alignItems='center'>
+                    <FormLabel mb='0'>
+                            Режим работы по документам
+                    </FormLabel>
+                    <Switch
+                        isChecked={mode === "pdf"}
+                        onChange={() => {
+                            handleSwitchMode()
+                        }}
+                    />
+                </FormControl>
+            )}
         </Flex>
     )
 }

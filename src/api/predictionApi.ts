@@ -7,11 +7,7 @@ const getDatastepPrediction = (body: Omit<QueryModel, "chat_id">): Promise<Messa
 }
 
 const getChatPdfPrediction = (body: Omit<QueryModel, "chat_id">): Promise<MessageModel> => {
-    return axiosClient.postForm(
-        "/chat_pdf/prediction",
-        { file: body.file },
-        { params: { query: body.query } }
-    ).then(response => ({ answer: response.data } as MessageModel))
+    return axiosClient.post("/chat_pdf/prediction", body).then(response => ({ answer: response.data } as MessageModel))
 }
 
 export {
