@@ -2,7 +2,6 @@ import { Button, Flex, FormControl, FormLabel, HStack, Input, Select, Switch, Te
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import useKeypress from "react-use-keypress"
 
 interface IInputGroup {
     value: string
@@ -28,7 +27,6 @@ const InputGroup: FC<IInputGroup> = ({
     setTable
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
-    useKeypress("Enter", handleSubmit)
 
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
 
