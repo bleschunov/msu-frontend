@@ -47,7 +47,7 @@ const SourcesList: FC<ISourcesList> = ({
                 })
             }, 0)
         }
-    }, [isOpen])
+    }, [isOpen, sourceList])
 
     return (
         <Drawer onClose={onClose} isOpen={isOpen} size="sm">
