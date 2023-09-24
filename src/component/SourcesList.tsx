@@ -31,14 +31,6 @@ const SourcesList: FC<ISourcesList> = ({
         return filename
     }
 
-    const handleSourceItemOver = (e: MouseEvent<HTMLDivElement> ) => {
-        e.currentTarget.style.backgroundColor = "gray.100"
-    }
-
-    const handleSourceItemOut = (e: MouseEvent<HTMLDivElement> ) => {
-        e.currentTarget.style.backgroundColor = "transparent"
-    }
-
     useEffect(() => {
         if (isOpen) {
             setTimeout(() => {
@@ -66,10 +58,9 @@ const SourcesList: FC<ISourcesList> = ({
                             direction="row"
                             justifyContent="space-between"
                             alignItems="center"
+                            backgroundColor={sourceItem.id === currentSource.id ? "gray.100" : "transparent"}
                             padding={3}
                             borderRadius={10}
-                            onMouseOver={handleSourceItemOver}
-                            onMouseOut={handleSourceItemOut}
                         >
                             <Flex direction="column">
                                 <Text>
