@@ -23,7 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # enviromental variables
-.env.development
-.env.production
 .idea
 .vscode
