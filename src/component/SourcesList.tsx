@@ -1,8 +1,18 @@
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Text } from "@chakra-ui/react"
+import {
+    Button,
+    Drawer,
+    DrawerBody,
+    DrawerCloseButton,
+    DrawerContent,
+    DrawerHeader,
+    DrawerOverlay,
+    Flex,
+    Text,
+} from "@chakra-ui/react"
 import queryClient from "api/queryClient"
 import { formatDate } from "misc/util"
 import SourceModel from "model/SourceModel"
-import { FC, MouseEvent, useEffect, useRef } from "react"
+import { FC, useEffect, useRef } from "react"
 import { BsCheck } from "react-icons/bs"
 
 interface ISourcesList {
