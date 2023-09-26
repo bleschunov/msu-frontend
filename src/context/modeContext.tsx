@@ -1,4 +1,5 @@
 import queryClient from "api/queryClient"
+import { INITIAL_MESSAGE_COUNT } from "constant/chatMessages"
 import { useSearchQuery } from "misc/util"
 import ChatModel from "model/ChatModel"
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useState } from "react"
@@ -21,11 +22,9 @@ interface ModeContextProviderProps {
     children: ReactNode
 }
 
-const InitialMessageCount: number = 2
-
 const ModeContextProvider: FC<ModeContextProviderProps> = ({ children }) => {
     const [mode, setMode] = useState<ModeT>("datastep")
-    const [shownMessageCount, setShownMessageCount] = useState<number>(InitialMessageCount)
+    const [shownMessageCount, setShownMessageCount] = useState<number>(INITIAL_MESSAGE_COUNT)
     const chatID = queryClient.getQueryData<ChatModel>("chat")?.id
 
     const searchQuery = useSearchQuery()
@@ -48,7 +47,7 @@ const ModeContextProvider: FC<ModeContextProviderProps> = ({ children }) => {
 }
 
 export {
-    InitialMessageCount, ModeContext, ModeContextProvider
+    ModeContext, ModeContextProvider
 }
 
 export type {

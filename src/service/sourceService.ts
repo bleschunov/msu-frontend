@@ -5,6 +5,7 @@ import { useMutation } from "react-query"
 const useSource = () => {
     return useMutation(uploadSourceApi, {
         onSuccess: () => {
+            queryClient.invalidateQueries("sourcesList")
             queryClient.invalidateQueries("currentSource")
         },
     })
