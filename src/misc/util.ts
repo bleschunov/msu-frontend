@@ -4,11 +4,11 @@ import { ReactNode, useMemo } from "react"
 import { useLocation } from "react-router-dom"
 
 const getBaseUrl = (): string => {
-    if (process.env.NODE_ENV === "production") {
-        return "https://msu-backend-dev.fly.dev/api/v1"
+    const backend_url = process.env["REACT_APP_BACKEND_URL"]
+    if (!backend_url) {
+        throw Error("REACT_APP_BACKEND_URL must be passed in .env.development or .env.production")
     }
-
-    return "http://localhost:8080/api/v1"
+    return backend_url
 }
 
 const getLastN = (n: number, arr: ReactNode[]) => {

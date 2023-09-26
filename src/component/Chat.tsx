@@ -1,9 +1,11 @@
-import { Button, Flex, Text } from "@chakra-ui/react"
+import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
-import { getLastSource } from "api/sourceApi"
+import queryClient from "api/queryClient"
+import { getAllSources, getLastSource } from "api/sourceApi"
 import InputGroup from "component/InputGroup"
 import { Message, createMessage } from "component/Message"
 import SkeletonMessage from "component/SkeletonMessage"
+import SourcesList from "component/SourcesList"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
@@ -15,7 +17,6 @@ import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
-import queryClient from "api/queryClient"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -23,8 +24,18 @@ function Chat() {
     const [query, setQuery] = useState<string>("")
     const [table, setTable] = useState<string>("платежи")
     const user = useContext(UserContext)
-    const { shownMessageCount, setShownMessageCount } = useContext<ModeContextI>(ModeContext)
-    const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
+    const {
+        mode,
+        setMode,
+        isFilesEnabled,
+        shownMessageCount,
+        setShownMessageCount
+    } = useContext<ModeContextI>(ModeContext)
+    const {
+        isOpen: isSourcesHistoryOpen,
+        onOpen: openSourcesHistory,
+        onClose: closeSourcesHistory
+    } = useDisclosure()
     
     const messageCreateMutation = useCreateMessage()
     const predictionMutation = usePrediction()
@@ -36,9 +47,15 @@ function Chat() {
         return getOrCreateChat(user.id)
     })
 
+    const { data: sourcesList, status: sourcesListQueryStatus } = useQuery<SourceModel[]>(
+        "sourcesList",
+        () => getAllSources(chat!.id),
+        { enabled: !!chat?.id }
+    )
+
     const { data: currentSource, status: currentSourceQueryStatus } = useQuery<SourceModel>(
         "currentSource",
-        () => { return getLastSource(chat!.id) },
+        () => getLastSource(chat!.id),
         { enabled: !!chat?.id }
     )
     const isSourcesExist = Boolean(currentSource)
@@ -47,6 +64,7 @@ function Chat() {
         || messageCreateMutation.isLoading
         // TODO start: move checking queries loading status to func
         || chatQueryStatus === "loading"
+        || sourcesListQueryStatus === "loading"
         || currentSourceQueryStatus === "loading"
         // TODO end
 
@@ -101,12 +119,22 @@ function Chat() {
     return (
         <Flex
             ref={chatRef}
+            position="relative"
             direction="column"
             p="10"
             pt="100"
             h="full"
             gap={10}
         >
+            {isFilesEnabled && (
+                <SourcesList
+                    sourceList={sourcesList}
+                    currentSource={currentSource}
+                    isOpen={isSourcesHistoryOpen}
+                    onClose={closeSourcesHistory}
+                />
+            )}
+
             {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
 
@@ -145,6 +173,7 @@ function Chat() {
                 multipleFilesEnabled={false}
                 isSourcesExist={isSourcesExist}
                 errorMessage={errorMessage}
+                openSourcesHistory={openSourcesHistory}
             />
 
             {isFilesEnabled && (

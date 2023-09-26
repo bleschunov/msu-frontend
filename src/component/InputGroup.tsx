@@ -1,7 +1,8 @@
-import { Button, Flex, FormControl, FormLabel, HStack, Input, Select, Switch, Textarea, VStack, Text } from "@chakra-ui/react"
+import { Button, Flex, FormControl, FormLabel, HStack, IconButton, Input, Select, Switch, Text, Textarea, VStack } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
+import { MdOutlineHistory } from "react-icons/md"
 
 interface IInputGroup {
     value: string
@@ -14,6 +15,7 @@ interface IInputGroup {
     isSourcesExist: boolean
     isUploadingFile: boolean
     errorMessage: string | undefined
+    openSourcesHistory: () => void
 }
 
 const InputGroup: FC<IInputGroup> = ({
@@ -26,7 +28,8 @@ const InputGroup: FC<IInputGroup> = ({
     isSourcesExist,
     isUploadingFile,
     setTable,
-    errorMessage
+    errorMessage,
+    openSourcesHistory
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -56,33 +59,58 @@ const InputGroup: FC<IInputGroup> = ({
 
     const isValueExists = value.trim() === ""
 
-    const isTextAreaDisable = isFilesEnabled ? isLoading || isUploadingFile || !isSourcesExist : isLoading
-    const isSubmitBtnDisable = isFilesEnabled ? isValueExists || isUploadingFile || !isSourcesExist : isValueExists
+    const isTextAreaDisable = () => {
+        if (isFilesEnabled)
+            return isLoading || isUploadingFile || !isSourcesExist
+        return isLoading
+    }
+    const isSubmitBtnDisable = () => {
+        if (isFilesEnabled)
+            return isValueExists || isUploadingFile || !isSourcesExist
+        return isValueExists
+    }
 
-    const submitBtnIsLoading = isFilesEnabled ? isLoading || isUploadingFile : isLoading
-    const uploadFileBtnIsLoading = isFilesEnabled ? isLoading || isUploadingFile : isLoading
+    const isSubmitButtonLoading = () => {
+        if (isFilesEnabled) 
+            return isLoading || isUploadingFile
+        return isLoading
+    }
+
+    const uploadFileBtnIsLoading = () => {
+        if (isFilesEnabled)
+            return isLoading || isUploadingFile
+        return isLoading
+    }
+
+    const handleUploadFileButtonClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files)
+            onUploadFiles(files)
+    }
 
     return (
         <Flex direction="column" gap="5">
             <HStack alignItems="flex-start">
-                <VStack w="full" alignItems="start">
-                    <Textarea
-                        height="100%"
-                        value={value}
-                        onChange={handleChange}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Напишите ваш запрос"
-                        disabled={isTextAreaDisable}
-                    />
-                    {errorMessage && <Text color="red">{errorMessage}</Text>}
-                </VStack>
+                <Textarea
+                    height="full"
+                    value={value}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Напишите ваш запрос"
+                    disabled={isTextAreaDisable()}
+                />
+                {errorMessage && <Text color="red">{errorMessage}</Text>}
                 <VStack alignItems="flex-start">
                     <Button
-                        width="100%"
+                        width="full"
                         colorScheme="blue"
                         onClick={handleSubmit}
-                        isLoading={submitBtnIsLoading}
-                        isDisabled={isSubmitBtnDisable}
+                        isLoading={isSubmitButtonLoading()}
+                        isDisabled={isSubmitBtnDisable()}
                     >
                         Отправить
                     </Button>
@@ -92,13 +120,11 @@ const InputGroup: FC<IInputGroup> = ({
                     </Select>
 
                     {isFilesEnabled && (
-                        <>
+                        <Flex direction="row" gap={1}>
                             <Button
                                 colorScheme="gray"
-                                onClick={() => {
-                                    fileInputRef.current?.click()
-                                }}
-                                isLoading={uploadFileBtnIsLoading}
+                                onClick={handleUploadFileButtonClick}
+                                isLoading={uploadFileBtnIsLoading()}
                                 fontWeight="normal"
                                 gap={2}
                             >
@@ -111,13 +137,15 @@ const InputGroup: FC<IInputGroup> = ({
                                 type="file"
                                 accept=".pdf"
                                 multiple={multipleFilesEnabled}
-                                onChange={(e) => {
-                                    const files = e.target.files
-                                    if (files)
-                                        onUploadFiles(files)
-                                }}
+                                onChange={handleFileInputChange}
                             />
-                        </>
+
+                            <IconButton
+                                aria-label="open files history"
+                                onClick={openSourcesHistory}
+                                icon={<MdOutlineHistory size={24} />}
+                            />
+                        </Flex>
                     )}
                 </VStack>
             </HStack>
@@ -132,9 +160,7 @@ const InputGroup: FC<IInputGroup> = ({
                     </FormLabel>
                     <Switch
                         isChecked={mode === "pdf"}
-                        onChange={() => {
-                            handleSwitchMode()
-                        }}
+                        onChange={handleSwitchMode}
                     />
                 </FormControl>
             )}

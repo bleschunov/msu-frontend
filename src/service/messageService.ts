@@ -1,6 +1,7 @@
 import { clearMessages as clearMessagesApi, createMessage as createMessageApi } from "api/messageApi"
 import queryClient from "api/queryClient"
-import { InitialMessageCount, ModeContext, ModeContextI } from "context/modeContext"
+import { INITIAL_MESSAGE_COUNT } from "constant/chatMessages"
+import { ModeContext, ModeContextI } from "context/modeContext"
 import ChatModel from "model/ChatModel"
 import MessageModel from "model/MessageModel"
 import { useContext } from "react"
@@ -42,7 +43,7 @@ const useClearMessages = () => {
             queryClient.invalidateQueries("chat")
         },
         onSettled: () => {
-            setShownMessageCount(InitialMessageCount)
+            setShownMessageCount(INITIAL_MESSAGE_COUNT)
         },
     })
 }
