@@ -58,7 +58,7 @@ const SourcesList: FC<ISourcesList> = ({
                             direction="row"
                             justifyContent="space-between"
                             alignItems="center"
-                            backgroundColor={sourceItem.id === currentSource.id ? "gray.100" : "transparent"}
+                            backgroundColor={sourceItem.id === currentSource?.id ? "gray.100" : "transparent"}
                             padding={3}
                             borderRadius={10}
                         >
