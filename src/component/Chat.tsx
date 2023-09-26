@@ -122,6 +122,7 @@ function Chat() {
             position="relative"
             direction="column"
             p="10"
+            pt="100"
             h="full"
             gap={10}
         >

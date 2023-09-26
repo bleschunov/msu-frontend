@@ -39,6 +39,9 @@ const useClearMessages = () => {
     const { setShownMessageCount } = useContext<ModeContextI>(ModeContext)
 
     return useMutation(clearMessagesApi, {
+        onError: () => {
+            queryClient.invalidateQueries("chat")
+        },
         onSettled: () => {
             setShownMessageCount(INITIAL_MESSAGE_COUNT)
         },
