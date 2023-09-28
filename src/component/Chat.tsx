@@ -79,28 +79,30 @@ function Chat() {
         })
     }, [chat?.message?.length])
 
-    const handleSubmit = async () => {
-        if (query.trim() !== "" && chat) {
-            setQuery("")
-            const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
-                query,
-                chat_id: chat.id
-            } as MessageModel)
-            const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
-                query,
-                source_id: currentSource?.source_id,
-                tables: [table]
-            })
-            await messageCreateMutation.mutateAsync({
-                chat_id: chat.id,
-                answer: answer,
-                sql: sql,
-                table: markdownTable,
-                connected_message_id: queryMessageId,
-            } as MessageModel)
+    const handleSubmit = async (customQuery?: string) => {
+        if (chat)
+            if (query.trim() !== "" || customQuery?.length) {
+                setQuery("")
+                const queryForRequest = customQuery ? customQuery : query
+                const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
+                    query: queryForRequest,
+                    chat_id: chat.id
+                } as MessageModel)
+                const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
+                    query: queryForRequest,
+                    source_id: currentSource?.source_id,
+                    tables: [table]
+                })
+                await messageCreateMutation.mutateAsync({
+                    chat_id: chat.id,
+                    answer: answer,
+                    sql: sql,
+                    table: markdownTable,
+                    connected_message_id: queryMessageId,
+                } as MessageModel)
 
-            queryClient.invalidateQueries("chat")
-        }
+                queryClient.invalidateQueries("chat")
+            }
     }
 
     const handleShowMore = () => {
