@@ -1,14 +1,17 @@
 import { Button, Flex, FormControl, FormLabel, HStack, IconButton, Input, Select, Switch, Text, Textarea, VStack } from "@chakra-ui/react"
+import { getTemplateQuestions } from "api/questionsApi"
 import { ModeContext, ModeContextI } from "context/modeContext"
+import QuestionModel from "model/QuestionModel"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import { MdOutlineHistory } from "react-icons/md"
+import { MdEdit, MdOutlineHistory } from "react-icons/md"
+import { useQuery } from "react-query"
 
 interface IInputGroup {
     value: string
     setValue: Dispatch<SetStateAction<string>>
     setTable: Dispatch<SetStateAction<string>>
-    handleSubmit: () => void
+    handleSubmit: (customQuery?: string) => void
     isLoading: boolean
     onUploadFiles: (files: FileList) => void
     multipleFilesEnabled?: boolean
@@ -32,8 +35,16 @@ const InputGroup: FC<IInputGroup> = ({
     openSourcesHistory
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
-
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
+
+    const {
+        data: templateQuestions,
+        status: templateQuestionsQueryStatus
+    } = useQuery<QuestionModel[]>(
+        "templateQuestions",
+        () => {
+            return getTemplateQuestions(3)
+        })
 
     const handleTableSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
         setTable(event.target.value)
@@ -92,8 +103,53 @@ const InputGroup: FC<IInputGroup> = ({
             onUploadFiles(files)
     }
 
+    const OnTemplateQuestionClick = (templateRequest: string) => {
+        handleSubmit(templateRequest)
+    }
+
+    const OnTemplateQuestionEditClick = (templateRequest: string) => {
+        setValue(templateRequest)
+    }
+
     return (
         <Flex direction="column" gap="5">
+            {templateQuestionsQueryStatus === "success" && (
+                <Flex
+                    w="full"
+                    direction="row"
+                    gap={5}
+                    overflowY="hidden"
+                >
+                    {templateQuestions?.map(({ question }) => (
+                        <Flex
+                            w="full"
+                            direction="row"
+                            justifyContent="center"
+                            alignItems="center"
+                            padding={2}
+                            fontStyle="italic"
+                            borderWidth={2}
+                            borderColor="gray.200"
+                            borderRadius={10}
+                            gap={1}
+                        >
+                            <Text
+                                // TODO: fix text only in 1 full line to enable horizontal scrolling
+                                w="fit-content"
+                                wordBreak="keep-all"
+                                onClick={() => OnTemplateQuestionClick(question)}
+                            >
+                                {question}
+                            </Text>
+                            <MdEdit
+                                size={24}
+                                onClick={() => OnTemplateQuestionEditClick(question)}
+                            />
+                        </Flex>
+                    ))}
+                </Flex>
+            )}
+
             <HStack alignItems="flex-start">
                 <Textarea
                     height="full"
@@ -103,12 +159,11 @@ const InputGroup: FC<IInputGroup> = ({
                     placeholder="Напишите ваш запрос"
                     disabled={isTextAreaDisable()}
                 />
-                {errorMessage && <Text color="red">{errorMessage}</Text>}
                 <VStack alignItems="flex-start">
                     <Button
                         width="full"
                         colorScheme="blue"
-                        onClick={handleSubmit}
+                        onClick={() => handleSubmit()}
                         isLoading={isSubmitButtonLoading()}
                         isDisabled={isSubmitBtnDisable()}
                     >
@@ -149,6 +204,7 @@ const InputGroup: FC<IInputGroup> = ({
                     )}
                 </VStack>
             </HStack>
+            {errorMessage && <Text color="red">{errorMessage}</Text>}
             
             <Button onClick={handleClick}>Не учитывать NULL</Button>
 
