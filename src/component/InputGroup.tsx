@@ -1,4 +1,18 @@
-import { Button, Flex, FormControl, FormLabel, HStack, IconButton, Input, Select, Switch, Text, Textarea, VStack } from "@chakra-ui/react"
+import {
+    Button,
+    Circle,
+    Flex,
+    FormControl,
+    FormLabel,
+    HStack,
+    IconButton,
+    Input,
+    Select, Spacer,
+    Switch,
+    Text,
+    Textarea,
+    VStack,
+} from '@chakra-ui/react'
 import { getTemplateQuestions } from "api/questionsApi"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import QuestionModel from "model/QuestionModel"
@@ -123,28 +137,37 @@ const InputGroup: FC<IInputGroup> = ({
                     {templateQuestions?.map(({ question }) => (
                         <Flex
                             w="full"
-                            direction="row"
+                            direction="column"
                             justifyContent="center"
                             alignItems="center"
-                            padding={2}
                             fontStyle="italic"
                             borderWidth={2}
                             borderColor="gray.200"
                             borderRadius={10}
                             gap={1}
+                            cursor="pointer"
+                            _hover={{
+                                background: "gray.200"
+                            }}
                         >
+                            <HStack w="full" p="1">
+                                <Spacer />
+                                <Circle size="30px" _hover={{ background: "gray.400" }} cursor="pointer">
+                                    <MdEdit
+                                        size={24}
+                                        onClick={() => OnTemplateQuestionEditClick(question)}
+                                    />
+                                </Circle>
+                            </HStack>
                             <Text
                                 // TODO: fix text only in 1 full line to enable horizontal scrolling
                                 w="fit-content"
                                 wordBreak="keep-all"
                                 onClick={() => OnTemplateQuestionClick(question)}
+                                p="2"
                             >
                                 {question}
                             </Text>
-                            <MdEdit
-                                size={24}
-                                onClick={() => OnTemplateQuestionEditClick(question)}
-                            />
                         </Flex>
                     ))}
                 </Flex>
