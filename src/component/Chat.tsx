@@ -79,30 +79,28 @@ function Chat() {
         })
     }, [chat?.message?.length])
 
-    const handleSubmit = async (customQuery?: string) => {
-        if (chat)
-            if (query.trim() !== "" || customQuery?.length) {
-                setQuery("")
-                const queryForRequest = customQuery ? customQuery : query
-                const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
-                    query: queryForRequest,
-                    chat_id: chat.id
-                } as MessageModel)
-                const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
-                    query: queryForRequest,
-                    source_id: currentSource?.source_id,
-                    tables: [table]
-                })
-                await messageCreateMutation.mutateAsync({
-                    chat_id: chat.id,
-                    answer: answer,
-                    sql: sql,
-                    table: markdownTable,
-                    connected_message_id: queryMessageId,
-                } as MessageModel)
+    const handleSubmit = async (finalQuery: string) => {
+        if (chat && finalQuery.trim() !== "") {
+            setQuery("")
+            const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
+                query: finalQuery,
+                chat_id: chat.id
+            } as MessageModel)
+            const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
+                query: finalQuery,
+                source_id: currentSource?.source_id,
+                tables: [table]
+            })
+            await messageCreateMutation.mutateAsync({
+                chat_id: chat.id,
+                answer: answer,
+                sql: sql,
+                table: markdownTable,
+                connected_message_id: queryMessageId,
+            } as MessageModel)
 
-                queryClient.invalidateQueries("chat")
-            }
+            queryClient.invalidateQueries("chat")
+        }
     }
 
     const handleShowMore = () => {
@@ -167,8 +165,8 @@ function Chat() {
             <InputGroup
                 isLoading={isLoading}
                 isUploadingFile={isUploadingFile}
-                value={query}
-                setValue={setQuery}
+                query={query}
+                setQuery={setQuery}
                 setTable={setTable}
                 handleSubmit={handleSubmit}
                 onUploadFiles={onUploadFiles}
