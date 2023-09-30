@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react"
 import { getTemplateQuestions } from "api/questionsApi"
 import { ModeContext, ModeContextI } from "context/modeContext"
-import QuestionModel from "model/QuestionModel"
+import QuestionModel, { QuestionGetModel } from "model/QuestionModel"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import { MdEdit, MdOutlineHistory } from "react-icons/md"
@@ -24,6 +24,7 @@ import { useQuery } from "react-query"
 interface IInputGroup {
     query: string
     setQuery: Dispatch<SetStateAction<string>>
+    table: string
     setTable: Dispatch<SetStateAction<string>>
     handleSubmit: (finalQuery: string) => void
     isLoading: boolean
@@ -38,13 +39,14 @@ interface IInputGroup {
 const InputGroup: FC<IInputGroup> = ({
     query,
     setQuery,
+    table,
+    setTable,
     handleSubmit,
     isLoading,
     onUploadFiles,
     multipleFilesEnabled = false,
     isSourcesExist,
     isUploadingFile,
-    setTable,
     errorMessage,
     openSourcesHistory
 }) => {
@@ -58,7 +60,10 @@ const InputGroup: FC<IInputGroup> = ({
         status: templateQuestionsQueryStatus
     } = useQuery<QuestionModel[]>(
         "templateQuestions",
-        () => getTemplateQuestions(3)
+        () => getTemplateQuestions({
+            tables: [table],
+            limit: 3
+        } as QuestionGetModel)
     )
 
     const isTextAreaDisable = () => {
@@ -116,11 +121,17 @@ const InputGroup: FC<IInputGroup> = ({
             onUploadFiles(files)
     }
 
+    const cleanTemplateQuestion = (templateQuery: string) => {
+        return templateQuery.slice(2)
+    }
+
     const handleTemplateQuestionClick = (templateQuery: string) => {
+        templateQuery = cleanTemplateQuestion(templateQuery)
         handleSubmit(templateQuery)
     }
 
     const handleTemplateQuestionEditClick = (templateQuery: string) => {
+        templateQuery = cleanTemplateQuestion(templateQuery)
         setQuery(templateQuery)
     }
 
@@ -175,7 +186,7 @@ const InputGroup: FC<IInputGroup> = ({
                                 onClick={() => handleTemplateQuestionClick(question)}
                                 p="2"
                             >
-                                {question}
+                                {cleanTemplateQuestion(question)}
                             </Text>
                         </Flex>
                     ))}

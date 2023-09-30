@@ -163,15 +163,16 @@ function Chat() {
                 </Message>}
 
             <InputGroup
-                isLoading={isLoading}
-                isUploadingFile={isUploadingFile}
                 query={query}
                 setQuery={setQuery}
+                table={table}
                 setTable={setTable}
                 handleSubmit={handleSubmit}
+                isLoading={isLoading}
                 onUploadFiles={onUploadFiles}
                 multipleFilesEnabled={false}
                 isSourcesExist={isSourcesExist}
+                isUploadingFile={isUploadingFile}
                 errorMessage={errorMessage}
                 openSourcesHistory={openSourcesHistory}
             />
