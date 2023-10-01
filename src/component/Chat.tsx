@@ -21,7 +21,6 @@ import { useSource } from "service/sourceService"
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
-    const [query, setQuery] = useState<string>("")
     const [table, setTable] = useState<string>("платежи")
     const user = useContext(UserContext)
     const {
@@ -81,7 +80,6 @@ function Chat() {
 
     const handleSubmit = async (finalQuery: string) => {
         if (chat && finalQuery.trim() !== "") {
-            setQuery("")
             const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
                 query: finalQuery,
                 chat_id: chat.id
@@ -163,8 +161,6 @@ function Chat() {
                 </Message>}
 
             <InputGroup
-                query={query}
-                setQuery={setQuery}
                 table={table}
                 setTable={setTable}
                 handleSubmit={handleSubmit}

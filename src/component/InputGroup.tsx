@@ -16,14 +16,12 @@ import {
 import { getTemplateQuestions } from "api/questionsApi"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import QuestionModel, { QuestionGetModel } from "model/QuestionModel"
-import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
+import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef, useState } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import { MdEdit, MdOutlineHistory } from "react-icons/md"
 import { useQuery } from "react-query"
 
 interface IInputGroup {
-    query: string
-    setQuery: Dispatch<SetStateAction<string>>
     table: string
     setTable: Dispatch<SetStateAction<string>>
     handleSubmit: (finalQuery: string) => void
@@ -37,8 +35,6 @@ interface IInputGroup {
 }
 
 const InputGroup: FC<IInputGroup> = ({
-    query,
-    setQuery,
     table,
     setTable,
     handleSubmit,
@@ -50,6 +46,7 @@ const InputGroup: FC<IInputGroup> = ({
     errorMessage,
     openSourcesHistory
 }) => {
+    const [query, setQuery] = useState<string>("")
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
 
@@ -137,6 +134,7 @@ const InputGroup: FC<IInputGroup> = ({
 
     const handleSubmitClick = () => {
         handleSubmit(query)
+        setQuery("")
     }
 
     return (
