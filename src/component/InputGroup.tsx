@@ -12,20 +12,21 @@ import {
     Text,
     Textarea,
     VStack,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react"
 import { getTemplateQuestions } from "api/questionsApi"
 import { ModeContext, ModeContextI } from "context/modeContext"
-import QuestionModel from "model/QuestionModel"
+import QuestionModel, { QuestionGetModel } from "model/QuestionModel"
 import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import { MdEdit, MdOutlineHistory } from "react-icons/md"
 import { useQuery } from "react-query"
 
 interface IInputGroup {
-    value: string
-    setValue: Dispatch<SetStateAction<string>>
+    query: string
+    setQuery: Dispatch<SetStateAction<string>>
+    table: string
     setTable: Dispatch<SetStateAction<string>>
-    handleSubmit: (customQuery?: string) => void
+    handleSubmit: (finalQuery: string) => void
     isLoading: boolean
     onUploadFiles: (files: FileList) => void
     multipleFilesEnabled?: boolean
@@ -36,53 +37,34 @@ interface IInputGroup {
 }
 
 const InputGroup: FC<IInputGroup> = ({
-    value,
-    setValue,
+    query,
+    setQuery,
+    table,
+    setTable,
     handleSubmit,
     isLoading,
     onUploadFiles,
     multipleFilesEnabled = false,
     isSourcesExist,
     isUploadingFile,
-    setTable,
     errorMessage,
     openSourcesHistory
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
 
+    const isValueExists = query.trim() === ""
+
     const {
         data: templateQuestions,
         status: templateQuestionsQueryStatus
     } = useQuery<QuestionModel[]>(
         "templateQuestions",
-        () => {
-            return getTemplateQuestions(3)
-        })
-
-    const handleTableSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        setTable(event.target.value)
-    }
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            handleSubmit()
-        }
-    }
-
-    const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-        setValue(event.target.value)
-    }
-
-    const handleClick = () => {
-        setValue(value => value + " Не учитывай NULL.")
-    }
-
-    const handleSwitchMode = () => {
-        setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
-    }
-
-    const isValueExists = value.trim() === ""
+        () => getTemplateQuestions({
+            tables: [table],
+            limit: 3
+        } as QuestionGetModel)
+    )
 
     const isTextAreaDisable = () => {
         if (isFilesEnabled)
@@ -101,10 +83,32 @@ const InputGroup: FC<IInputGroup> = ({
         return isLoading
     }
 
-    const uploadFileBtnIsLoading = () => {
+    const isUploadFileBtnLoading = () => {
         if (isFilesEnabled)
             return isLoading || isUploadingFile
         return isLoading
+    }
+
+    const handleTableSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setTable(event.target.value)
+    }
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            handleSubmit(query)
+        }
+    }
+
+    const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        setQuery(event.target.value)
+    }
+
+    const handleClick = () => {
+        setQuery(value => value + " Не учитывай NULL.")
+    }
+
+    const handleSwitchMode = () => {
+        setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
     }
 
     const handleUploadFileButtonClick = () => {
@@ -117,12 +121,22 @@ const InputGroup: FC<IInputGroup> = ({
             onUploadFiles(files)
     }
 
-    const OnTemplateQuestionClick = (templateRequest: string) => {
-        handleSubmit(templateRequest)
+    const cleanTemplateQuestion = (templateQuery: string) => {
+        return templateQuery.slice(2)
     }
 
-    const OnTemplateQuestionEditClick = (templateRequest: string) => {
-        setValue(templateRequest)
+    const handleTemplateQuestionClick = (templateQuery: string) => {
+        templateQuery = cleanTemplateQuestion(templateQuery)
+        handleSubmit(templateQuery)
+    }
+
+    const handleTemplateQuestionEditClick = (templateQuery: string) => {
+        templateQuery = cleanTemplateQuestion(templateQuery)
+        setQuery(templateQuery)
+    }
+
+    const handleSubmitClick = () => {
+        handleSubmit(query)
     }
 
     return (
@@ -152,10 +166,16 @@ const InputGroup: FC<IInputGroup> = ({
                         >
                             <HStack w="full" p="1">
                                 <Spacer />
-                                <Circle size="30px" _hover={{ background: "gray.400" }} cursor="pointer">
+                                <Circle
+                                    size="30px"
+                                    _hover={{
+                                        background: "gray.400"
+                                    }}
+                                    cursor="pointer"
+                                >
                                     <MdEdit
                                         size={24}
-                                        onClick={() => OnTemplateQuestionEditClick(question)}
+                                        onClick={() => handleTemplateQuestionEditClick(question)}
                                     />
                                 </Circle>
                             </HStack>
@@ -163,10 +183,10 @@ const InputGroup: FC<IInputGroup> = ({
                                 // TODO: fix text only in 1 full line to enable horizontal scrolling
                                 w="fit-content"
                                 wordBreak="keep-all"
-                                onClick={() => OnTemplateQuestionClick(question)}
+                                onClick={() => handleTemplateQuestionClick(question)}
                                 p="2"
                             >
-                                {question}
+                                {cleanTemplateQuestion(question)}
                             </Text>
                         </Flex>
                     ))}
@@ -176,7 +196,7 @@ const InputGroup: FC<IInputGroup> = ({
             <HStack alignItems="flex-start">
                 <Textarea
                     height="full"
-                    value={value}
+                    value={query}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Напишите ваш запрос"
@@ -186,7 +206,7 @@ const InputGroup: FC<IInputGroup> = ({
                     <Button
                         width="full"
                         colorScheme="blue"
-                        onClick={() => handleSubmit()}
+                        onClick={handleSubmitClick}
                         isLoading={isSubmitButtonLoading()}
                         isDisabled={isSubmitBtnDisable()}
                     >
@@ -202,7 +222,7 @@ const InputGroup: FC<IInputGroup> = ({
                             <Button
                                 colorScheme="gray"
                                 onClick={handleUploadFileButtonClick}
-                                isLoading={uploadFileBtnIsLoading()}
+                                isLoading={isUploadFileBtnLoading()}
                                 fontWeight="normal"
                                 gap={2}
                             >
