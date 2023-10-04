@@ -14,8 +14,8 @@ function App() {
     return (
         <BrowserRouter>
             <ChakraProvider>
-                <Auth>
-                    <QueryClientProvider client={queryClient}>
+                <QueryClientProvider client={queryClient}>
+                    <Auth>
                         <UserContextProvider>
                             <ModeContextProvider>
                                 <div className="App">
@@ -32,8 +32,8 @@ function App() {
                                 </div>
                             </ModeContextProvider>
                         </UserContextProvider>
-                    </QueryClientProvider>
-                </Auth>
+                    </Auth>
+                </QueryClientProvider>
             </ChakraProvider>
         </BrowserRouter>
     )
