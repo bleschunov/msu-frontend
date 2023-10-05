@@ -1,5 +1,4 @@
-interface UserModel {
+export interface UserModel {
     email: string
+    tenant_id: number
 }
-
-export default UserModel
