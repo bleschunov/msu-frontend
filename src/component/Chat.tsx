@@ -119,8 +119,8 @@ function Chat() {
             ref={chatRef}
             position="relative"
             direction="column"
-            p="10"
             pt="100"
+            pb="50"
             h="full"
             gap={10}
         >

@@ -3,7 +3,7 @@ import {
     Circle,
     Flex,
     FormControl,
-    FormLabel,
+    FormLabel, Grid, GridItem,
     HStack,
     IconButton,
     Input,
@@ -12,7 +12,7 @@ import {
     Text,
     Textarea,
     VStack,
-} from "@chakra-ui/react"
+} from '@chakra-ui/react'
 import { getTemplateQuestions } from "api/questionsApi"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import QuestionModel, { QuestionGetModel } from "model/QuestionModel"
@@ -20,6 +20,7 @@ import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, u
 import { FaFileUpload } from "react-icons/fa"
 import { MdEdit, MdOutlineHistory } from "react-icons/md"
 import { useQuery } from "react-query"
+import TemplateQuestion from './QuestionTemplate'
 
 interface IInputGroup {
     table: string
@@ -140,55 +141,7 @@ const InputGroup: FC<IInputGroup> = ({
     return (
         <Flex direction="column" gap="5">
             {templateQuestionsQueryStatus === "success" && (
-                <Flex
-                    w="full"
-                    direction="row"
-                    gap={5}
-                    overflowY="hidden"
-                >
-                    {templateQuestions?.map(({ question }) => (
-                        <Flex
-                            w="full"
-                            direction="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            fontStyle="italic"
-                            borderWidth={2}
-                            borderColor="gray.200"
-                            borderRadius={10}
-                            gap={1}
-                            cursor="pointer"
-                            _hover={{
-                                background: "gray.200"
-                            }}
-                        >
-                            <HStack w="full" p="1">
-                                <Spacer />
-                                <Circle
-                                    size="30px"
-                                    _hover={{
-                                        background: "gray.400"
-                                    }}
-                                    cursor="pointer"
-                                >
-                                    <MdEdit
-                                        size={24}
-                                        onClick={() => handleTemplateQuestionEditClick(question)}
-                                    />
-                                </Circle>
-                            </HStack>
-                            <Text
-                                // TODO: fix text only in 1 full line to enable horizontal scrolling
-                                w="fit-content"
-                                wordBreak="keep-all"
-                                onClick={() => handleTemplateQuestionClick(question)}
-                                p="2"
-                            >
-                                {cleanTemplateQuestion(question)}
-                            </Text>
-                        </Flex>
-                    ))}
-                </Flex>
+                <TemplateQuestion templateQuestions={templateQuestions} />
             )}
 
             <HStack alignItems="flex-start">
