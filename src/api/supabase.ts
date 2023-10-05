@@ -1,4 +1,4 @@
-import { User, createClient } from "@supabase/supabase-js"
+import { createClient } from "@supabase/supabase-js"
 
 const supabase = createClient(
     "https://jkhlwowgrekoqgvfruhq.supabase.co",
@@ -10,18 +10,7 @@ const signOut = async () => {
     await supabase.auth.signOut()
 }
 
-const getUser = async (): Promise<User> => {
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        throw Error("User does not find")
-    }
-
-    return user
-}
-
 export {
     supabase,
     signOut,
-    getUser,
 }

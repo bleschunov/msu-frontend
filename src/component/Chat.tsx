@@ -17,12 +17,13 @@ import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
+import { UserModel } from "model/UserModel"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [table, setTable] = useState<string>("платежи")
-    const user = useContext(UserContext)
+    const user = useContext<UserModel>(UserContext)
     const {
         mode,
         setMode,

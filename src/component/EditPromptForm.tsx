@@ -1,10 +1,11 @@
-import React, { ChangeEvent } from "react"
+import React, { ChangeEvent, useContext } from "react"
 import { Box, Button, Text, Textarea } from "@chakra-ui/react"
-import { getPrompt } from "api/promptApi"
+import { getActivePrompt } from "api/promptApi"
 import { usePrompt } from "service/promptService"
 import queryClient from "api/queryClient"
-import PromptModel from "model/PromptModel"
+import { PromptModel } from "model/PromptModel"
 import { useQuery } from "react-query"
+import { UserContext } from "context/userContext"
 
 const updatePrompt = (promptModel: PromptModel, newPrompt: string) => {
     promptModel.prompt = newPrompt
@@ -12,7 +13,9 @@ const updatePrompt = (promptModel: PromptModel, newPrompt: string) => {
 }
 
 const EditPromptForm = () => {
-    const { data: prompt, status: queryPromptStatus } = useQuery("prompt", getPrompt)
+    const user = useContext(UserContext)
+    const { data: prompt, status: queryPromptStatus } =
+        useQuery<PromptModel>("prompt", () => getActivePrompt(user.tenant_id))
     const promptService = usePrompt()
 
     const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -23,7 +26,16 @@ const EditPromptForm = () => {
 
     const handleButtonClick = () => {
         if (prompt?.prompt) {
-            promptService.mutate({ prompt: prompt.prompt })
+            promptService.mutate({
+                prompt_id: prompt.id,
+                body: {
+                    prompt: prompt.prompt,
+                    name: "",
+                    description: "",
+                    is_active: prompt.is_active,
+                    updated_by: user.id
+                }
+            })
         }
     }
 

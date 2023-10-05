@@ -1,4 +1,4 @@
-import { ChakraProvider, Container, Flex } from "@chakra-ui/react"
+import { Box, ChakraProvider, Container, Flex } from "@chakra-ui/react"
 import queryClient from "api/queryClient"
 import Auth from "component/Auth"
 import Chat from "component/Chat"
@@ -23,7 +23,11 @@ function App() {
                                         <Header />
                                         <Container maxW="3xl" flexGrow="1">
                                             <Routes>
-                                                <Route path="/admin" element={<EditPromptForm />} />
+                                                <Route path="/admin" element={
+                                                    <Box mt={40}>
+                                                        <EditPromptForm />
+                                                    </Box>
+                                                } />
                                                 <Route path="/" element={<Chat />} />
                                             </Routes>
                                         </Container>
