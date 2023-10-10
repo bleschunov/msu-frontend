@@ -25,6 +25,10 @@ import { useSource } from "service/sourceService"
 import { UserModel } from "model/UserModel"
 import InputGroupContext from "./InputGroup/context"
 import { PDFViewer } from "./PDFViewer"
+import InputGroupContext from "./InputGroup/context"
+import FileModel from "../model/FileModel"
+import { getAllFiles } from "../api/fileApi"
+import QueryModel from "../model/QueryModel"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -145,73 +149,87 @@ function Chat() {
     return (
         <Flex
             position="relative"
-            direction="column"
-            justifyContent="flex-end"
-            // alignItems="center"
-            p="10"
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-end"
+            pt="100"
+            pb="10"
+            // gap={10}
             h="full"
-            w="full"
-            gap={10}
         >
-            {isFilesEnabled && filesList && (
-                <SourcesList
-                    filesList={filesList}
-                    currentFileIndex={currentFileIndex}
-                    setCurrentFileIndex={setCurrentFileIndex}
-                    isOpen={isSourcesHistoryOpen}
-                    onClose={closeSourcesHistory}
-                />
-            )}
+            {isFilesEnabled && filesList && currentFileIndex >= 0
+                    && (<PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />)}
+            <Flex
+                ref={chatRef}
+                position="relative"
+                direction="column"
+                justifyContent="flex-end"
+                p="10"
+                h="full"
+                w="full"
+                gap={10}
+            >
 
-                    {chat && !!chat.message?.length && chat.message.length > shownMessageCount
+                {isFilesEnabled && filesList && (
+                    <SourcesList
+                        filesList={filesList}
+                        currentFileIndex={currentFileIndex}
+                        setCurrentFileIndex={setCurrentFileIndex}
+                        isOpen={isSourcesHistoryOpen}
+                        onClose={closeSourcesHistory}
+                    />
+                )}
+
+                {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
 
-                    {chatQueryStatus !== "loading" ?
-                        <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                            {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
-                        </Flex> :
-                        <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                            <SkeletonMessage direction="outgoing" width="35%" height="60px" />
-                            <SkeletonMessage direction="incoming" width="65%" height="95px" />
-                            <SkeletonMessage direction="outgoing" width="30%" height="55px" />
-                            <SkeletonMessage direction="incoming" width="68%" height="75px" />
-                            <SkeletonMessage direction="outgoing" width="45%" height="65px" />
-                            <SkeletonMessage direction="incoming" width="63%" height="105px" />
-                        </Flex>
-                    }
+                {chatQueryStatus !== "loading" ?
+                    <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                        {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
+                    </Flex> :
+                    <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                        <SkeletonMessage direction="outgoing" width="35%" height="60px" />
+                        <SkeletonMessage direction="incoming" width="65%" height="95px" />
+                        <SkeletonMessage direction="outgoing" width="30%" height="55px" />
+                        <SkeletonMessage direction="incoming" width="68%" height="75px" />
+                        <SkeletonMessage direction="outgoing" width="45%" height="65px" />
+                        <SkeletonMessage direction="incoming" width="63%" height="105px" />
+                    </Flex>
+                }
 
-                    {chat && !chat.message?.length &&
-                <Message
-                    direction='incoming'
-                    messageId={-1}
-                    src={"/image/avatar/bot.png"}
-                    callback={false}
-                >
-                    Какой у вас запрос?
-                </Message>}
+                {chat && !chat.message?.length &&
+                    <Message
+                        direction='incoming'
+                        messageId={-1}
+                        src={"/image/avatar/bot.png"}
+                        callback={false}
+                    >
+                        Какой у вас запрос?
+                    </Message>}
+                <InputGroupContext.Provider value={{ handleSubmit, similarQueries }}>
+                    <InputGroup
+                        setTable={setTable}
+                        isLoading={isLoading}
+                        onUploadFiles={onUploadFiles}
+                        multipleFilesEnabled={false}
+                        isSourcesExist={isSourcesExist}
+                        isUploadingFile={isUploadingFile}
+                        errorMessage={errorMessage}
+                        openSourcesHistory={openSourcesHistory}
+                    />
+                </InputGroupContext.Provider>
 
-            <InputGroupContext.Provider value={{ handleSubmit, similarQueries }}>
-                <InputGroup
-                    setTable={setTable}
-                    isLoading={isLoading}
-                    onUploadFiles={onUploadFiles}
-                    multipleFilesEnabled={false}
-                    isSourcesExist={isSourcesExist}
-                    isUploadingFile={isUploadingFile}
-                    errorMessage={errorMessage}
-                    openSourcesHistory={openSourcesHistory}
-                />
-            </InputGroupContext.Provider>
+                {isFilesEnabled && (
+                    isFilesMode ? filesList && currentFileIndex >= 0 ? (
+                        <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
+                    ) : (
+                        <Text color="gray" fontStyle="italic">Загрузите файл</Text>
+                    ) : filesList && currentFileIndex >= 0 && (
+                        <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
+                    )
+                )}
+            </Flex>
 
-            {isFilesEnabled && (
-                isFilesMode ? filesList && currentFileIndex >= 0 ? (
-                    <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
-                ) : (
-                    <Text color="gray" fontStyle="italic">Загрузите файл</Text>
-                ) : filesList && currentFileIndex >= 0 && (
-                    <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
-                )
-            )}
         </Flex>
     )
 }

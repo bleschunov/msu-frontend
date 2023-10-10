@@ -1,4 +1,5 @@
 import { Box, ChakraProvider, Container, Flex } from "@chakra-ui/react"
+import { Box, ChakraProvider, Container, Flex } from "@chakra-ui/react"
 import queryClient from "api/queryClient"
 import { AppLayout } from "component/AppLayout"
 import Auth from "component/Auth"
@@ -6,6 +7,7 @@ import Chat from "component/Chat"
 import EditPromptForm from "component/EditPromptForm"
 import Footer from "component/Footer"
 import Header from "component/Header"
+import { PDFChat } from "component/PDFChat"
 import { ModeContextProvider } from "context/modeContext"
 import { UserContextProvider } from "context/userContext"
 import { QueryClientProvider } from "react-query"
@@ -26,8 +28,8 @@ function App() {
                                                 <EditPromptForm />
                                             </Box>
                                         } />
-                                        <Route path="/" element={<Chat />} />
-                                        {/* <Route path="/" element={} /> */}
+                                        <Route index element={<Chat />} />
+                                        <Route path="/PDFChat" element={<PDFChat />} />
                                     </Route>
                                 </Routes>
                             </ModeContextProvider>
