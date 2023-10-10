@@ -21,6 +21,10 @@ import { useQuery } from "react-query"
 import { useFiles } from "service/fileService"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
+import { useSource } from "service/sourceService"
+import { UserModel } from "model/UserModel"
+import InputGroupContext from "./InputGroup/context"
+import { PDFViewer } from "./PDFViewer"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -140,13 +144,13 @@ function Chat() {
 
     return (
         <Flex
-            ref={chatRef}
             position="relative"
             direction="column"
             justifyContent="flex-end"
-            pt="100"
-            pb="10"
+            // alignItems="center"
+            p="10"
             h="full"
+            w="full"
             gap={10}
         >
             {isFilesEnabled && filesList && (
@@ -159,24 +163,24 @@ function Chat() {
                 />
             )}
 
-            {chat && !!chat.message?.length && chat.message.length > shownMessageCount
+                    {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
 
-            {chatQueryStatus !== "loading" ?
-                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                    {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
-                </Flex> :
-                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                    <SkeletonMessage direction="outgoing" width="35%" height="60px" />
-                    <SkeletonMessage direction="incoming" width="65%" height="95px" />
-                    <SkeletonMessage direction="outgoing" width="30%" height="55px" />
-                    <SkeletonMessage direction="incoming" width="68%" height="75px" />
-                    <SkeletonMessage direction="outgoing" width="45%" height="65px" />
-                    <SkeletonMessage direction="incoming" width="63%" height="105px" />
-                </Flex>
-            }
+                    {chatQueryStatus !== "loading" ?
+                        <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                            {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
+                        </Flex> :
+                        <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                            <SkeletonMessage direction="outgoing" width="35%" height="60px" />
+                            <SkeletonMessage direction="incoming" width="65%" height="95px" />
+                            <SkeletonMessage direction="outgoing" width="30%" height="55px" />
+                            <SkeletonMessage direction="incoming" width="68%" height="75px" />
+                            <SkeletonMessage direction="outgoing" width="45%" height="65px" />
+                            <SkeletonMessage direction="incoming" width="63%" height="105px" />
+                        </Flex>
+                    }
 
-            {chat && !chat.message?.length &&
+                    {chat && !chat.message?.length &&
                 <Message
                     direction='incoming'
                     messageId={-1}

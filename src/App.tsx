@@ -1,5 +1,6 @@
 import { Box, ChakraProvider, Container, Flex } from "@chakra-ui/react"
 import queryClient from "api/queryClient"
+import { AppLayout } from "component/AppLayout"
 import Auth from "component/Auth"
 import Chat from "component/Chat"
 import EditPromptForm from "component/EditPromptForm"
@@ -18,22 +19,17 @@ function App() {
                     <Auth>
                         <UserContextProvider>
                             <ModeContextProvider>
-                                <div className="App">
-                                    <Flex direction="column" h="100vh">
-                                        <Header />
-                                        <Container maxW="container.md" flexGrow="1">
-                                            <Routes>
-                                                <Route path="/admin" element={
-                                                    <Box mt={40}>
-                                                        <EditPromptForm />
-                                                    </Box>
-                                                } />
-                                                <Route path="/" element={<Chat />} />
-                                            </Routes>
-                                        </Container>
-                                        <Footer />
-                                    </Flex>
-                                </div>
+                                <Routes >
+                                    <Route element={<AppLayout/>}>
+                                        <Route path="/admin" element={
+                                            <Box mt={40}>
+                                                <EditPromptForm />
+                                            </Box>
+                                        } />
+                                        <Route path="/" element={<Chat />} />
+                                        {/* <Route path="/" element={} /> */}
+                                    </Route>
+                                </Routes>
                             </ModeContextProvider>
                         </UserContextProvider>
                     </Auth>
