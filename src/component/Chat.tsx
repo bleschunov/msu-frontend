@@ -1,8 +1,10 @@
 import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
+import { getAllFiles } from "api/fileApi"
 import queryClient from "api/queryClient"
 import { getAllSources, getLastSource } from "api/sourceApi"
 import InputGroup from "component/InputGroup/InputGroup"
+import InputGroupContext from "component/InputGroup/context"
 import { Message, createMessage } from "component/Message/Message"
 import SkeletonMessage from "component/Message/SkeletonMessage"
 import SourcesList from "component/SourcesList"
@@ -10,17 +12,15 @@ import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
+import FileModel from "model/FileModel"
+import QueryModel from "model/QueryModel"
 import SourceModel from "model/SourceModel"
+import { UserModel } from "model/UserModel"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
+import { useFiles } from "service/fileService"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
-import { useSource } from "service/sourceService"
-import { UserModel } from "model/UserModel"
-import InputGroupContext from './InputGroup/context'
-import FileModel from '../model/FileModel'
-import { getAllFiles } from '../api/fileApi'
-import QueryModel from '../model/QueryModel'
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -44,7 +44,8 @@ function Chat() {
     
     const messageCreateMutation = useCreateMessage()
     const predictionMutation = usePrediction()
-    const sourceMutation = useSource()
+    // const sourceMutation = useSource()
+    const filesMutation = useFiles()
     
     const isFilesMode = mode === "pdf"
 
@@ -52,7 +53,11 @@ function Chat() {
         return getOrCreateChat(user.id)
     })
 
-    const { data: filesList } = useQuery<FileModel[]>("files_list", getAllFiles)
+    const { data: filesList } = useQuery<FileModel[]>(
+        "files_list",
+        () => getAllFiles(chat!.id),
+        { enabled: !!chat?.id }
+    )
 
     const { data: sourcesList, status: sourcesListQueryStatus } = useQuery<SourceModel[]>(
         "sourcesList",
@@ -77,7 +82,7 @@ function Chat() {
 
     const errorMessage = predictionMutation.isError ? "Произошла ошибка. Попробуйте ещё раз" : undefined
 
-    const isUploadingFile = sourceMutation.isLoading
+    const isUploadingFile = filesMutation.isLoading
 
     useEffect(() => {
         window.scroll({
@@ -127,7 +132,7 @@ function Chat() {
     const onUploadFiles = (files: FileList) => {
         const file = files.item(0)
         setMode("pdf")
-        sourceMutation.mutateAsync({
+        filesMutation.mutateAsync({
             chat_id: chat!.id,
             file: file!
         })
