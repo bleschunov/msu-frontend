@@ -33,6 +33,7 @@ import QueryModel from "../model/QueryModel"
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
+    const [currentPage, setCurrentPage] = useState<number>(0)
     const [table, setTable] = useState<string>("платежи")
     const [currentFileIndex, setCurrentFileIndex] = useState<number>(-1)
     const user = useContext<UserModel>(UserContext)
@@ -116,8 +117,10 @@ function Chat() {
                 body["tables"] = [table]
             }
 
-            const { answer, sql, table: markdownTable, similar_queries: similarQueries }
+            const { answer, sql, table: markdownTable, similar_queries: similarQueries, page }
                 = await predictionMutation.mutateAsync(body)
+
+            setCurrentPage(page)
 
             setSimilarQueries(similarQueries)
 
