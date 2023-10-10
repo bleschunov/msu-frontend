@@ -2,12 +2,9 @@ import React, { FC } from "react"
 import "github-markdown-css"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { IMarkdown } from './types'
 
-interface MarkdownI {
-    children: string
-}
-
-const Markdown: FC<MarkdownI> = ({ children }) => {
+const Markdown: FC<IMarkdown> = ({ children }) => {
     return (
         <div className='markdown-body'>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{children}</ReactMarkdown>

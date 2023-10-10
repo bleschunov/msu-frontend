@@ -1,10 +1,6 @@
 import React, { FC } from "react"
 import { Avatar as ChakraAvatar } from "@chakra-ui/react"
-
-interface IAvatar {
-    name: string
-    src: string
-}
+import { IAvatar } from './types'
 
 const Avatar: FC<IAvatar> = ({ name, src }) => {
     return (

@@ -21,7 +21,7 @@ function App() {
                                 <div className="App">
                                     <Flex direction="column" h="100vh">
                                         <Header />
-                                        <Container maxW="3xl" flexGrow="1">
+                                        <Container maxW="container.md" flexGrow="1">
                                             <Routes>
                                                 <Route path="/admin" element={
                                                     <Box mt={40}>

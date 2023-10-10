@@ -1,29 +1,19 @@
 import { Box, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
 import { FC, ReactNode } from "react"
-import Avatar from "component/Avatar"
-import Callback from "component/Callback"
+import Avatar from "component/Message/Avatar"
+import Callback from "component/Message/Callback"
 import Code from "component/Code"
-import Markdown from "component/Markdown"
-import MessageModel from "model/MessageModel"
-import { ReviewModelRead } from "model/ReviewModel"
-import MarkModel from "model/MarkModel"
+import Markdown from "component/Message/Markdown"
 import { formatDate } from "misc/util"
 import ReactMarkdown from "react-markdown"
-
-interface MessageProps {
-    messageId: number
-    src: string
-    children: ReactNode
-    direction: "incoming" | "outgoing"
-    reviewModels?: ReviewModelRead[]
-    markModel?: MarkModel
-    callback?: boolean
-}
+import { IMessage } from './types'
+import Accordion from 'component/Accordion'
+import { MessageModel } from 'model/MessageModel'
 
 // # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
 //  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
 // # TODO: Сделать на беке в сообщении указание, сообщение от человека или от робота и убрать логику определения этого с фронта.
-export const Message: FC<MessageProps> = ({
+export const Message: FC<IMessage> = ({
     messageId,
     src,
     direction,
@@ -59,7 +49,7 @@ export const Message: FC<MessageProps> = ({
 
                     {direction === "incoming" && callback &&
                         <>
-                            <Box mt="5"><Callback markModel={markModel} messageId={messageId} /></Box>
+                            <Box mt="0"><Callback markModel={markModel} messageId={messageId} /></Box>
                             <VStack align="start">
                                 {reviewModels && reviewModels.length !== 0 &&
                                     <>
@@ -95,25 +85,39 @@ export const createMessage = (messageModel: MessageModel, key: number): ReactNod
         src = "/image/avatar/bot.png"
     }
 
+    const titles = []
+    const panels = []
+
+    if (messageModel.sql) {
+        titles.push("Как получился результат")
+        panels.push(<Code>{messageModel.sql}</Code>)
+    }
+
+    titles.push("Результат")
+
+    if (messageModel.table) {
+        panels.push(<Text mt="5"><Markdown>{messageModel.table}</Markdown></Text>)
+    } else {
+        panels.push(<Text mt="5">В таблице нет информации для данных фильтров</Text>)
+    }
+
     return <Message
         reviewModels={messageModel?.review}
         markModel={messageModel.mark && (messageModel.mark.length === 0 ? undefined : messageModel.mark[0])}
         src={src}
         messageId={messageModel.id}
-        direction={messageModel.answer != undefined ? "incoming" : "outgoing"} // eslint-disable-line
+        direction={messageModel.answer != undefined ? "incoming" : "outgoing"}
         key={key}
     >
         <Markdown>{messageContent}</Markdown>
-        { messageModel.sql && <Code>{messageModel.sql}</Code> }
-        {<Box
-            overflowX="scroll"
-            css={{
-                "&::-webkit-scrollbar": {
-                    display: "none",
-                },
-            }}
-        >
-            {messageModel.table && <Text mt="5"><Markdown>{messageModel.table}</Markdown></Text>}
-        </Box>}
+        <Box mt="5">
+            { messageModel.sql &&
+                <Accordion
+                    titles={titles}
+                    panels={panels}
+                    defaultIndex={1}
+                />
+            }
+        </Box>
     </Message>
 }

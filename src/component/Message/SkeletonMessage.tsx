@@ -1,12 +1,7 @@
 import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react"
+import { ISkeletonMessage } from './types'
 
-interface SkeletonMessageI {
-    direction: "incoming" | "outgoing"
-    width: string
-    height: string
-}
-
-const SkeletonMessage = ({ direction, width, height }: SkeletonMessageI) => {
+const SkeletonMessage = ({ direction, width, height }: ISkeletonMessage) => {
     let justify, flexDirection
 
     if (direction === "incoming") {

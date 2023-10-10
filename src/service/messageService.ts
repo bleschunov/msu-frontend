@@ -3,7 +3,7 @@ import queryClient from "api/queryClient"
 import { INITIAL_MESSAGE_COUNT } from "constant/chatMessages"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import ChatModel from "model/ChatModel"
-import MessageModel from "model/MessageModel"
+import { MessageCreateModel, MessageModel } from 'model/MessageModel'
 import { useContext } from "react"
 import { useMutation } from "react-query"
 
@@ -16,11 +16,11 @@ const useCreateMessage = () => {
     const { setShownMessageCount } = useContext<ModeContextI>(ModeContext)
 
     return useMutation(createMessageApi, {
-        onMutate: async (newMessage: MessageModel) => {
+        onMutate: async (newMessage: MessageCreateModel) => {
             await queryClient.cancelQueries("message")
             const previousChat = queryClient.getQueryData<ChatModel>("chat")
             if (previousChat) {
-                queryClient.setQueriesData<ChatModel>("chat", updateMessagesInChat(previousChat, newMessage))
+                queryClient.setQueriesData<ChatModel>("chat", updateMessagesInChat(previousChat, newMessage as MessageModel))
             }
             return {
                 previousChat,

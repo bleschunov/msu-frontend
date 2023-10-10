@@ -1,43 +1,29 @@
 import {
     Button,
-    Circle,
     Flex,
     FormControl,
-    FormLabel,
+    FormLabel, Grid,
+    GridItem,
     HStack,
     IconButton,
     Input,
-    Select, Spacer,
+    Select,
     Switch,
     Text,
     Textarea,
     VStack,
-} from "@chakra-ui/react"
-import { getTemplateQuestions } from "api/questionsApi"
+} from '@chakra-ui/react'
 import { ModeContext, ModeContextI } from "context/modeContext"
-import QuestionModel, { QuestionGetModel } from "model/QuestionModel"
-import { ChangeEvent, Dispatch, FC, KeyboardEvent, SetStateAction, useContext, useRef, useState } from "react"
+import { ChangeEvent, FC, KeyboardEvent, useContext, useRef, useState } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import { MdEdit, MdOutlineHistory } from "react-icons/md"
-import { useQuery } from "react-query"
-
-interface IInputGroup {
-    table: string
-    setTable: Dispatch<SetStateAction<string>>
-    handleSubmit: (finalQuery: string) => void
-    isLoading: boolean
-    onUploadFiles: (files: FileList) => void
-    multipleFilesEnabled?: boolean
-    isSourcesExist: boolean
-    isUploadingFile: boolean
-    errorMessage: string | undefined
-    openSourcesHistory: () => void
-}
+import { MdOutlineHistory } from "react-icons/md"
+import { IInputGroup, IInputGroupContext } from './types'
+import InputGroupContext from './context'
+import AskQueryButton from './AskQueryButton'
+import Accordion from '../Accordion'
 
 const InputGroup: FC<IInputGroup> = ({
-    table,
     setTable,
-    handleSubmit,
     isLoading,
     onUploadFiles,
     multipleFilesEnabled = false,
@@ -49,19 +35,9 @@ const InputGroup: FC<IInputGroup> = ({
     const [query, setQuery] = useState<string>("")
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
+    const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
 
     const isValueExists = query.trim() === ""
-
-    const {
-        data: templateQuestions,
-        status: templateQuestionsQueryStatus
-    } = useQuery<QuestionModel[]>(
-        "templateQuestions",
-        () => getTemplateQuestions({
-            tables: [table],
-            limit: 3
-        } as QuestionGetModel)
-    )
 
     const isTextAreaDisable = () => {
         if (isFilesEnabled)
@@ -118,20 +94,6 @@ const InputGroup: FC<IInputGroup> = ({
             onUploadFiles(files)
     }
 
-    const cleanTemplateQuestion = (templateQuery: string) => {
-        return templateQuery.slice(2)
-    }
-
-    const handleTemplateQuestionClick = (templateQuery: string) => {
-        templateQuery = cleanTemplateQuestion(templateQuery)
-        handleSubmit(templateQuery)
-    }
-
-    const handleTemplateQuestionEditClick = (templateQuery: string) => {
-        templateQuery = cleanTemplateQuestion(templateQuery)
-        setQuery(templateQuery)
-    }
-
     const handleSubmitClick = () => {
         handleSubmit(query)
         setQuery("")
@@ -139,57 +101,18 @@ const InputGroup: FC<IInputGroup> = ({
 
     return (
         <Flex direction="column" gap="5">
-            {templateQuestionsQueryStatus === "success" && (
-                <Flex
-                    w="full"
-                    direction="row"
-                    gap={5}
-                    overflowY="hidden"
-                >
-                    {templateQuestions?.map(({ question }) => (
-                        <Flex
-                            w="full"
-                            direction="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            fontStyle="italic"
-                            borderWidth={2}
-                            borderColor="gray.200"
-                            borderRadius={10}
-                            gap={1}
-                            cursor="pointer"
-                            _hover={{
-                                background: "gray.200"
-                            }}
-                        >
-                            <HStack w="full" p="1">
-                                <Spacer />
-                                <Circle
-                                    size="30px"
-                                    _hover={{
-                                        background: "gray.400"
-                                    }}
-                                    cursor="pointer"
-                                >
-                                    <MdEdit
-                                        size={24}
-                                        onClick={() => handleTemplateQuestionEditClick(question)}
-                                    />
-                                </Circle>
-                            </HStack>
-                            <Text
-                                // TODO: fix text only in 1 full line to enable horizontal scrolling
-                                w="fit-content"
-                                wordBreak="keep-all"
-                                onClick={() => handleTemplateQuestionClick(question)}
-                                p="2"
-                            >
-                                {cleanTemplateQuestion(question)}
-                            </Text>
-                        </Flex>
-                    ))}
-                </Flex>
-            )}
+            <Grid
+                h='200px'
+                templateRows='repeat(2, 1fr)'
+                templateColumns='repeat(2, 1fr)'
+                gap={4}
+            >
+                {similarQueries.map((query: string) => (
+                    <GridItem>
+                        <AskQueryButton query={query} />
+                    </GridItem>
+                ))}
+            </Grid>
 
             <HStack alignItems="flex-start">
                 <Textarea
@@ -247,7 +170,11 @@ const InputGroup: FC<IInputGroup> = ({
             </HStack>
             {errorMessage && <Text color="red">{errorMessage}</Text>}
             
-            <Button onClick={handleClick}>Не учитывать NULL</Button>
+            <Accordion
+                titles={["Дополнительные настройки"]}
+                panels={[<Button onClick={handleClick}>Не учитывать NULL</Button>]}
+                defaultIndex={-1}
+            />
 
             {/* Toggle for files */}
             {isFilesEnabled && (

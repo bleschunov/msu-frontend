@@ -13,7 +13,14 @@ interface UserContextProviderProps {
 
 const UserContextProvider: FC<UserContextProviderProps> = ({ children }) => {
     const { data: user, isSuccess } = useQuery<UserModel>("user", getCurrentUser, {
-        onError: signOut,
+        onError: (error) => {
+            // @ts-ignore
+            if (error.response?.status === 404) {
+                signOut()
+                throw Error("User is not found or user is not under any tenant.")
+            }
+
+        },
         cacheTime: 0
     })
 

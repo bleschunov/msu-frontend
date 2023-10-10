@@ -2,15 +2,14 @@ import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
 import { getAllSources, getLastSource } from "api/sourceApi"
-import InputGroup from "component/InputGroup"
-import { Message, createMessage } from "component/Message"
-import SkeletonMessage from "component/SkeletonMessage"
+import InputGroup from "component/InputGroup/InputGroup"
+import { Message, createMessage } from "component/Message/Message"
+import SkeletonMessage from "component/Message/SkeletonMessage"
 import SourcesList from "component/SourcesList"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
-import MessageModel from "model/MessageModel"
 import SourceModel from "model/SourceModel"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
@@ -18,12 +17,14 @@ import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
 import { UserModel } from "model/UserModel"
+import InputGroupContext from './InputGroup/context'
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [table, setTable] = useState<string>("платежи")
     const user = useContext<UserModel>(UserContext)
+    const [similarQueries, setSimilarQueries] = useState<string[]>([])
     const {
         mode,
         setMode,
@@ -84,19 +85,22 @@ function Chat() {
             const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
                 query: finalQuery,
                 chat_id: chat.id
-            } as MessageModel)
-            const { answer, sql, table: markdownTable } = await predictionMutation.mutateAsync({
+            })
+            const { answer, sql, table: markdownTable, similar_queries: similarQueries } = await predictionMutation.mutateAsync({
                 query: finalQuery,
                 source_id: currentSource?.source_id,
-                tables: [table]
+                tables: [table],
             })
+
+            setSimilarQueries(similarQueries)
+
             await messageCreateMutation.mutateAsync({
                 chat_id: chat.id,
                 answer: answer,
                 sql: sql,
                 table: markdownTable,
                 connected_message_id: queryMessageId,
-            } as MessageModel)
+            })
 
             queryClient.invalidateQueries("chat")
         }
@@ -120,8 +124,9 @@ function Chat() {
             ref={chatRef}
             position="relative"
             direction="column"
-            p="10"
+            justifyContent="flex-end"
             pt="100"
+            pb="10"
             h="full"
             gap={10}
         >
@@ -161,18 +166,18 @@ function Chat() {
                     Какой у вас запрос?
                 </Message>}
 
-            <InputGroup
-                table={table}
-                setTable={setTable}
-                handleSubmit={handleSubmit}
-                isLoading={isLoading}
-                onUploadFiles={onUploadFiles}
-                multipleFilesEnabled={false}
-                isSourcesExist={isSourcesExist}
-                isUploadingFile={isUploadingFile}
-                errorMessage={errorMessage}
-                openSourcesHistory={openSourcesHistory}
-            />
+            <InputGroupContext.Provider value={{ handleSubmit, similarQueries }}>
+                <InputGroup
+                    setTable={setTable}
+                    isLoading={isLoading}
+                    onUploadFiles={onUploadFiles}
+                    multipleFilesEnabled={false}
+                    isSourcesExist={isSourcesExist}
+                    isUploadingFile={isUploadingFile}
+                    errorMessage={errorMessage}
+                    openSourcesHistory={openSourcesHistory}
+                />
+            </InputGroupContext.Provider>
 
             {isFilesEnabled && (
                 isFilesMode ? isSourcesExist ? (

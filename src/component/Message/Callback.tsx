@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
-import { Button, HStack, Text, Textarea, VStack } from "@chakra-ui/react"
+import { Box, Button, HStack, Textarea, VStack } from '@chakra-ui/react'
 import { useMutation, useQueryClient } from "react-query"
 import MarkModel from "model/MarkModel"
 import { createMark } from "api/markApi"
@@ -7,11 +7,7 @@ import { UserContext } from "context/userContext"
 import { createReview } from "api/reviewApi"
 import ChatModel from "model/ChatModel"
 import { UserModel } from "model/UserModel"
-
-interface CallbackProps {
-  messageId: number;
-  markModel?: MarkModel;
-}
+import { ICallback } from './types'
 
 const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
     oldChat.message?.forEach((message) => {
@@ -22,7 +18,7 @@ const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkMo
     return oldChat
 }
 
-const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
+const Callback: FC<ICallback> = ({ messageId, markModel }) => {
     const [commentary, setCommentary] = useState<string>("")
     const queryClient = useQueryClient()
 
@@ -79,14 +75,11 @@ const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
         setCommentary("")
     }
 
-    return (
-        <VStack align="left" mt="10">
-            <Text fontWeight="bold">
-        Поставьте оценку и напишите комментарий, что понравилось в ответе, а что
-        — нет:
-            </Text>
+    const LikeDislike = () => {
+        return (
             <HStack gap="3">
                 <Button
+                    size="xs"
                     colorScheme="blue"
                     variant={markModel && markModel.mark === 1 ? "solid" : "outline"}
                     onClick={() => handleMarkButton(1)}
@@ -94,6 +87,7 @@ const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
                     👍
                 </Button>
                 <Button
+                    size="xs"
                     colorScheme="blue"
                     variant={markModel && markModel.mark === 0 ? "solid" : "outline"}
                     onClick={() => handleMarkButton(0)}
@@ -101,6 +95,11 @@ const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
                     👎
                 </Button>
             </HStack>
+        )
+    }
+
+    return (
+        <VStack align="left" mt="10">
             <HStack mt="2" gap="3" alignItems="top">
                 <Textarea
                     value={commentary}
@@ -109,13 +108,18 @@ const Callback: FC<CallbackProps> = ({ messageId, markModel }) => {
                     placeholder="Ваш комментарий..."
                     disabled={reviewMutation.isLoading}
                 />
-                <Button
-                    colorScheme="blue"
-                    onClick={handleSubmitCommentary}
-                    isLoading={reviewMutation.isLoading}
-                >
-          Отправить
-                </Button>
+                <VStack justifyContent="space-between">
+                    <Button
+                        colorScheme="blue"
+                        onClick={handleSubmitCommentary}
+                        isLoading={reviewMutation.isLoading}
+                    >
+                        Отправить
+                    </Button>
+                    <Box alignSelf="end">
+                        <LikeDislike />
+                    </Box>
+                </VStack>
             </HStack>
         </VStack>
     )

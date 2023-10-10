@@ -1,4 +1,4 @@
-import MessageModel from "model/MessageModel"
+import { MessageModel } from "model/MessageModel"
 import SourceModel from "model/SourceModel"
 
 interface ChatModel {
