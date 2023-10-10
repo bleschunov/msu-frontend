@@ -9,31 +9,26 @@ import {
     Flex,
     Text,
 } from "@chakra-ui/react"
-import queryClient from "api/queryClient"
-import { formatDate } from "misc/util"
-import SourceModel from "model/SourceModel"
-import { FC, useEffect, useRef } from "react"
+import { Dispatch, FC, SetStateAction, useRef } from 'react'
 import { BsCheck } from "react-icons/bs"
+import FileModel from '../model/FileModel'
 
 interface ISourcesList {
-    sourceList?: SourceModel[]
-    currentSource?: SourceModel
+    filesList: FileModel[]
+    currentFileIndex: number
+    setCurrentFileIndex: Dispatch<SetStateAction<number>>
     isOpen: boolean
     onClose: () => void
 }
 
 const SourcesList: FC<ISourcesList> = ({
-    sourceList = [],
-    currentSource,
+    filesList,
+    currentFileIndex,
+    setCurrentFileIndex,
     isOpen,
     onClose
 }) => {
     const lastSourceRef = useRef<HTMLDivElement | null>(null)
-
-    const setCurrentSource = (selectedSource: SourceModel) => {
-        queryClient.cancelQueries("currentSource")
-        queryClient.setQueryData("currentSource", selectedSource)
-    }
 
     const getShortFileName = (filename: string) => {
         if (filename.length > 30)
@@ -41,15 +36,15 @@ const SourcesList: FC<ISourcesList> = ({
         return filename
     }
 
-    useEffect(() => {
-        if (isOpen) {
-            setTimeout(() => {
-                lastSourceRef.current?.scrollIntoView({
-                    behavior: "smooth"
-                })
-            }, 0)
-        }
-    }, [isOpen, sourceList])
+    // useEffect(() => {
+    //     if (isOpen) {
+    //         setTimeout(() => {
+    //             lastSourceRef.current?.scrollIntoView({
+    //                 behavior: "smooth"
+    //             })
+    //         }, 0)
+    //     }
+    // }, [isOpen, sourceList])
 
     return (
         <Drawer onClose={onClose} isOpen={isOpen} size="sm">
@@ -62,34 +57,29 @@ const SourcesList: FC<ISourcesList> = ({
                     flexDirection="column"
                     paddingBottom={10}
                 >
-                    {sourceList?.map((sourceItem, index) => (
+                    {filesList?.map((file, index) => (
                         <Flex
-                            ref={index === sourceList.length - 1 ? lastSourceRef : null}
+                            // ref={index === sourceList.length - 1 ? lastSourceRef : null}
                             direction="row"
                             justifyContent="space-between"
                             alignItems="center"
-                            backgroundColor={sourceItem.id === currentSource?.id ? "gray.100" : "transparent"}
+                            backgroundColor={index === currentFileIndex ? "gray.100" : "transparent"}
                             padding={3}
                             borderRadius={10}
                         >
                             <Flex direction="column">
                                 <Text>
-                                    {getShortFileName(sourceItem.file_name)}
-                                </Text>
-                                <Text color="gray" fontSize="xs">
-                                    {formatDate(sourceItem.created_at)}
+                                    {getShortFileName(file.name_ru)}
                                 </Text>
                             </Flex>
-                            {currentSource?.id === sourceItem.id ? (
+                            {index === currentFileIndex ? (
                                 <BsCheck size={24}/>
                             ) : (
                                 <Button
                                     colorScheme="blue"
                                     variant="link"
                                     size="sm"
-                                    onClick={() => {
-                                        setCurrentSource(sourceItem)
-                                    }}
+                                    onClick={() => setCurrentFileIndex(index)}
                                 >
                                     Выбрать
                                 </Button>

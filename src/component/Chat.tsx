@@ -18,11 +18,15 @@ import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
 import { UserModel } from "model/UserModel"
 import InputGroupContext from './InputGroup/context'
+import FileModel from '../model/FileModel'
+import { getAllFiles } from '../api/fileApi'
+import QueryModel from '../model/QueryModel'
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
     const [table, setTable] = useState<string>("платежи")
+    const [currentFileIndex, setCurrentFileIndex] = useState<number>(-1)
     const user = useContext<UserModel>(UserContext)
     const [similarQueries, setSimilarQueries] = useState<string[]>([])
     const {
@@ -47,6 +51,8 @@ function Chat() {
     const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
+
+    const { data: filesList } = useQuery<FileModel[]>("files_list", getAllFiles)
 
     const { data: sourcesList, status: sourcesListQueryStatus } = useQuery<SourceModel[]>(
         "sourcesList",
@@ -86,11 +92,19 @@ function Chat() {
                 query: finalQuery,
                 chat_id: chat.id
             })
-            const { answer, sql, table: markdownTable, similar_queries: similarQueries } = await predictionMutation.mutateAsync({
-                query: finalQuery,
-                source_id: currentSource?.source_id,
-                tables: [table],
-            })
+
+            const body: Omit<QueryModel, "chat_id"> = {
+                query: finalQuery
+            }
+
+            if (isFilesMode && filesList) {
+                body["filename"] = filesList[currentFileIndex].name_en
+            } else {
+                body["tables"] = [table]
+            }
+
+            const { answer, sql, table: markdownTable, similar_queries: similarQueries }
+                = await predictionMutation.mutateAsync(body)
 
             setSimilarQueries(similarQueries)
 
@@ -130,10 +144,11 @@ function Chat() {
             h="full"
             gap={10}
         >
-            {isFilesEnabled && (
+            {isFilesEnabled && filesList && (
                 <SourcesList
-                    sourceList={sourcesList}
-                    currentSource={currentSource}
+                    filesList={filesList}
+                    currentFileIndex={currentFileIndex}
+                    setCurrentFileIndex={setCurrentFileIndex}
                     isOpen={isSourcesHistoryOpen}
                     onClose={closeSourcesHistory}
                 />
@@ -180,12 +195,12 @@ function Chat() {
             </InputGroupContext.Provider>
 
             {isFilesEnabled && (
-                isFilesMode ? isSourcesExist ? (
-                    <Text color="black">{currentSource?.file_name}</Text>
+                isFilesMode ? filesList && currentFileIndex >= 0 ? (
+                    <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
                 ) : (
                     <Text color="gray" fontStyle="italic">Загрузите файл</Text>
-                ) : isSourcesExist && (
-                    <Text color="gray">{currentSource?.file_name}</Text>
+                ) : filesList && currentFileIndex >= 0 && (
+                    <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
                 )
             )}
         </Flex>
