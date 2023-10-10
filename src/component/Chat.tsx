@@ -17,6 +17,7 @@ import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { useSource } from "service/sourceService"
 import { UserModel } from "model/UserModel"
+import { PDFViewer } from "./PDFViewer"
 import InputGroupContext from './InputGroup/context'
 import FileModel from '../model/FileModel'
 import { getAllFiles } from '../api/fileApi'
@@ -25,6 +26,7 @@ import QueryModel from '../model/QueryModel'
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
     const chatRef = useRef<HTMLDivElement | null>(null)
+    const [currentPage, setCurrentPage] = useState<number>(0)
     const [table, setTable] = useState<string>("платежи")
     const [currentFileIndex, setCurrentFileIndex] = useState<number>(-1)
     const user = useContext<UserModel>(UserContext)
@@ -103,8 +105,10 @@ function Chat() {
                 body["tables"] = [table]
             }
 
-            const { answer, sql, table: markdownTable, similar_queries: similarQueries }
+            const { answer, sql, table: markdownTable, similar_queries: similarQueries, page }
                 = await predictionMutation.mutateAsync(body)
+
+            setCurrentPage(page)
 
             setSimilarQueries(similarQueries)
 
@@ -135,51 +139,65 @@ function Chat() {
 
     return (
         <Flex
-            ref={chatRef}
             position="relative"
-            direction="column"
-            justifyContent="flex-end"
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-end"
             pt="100"
             pb="10"
+            // gap={10}
             h="full"
-            gap={10}
         >
-            {isFilesEnabled && filesList && (
+                {isFilesEnabled && filesList && currentFileIndex >= 0
+                    && (<PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />)}
+                <Flex
+                    ref={chatRef}
+                    position="relative"
+                    direction="column"
+                    justifyContent="flex-end"
+                    p="10"
+                    h="full"
+                    w="full"
+                    gap={10}
+                >
+
+                    {isFilesEnabled && filesList && (
                 <SourcesList
                     filesList={filesList}
-                    currentFileIndex={currentFileIndex}
+                            currentFileIndex={currentFileIndex}
                     setCurrentFileIndex={setCurrentFileIndex}
-                    isOpen={isSourcesHistoryOpen}
-                    onClose={closeSourcesHistory}
-                />
-            )}
+                            isOpen={isSourcesHistoryOpen}
+                            onClose={closeSourcesHistory}
+                        />
+                    )}
 
-            {chat && !!chat.message?.length && chat.message.length > shownMessageCount
+                    {chat && !!chat.message?.length && chat.message.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
 
-            {chatQueryStatus !== "loading" ?
-                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                    {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
-                </Flex> :
-                <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                    <SkeletonMessage direction="outgoing" width="35%" height="60px" />
-                    <SkeletonMessage direction="incoming" width="65%" height="95px" />
-                    <SkeletonMessage direction="outgoing" width="30%" height="55px" />
-                    <SkeletonMessage direction="incoming" width="68%" height="75px" />
-                    <SkeletonMessage direction="outgoing" width="45%" height="65px" />
-                    <SkeletonMessage direction="incoming" width="63%" height="105px" />
-                </Flex>
-            }
+                    {chatQueryStatus !== "loading" ?
+                        <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                            {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
+                        </Flex> :
+                        <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
+                            <SkeletonMessage direction="outgoing" width="35%" height="60px" />
+                            <SkeletonMessage direction="incoming" width="65%" height="95px" />
+                            <SkeletonMessage direction="outgoing" width="30%" height="55px" />
+                            <SkeletonMessage direction="incoming" width="68%" height="75px" />
+                            <SkeletonMessage direction="outgoing" width="45%" height="65px" />
+                            <SkeletonMessage direction="incoming" width="63%" height="105px" />
+                        </Flex>
+                    }
 
-            {chat && !chat.message?.length &&
-                <Message
-                    direction='incoming'
-                    messageId={-1}
-                    src={"/image/avatar/bot.png"}
-                    callback={false}
-                >
-                    Какой у вас запрос?
-                </Message>}
+                {chat && !chat.message?.length &&
+                    <Message
+                        direction='incoming'
+                        messageId={-1}
+                        src={"/image/avatar/bot.png"}
+                        callback={false}
+                    >
+                        Какой у вас запрос?
+                    </Message>}
+            </Flex>
 
             <InputGroupContext.Provider value={{ handleSubmit, similarQueries }}>
                 <InputGroup
