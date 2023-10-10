@@ -16,6 +16,7 @@ interface MessageCreateModel extends MessageBaseModel {
 
 interface MessageInModel extends MessageBaseModel {
     similar_queries: string[]
+    page: number
 }
 
 interface MessageModel extends MessageInModel, MessageCreateModel {
