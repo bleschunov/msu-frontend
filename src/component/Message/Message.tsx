@@ -1,14 +1,14 @@
-import { Box, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
-import { FC, ReactNode } from "react"
+import { Box, Button, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
+import { FC, ReactNode, useState } from "react"
 import Avatar from "component/Message/Avatar"
 import Callback from "component/Message/Callback"
 import Code from "component/Code"
 import Markdown from "component/Message/Markdown"
 import { formatDate } from "misc/util"
 import ReactMarkdown from "react-markdown"
-import { IMessage } from './types'
 import Accordion from 'component/Accordion'
 import { MessageModel } from 'model/MessageModel'
+import { IMessage } from './types'
 
 // # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
 //  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
@@ -23,6 +23,7 @@ export const Message: FC<IMessage> = ({
     callback = true
 }) => {
     let justify, flexDirection, name = ""
+    const [isCommenting, setIsCommenting] = useState<boolean>(false)
 
     if (direction === "incoming") {
         justify = "start" as const
@@ -49,9 +50,31 @@ export const Message: FC<IMessage> = ({
 
                     {direction === "incoming" && callback &&
                         <>
-                            <Box mt="0"><Callback markModel={markModel} messageId={messageId} /></Box>
+                            <Box mt="0">
+                                {!isCommenting && (
+                                    <Button
+                                        size="sm"
+                                        mt={3}
+                                        onClick={() => setIsCommenting(true)}
+                                    >
+                                    Открыть комментарии
+                                    </Button>
+                                )}
+                                {isCommenting && (
+                                    <>
+                                        <Button
+                                            size="sm"
+                                            mt={3}
+                                            onClick={() => setIsCommenting(false)}
+                                        >
+                                            Закрыть комментарии
+                                        </Button>
+                                        <Callback markModel={markModel} messageId={messageId} />
+                                    </>
+                                )}
+                            </Box>
                             <VStack align="start">
-                                {reviewModels && reviewModels.length !== 0 &&
+                                {reviewModels && reviewModels.length !== 0 && isCommenting &&
                                     <>
                                         <Text fontWeight="bold" mt="5">Комментарии</Text>
                                         {reviewModels.map(({ commentary, id, created_at }, index) => (

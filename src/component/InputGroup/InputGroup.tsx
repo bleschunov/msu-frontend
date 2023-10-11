@@ -5,7 +5,6 @@ import {
     FormLabel, Grid,
     GridItem,
     HStack,
-    IconButton,
     Input,
     Select,
     Switch,
@@ -16,11 +15,10 @@ import {
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, FC, KeyboardEvent, useContext, useRef, useState } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import { MdOutlineHistory } from "react-icons/md"
-import { IInputGroup, IInputGroupContext } from "./types"
-import InputGroupContext from "./context"
-import AskQueryButton from "./AskQueryButton"
 import Accordion from "../Accordion"
+import AskQueryButton from "./AskQueryButton"
+import InputGroupContext from "./context"
+import { IInputGroup, IInputGroupContext } from "./types"
 
 const InputGroup: FC<IInputGroup> = ({
     setTable,
