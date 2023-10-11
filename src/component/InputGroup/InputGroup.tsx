@@ -12,15 +12,15 @@ import {
     Text,
     Textarea,
     VStack,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, FC, KeyboardEvent, useContext, useRef, useState } from "react"
 import { FaFileUpload } from "react-icons/fa"
 import { MdOutlineHistory } from "react-icons/md"
-import { IInputGroup, IInputGroupContext } from './types'
-import InputGroupContext from './context'
-import AskQueryButton from './AskQueryButton'
-import Accordion from '../Accordion'
+import { IInputGroup, IInputGroupContext } from "./types"
+import InputGroupContext from "./context"
+import AskQueryButton from "./AskQueryButton"
+import Accordion from "../Accordion"
 
 const InputGroup: FC<IInputGroup> = ({
     setTable,
@@ -133,10 +133,12 @@ const InputGroup: FC<IInputGroup> = ({
                     >
                         Отправить
                     </Button>
-                    <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
-                        <option value='платежи' selected>Платежи</option>
-                        <option value='сотрудники'>Сотрудники</option>
-                    </Select>
+                    {mode !== "pdf" && (
+                        <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
+                            <option value='платежи' selected>Платежи</option>
+                            <option value='сотрудники'>Сотрудники</option>
+                        </Select>
+                    )}
 
                     {isFilesEnabled && (
                         <Flex direction="column" gap={1}>
@@ -169,11 +171,13 @@ const InputGroup: FC<IInputGroup> = ({
             </HStack>
             {errorMessage && <Text color="red">{errorMessage}</Text>}
             
-            <Accordion
-                titles={["Дополнительные настройки"]}
-                panels={[<Button onClick={handleClick}>Не учитывать NULL</Button>]}
-                defaultIndex={-1}
-            />
+            {mode !== "pdf" && (
+                <Accordion
+                    titles={["Дополнительные настройки"]}
+                    panels={[<Button onClick={handleClick}>Не учитывать NULL</Button>]}
+                    defaultIndex={-1}
+                />
+            )}
 
             {/* Toggle for files */}
             {isFilesEnabled && (
