@@ -1,5 +1,5 @@
-import React, { ReactElement } from 'react'
-import { Accordion as ChakraAccordion, AccordionButton, AccordionIcon, AccordionItem as ChakraAccordionItem, AccordionPanel, Box } from '@chakra-ui/react'
+import React, { ReactElement } from "react"
+import { Accordion as ChakraAccordion, AccordionButton, AccordionIcon, AccordionItem as ChakraAccordionItem, AccordionPanel, Box } from "@chakra-ui/react"
 
 interface IAccordion {
     titles: string[]
@@ -12,12 +12,12 @@ interface IAccordionItem {
     panel: ReactElement
 }
 
-const Accordion = ({titles, panels, defaultIndex}: IAccordion) => {
+const Accordion = ({ titles, panels, defaultIndex }: IAccordion) => {
     if (titles.length !== panels.length) {
         throw Error("Length of the title and panels aren't identical in Accordion component")
     }
 
-    const AccordionItem = ({title, panel}: IAccordionItem) => {
+    const AccordionItem = ({ title, panel }: IAccordionItem) => {
         return (
             <ChakraAccordionItem>
                 <h2>

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Spacer, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Flex, Spacer, Text, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
 import { getAllSources, getLastSource } from "api/sourceApi"
@@ -16,11 +16,11 @@ import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
 import { UserModel } from "model/UserModel"
-import InputGroupContext from "./InputGroup/context"
-import { PDFViewer } from "./PDFViewer"
-import FileModel from "../model/FileModel"
-import { getAllFiles } from "../api/fileApi"
-import QueryModel from "../model/QueryModel"
+import InputGroupContext from "component/InputGroup/context"
+import { PDFViewer } from "component/PDFViewer"
+import FileModel from "model/FileModel"
+import { getAllFiles } from "api/fileApi"
+import QueryModel from "model/QueryModel"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -57,7 +57,7 @@ function Chat() {
         { enabled: !!chat?.id }
     )
 
-    const { data: sourcesList, status: sourcesListQueryStatus } = useQuery<SourceModel[]>(
+    const { status: sourcesListQueryStatus } = useQuery<SourceModel[]>(
         "sourcesList",
         () => getAllSources(chat!.id),
         { enabled: !!chat?.id }

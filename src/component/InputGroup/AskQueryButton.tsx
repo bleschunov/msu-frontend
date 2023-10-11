@@ -1,7 +1,7 @@
-import { useContext, MouseEvent } from 'react'
-import { IInputGroupContext } from './types'
-import InputGroupContext from './context'
-import { Button } from '@chakra-ui/react'
+import { useContext, MouseEvent } from "react"
+import { Button } from "@chakra-ui/react"
+import { IInputGroupContext } from "component/InputGroup/types"
+import InputGroupContext from "component/InputGroup/context"
 
 interface IAskQueryButton {
     query: string

@@ -1,5 +1,5 @@
 import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react"
-import { ISkeletonMessage } from './types'
+import { ISkeletonMessage } from "component/Message/types"
 
 const SkeletonMessage = ({ direction, width, height }: ISkeletonMessage) => {
     let justify, flexDirection

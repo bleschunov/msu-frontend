@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
-import { Box, Button, HStack, Textarea, VStack } from '@chakra-ui/react'
+import { Box, Button, HStack, Textarea, VStack } from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "react-query"
 import MarkModel from "model/MarkModel"
 import { createMark } from "api/markApi"
@@ -7,7 +7,7 @@ import { UserContext } from "context/userContext"
 import { createReview } from "api/reviewApi"
 import ChatModel from "model/ChatModel"
 import { UserModel } from "model/UserModel"
-import { ICallback } from './types'
+import { ICallback } from "component/Message/types"
 
 const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
     oldChat.message?.forEach((message) => {

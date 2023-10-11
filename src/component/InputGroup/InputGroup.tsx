@@ -6,20 +6,19 @@ import {
     GridItem,
     HStack,
     IconButton,
-    Input,
     Select,
     Switch,
     Text,
     Textarea,
     VStack,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
 import { MdOutlineHistory } from "react-icons/md"
-import { IInputGroup, IInputGroupContext } from './types'
-import InputGroupContext from './context'
-import AskQueryButton from './AskQueryButton'
-import Accordion from '../Accordion'
+import { IInputGroup, IInputGroupContext } from "component/InputGroup/types"
+import InputGroupContext from "component/InputGroup/context"
+import AskQueryButton from "component/InputGroup/AskQueryButton"
+import Accordion from "component/Accordion"
 
 const InputGroup: FC<IInputGroup> = ({
     setTable,

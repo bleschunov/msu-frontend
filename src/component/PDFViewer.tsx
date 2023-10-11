@@ -1,7 +1,7 @@
 import { SpecialZoomLevel, Viewer, Worker } from "@react-pdf-viewer/core"
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout"
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation"
-import { FC, useEffect } from 'react'
+import { FC, useEffect } from "react"
 
 // Import styles
 import "@react-pdf-viewer/core/lib/styles/index.css"
@@ -21,9 +21,7 @@ export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
 
     useEffect(() => {
         jumpToPage(page)
-    }, [page])
-
-    const { CurrentPageLabel } = pageNavigationPluginInstance
+    }, [page, jumpToPage])
 
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
@@ -42,7 +40,4 @@ export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
             </VStack>
         </Worker>
     )
-}
-function jumpToPagePlugin() {
-    throw new Error("Function not implemented.")
 }

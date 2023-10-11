@@ -8,14 +8,14 @@ import {
     DrawerOverlay,
     Flex, Input,
     Text,
-} from '@chakra-ui/react'
-import { ChangeEvent, Dispatch, FC, SetStateAction, useContext, useRef } from 'react'
+} from "@chakra-ui/react"
+import { ChangeEvent, Dispatch, FC, SetStateAction, useContext, useRef } from "react"
 import { BsCheck } from "react-icons/bs"
-import FileModel from '../model/FileModel'
-import queryClient from '../api/queryClient'
-import { ModeContext, ModeContextI } from '../context/modeContext'
-import { useFiles } from '../service/fileService'
-import { FaFileUpload } from 'react-icons/fa'
+import { FaFileUpload } from "react-icons/fa"
+import FileModel from "model/FileModel"
+import queryClient from "api/queryClient"
+import { ModeContext, ModeContextI } from "context/modeContext"
+import { useFiles } from "service/fileService"
 
 interface ISourcesList {
     chat_id: number
