@@ -139,7 +139,12 @@ const InputGroup: FC<IInputGroup> = ({
                     </Select>
 
                     {isFilesEnabled && (
-                        <Flex direction="row" gap={1}>
+                        <Flex direction="column" gap={1}>
+                            <Button
+                                aria-label="open files history"
+                                onClick={openSourcesHistory}
+                                children="Документы"
+                            />
                             <Button
                                 colorScheme="gray"
                                 onClick={handleUploadFileButtonClick}
@@ -157,12 +162,6 @@ const InputGroup: FC<IInputGroup> = ({
                                 accept=".pdf"
                                 multiple={multipleFilesEnabled}
                                 onChange={handleFileInputChange}
-                            />
-
-                            <IconButton
-                                aria-label="open files history"
-                                onClick={openSourcesHistory}
-                                icon={<MdOutlineHistory size={24} />}
                             />
                         </Flex>
                     )}
