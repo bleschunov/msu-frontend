@@ -126,7 +126,10 @@ const SourcesList: FC<ISourcesList> = ({
                                     colorScheme="blue"
                                     variant="link"
                                     size="sm"
-                                    onClick={() => setCurrentFileIndex(index)}
+                                    onClick={() => {
+                                        setMode("pdf")
+                                        setCurrentFileIndex(index)}
+                                    }
                                 >
                                     Выбрать
                                 </Button>
