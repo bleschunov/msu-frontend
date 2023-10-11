@@ -14,8 +14,7 @@ import {
     VStack,
 } from '@chakra-ui/react'
 import { ModeContext, ModeContextI } from "context/modeContext"
-import { ChangeEvent, FC, KeyboardEvent, useContext, useRef, useState } from "react"
-import { FaFileUpload } from "react-icons/fa"
+import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
 import { MdOutlineHistory } from "react-icons/md"
 import { IInputGroup, IInputGroupContext } from './types'
 import InputGroupContext from './context'
@@ -25,15 +24,11 @@ import Accordion from '../Accordion'
 const InputGroup: FC<IInputGroup> = ({
     setTable,
     isLoading,
-    onUploadFiles,
-    multipleFilesEnabled = false,
     isSourcesExist,
-    isUploadingFile,
     errorMessage,
     openSourcesHistory
 }) => {
     const [query, setQuery] = useState<string>("")
-    const fileInputRef = useRef<HTMLInputElement | null>(null)
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
 
@@ -41,24 +36,18 @@ const InputGroup: FC<IInputGroup> = ({
 
     const isTextAreaDisable = () => {
         if (isFilesEnabled)
-            return isLoading || isUploadingFile || !isSourcesExist
+            return isLoading || !isSourcesExist
         return isLoading
     }
     const isSubmitBtnDisable = () => {
         if (isFilesEnabled)
-            return isValueExists || isUploadingFile || !isSourcesExist
+            return isValueExists || !isSourcesExist
         return isValueExists
     }
 
     const isSubmitButtonLoading = () => {
         if (isFilesEnabled) 
-            return isLoading || isUploadingFile
-        return isLoading
-    }
-
-    const isUploadFileBtnLoading = () => {
-        if (isFilesEnabled)
-            return isLoading || isUploadingFile
+            return isLoading
         return isLoading
     }
 
@@ -82,16 +71,6 @@ const InputGroup: FC<IInputGroup> = ({
 
     const handleSwitchMode = () => {
         setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
-    }
-
-    const handleUploadFileButtonClick = () => {
-        fileInputRef.current?.click()
-    }
-
-    const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files
-        if (files)
-            onUploadFiles(files)
     }
 
     const handleSubmitClick = () => {
@@ -140,25 +119,6 @@ const InputGroup: FC<IInputGroup> = ({
 
                     {isFilesEnabled && (
                         <Flex direction="row" gap={1}>
-                            <Button
-                                colorScheme="gray"
-                                onClick={handleUploadFileButtonClick}
-                                isLoading={isUploadFileBtnLoading()}
-                                fontWeight="normal"
-                                gap={2}
-                            >
-                                <FaFileUpload />
-                                Загрузить файл
-                            </Button>
-                            <Input
-                                hidden
-                                ref={fileInputRef}
-                                type="file"
-                                accept=".pdf"
-                                multiple={multipleFilesEnabled}
-                                onChange={handleFileInputChange}
-                            />
-
                             <IconButton
                                 aria-label="open files history"
                                 onClick={openSourcesHistory}

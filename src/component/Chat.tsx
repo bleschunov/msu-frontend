@@ -1,4 +1,4 @@
-import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, Spacer, Text, useDisclosure } from '@chakra-ui/react'
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
 import { getAllSources, getLastSource } from "api/sourceApi"
@@ -13,10 +13,8 @@ import ChatModel from "model/ChatModel"
 import SourceModel from "model/SourceModel"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
-import { useFiles } from "service/fileService"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
-import { useSource } from "service/sourceService"
 import { UserModel } from "model/UserModel"
 import InputGroupContext from "./InputGroup/context"
 import { PDFViewer } from "./PDFViewer"
@@ -34,7 +32,6 @@ function Chat() {
     const [similarQueries, setSimilarQueries] = useState<string[]>([])
     const {
         mode,
-        setMode,
         isFilesEnabled,
         shownMessageCount,
         setShownMessageCount
@@ -47,9 +44,7 @@ function Chat() {
     
     const messageCreateMutation = useCreateMessage()
     const predictionMutation = usePrediction()
-    // const sourceMutation = useSource()
-    const filesMutation = useFiles()
-    
+
     const isFilesMode = mode === "pdf"
 
     const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
@@ -57,7 +52,7 @@ function Chat() {
     })
 
     const { data: filesList } = useQuery<FileModel[]>(
-        "files_list",
+        "filesList",
         () => getAllFiles(chat!.id),
         { enabled: !!chat?.id }
     )
@@ -84,8 +79,6 @@ function Chat() {
         // TODO end
 
     const errorMessage = predictionMutation.isError ? "Произошла ошибка. Попробуйте ещё раз" : undefined
-
-    const isUploadingFile = filesMutation.isLoading
 
     useEffect(() => {
         window.scroll({
@@ -125,8 +118,7 @@ function Chat() {
                 table: markdownTable,
                 connected_message_id: queryMessageId,
             })
-
-            queryClient.invalidateQueries("chat")
+            await queryClient.invalidateQueries("chat")
         }
     }
 
@@ -134,28 +126,25 @@ function Chat() {
         setShownMessageCount((lastN) => lastN + 10)
     }
 
-    const onUploadFiles = (files: FileList) => {
-        const file = files.item(0)
-        setMode("pdf")
-        filesMutation.mutateAsync({
-            chat_id: chat!.id,
-            file: file!
-        })
-    }
-
     return (
         <Flex
             position="relative"
             direction="row"
-            justifyContent="space-between"
+            justifyContent="center"
             alignItems="flex-end"
             pt="100"
             pb="10"
             // gap={10}
             h="full"
         >
-            {isFilesEnabled && filesList && currentFileIndex >= 0
-                    && (<PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />)}
+            {isFilesEnabled && filesList && currentFileIndex >= 0 &&
+                <>
+                    <Box position="fixed" left="0" top="80px">
+                        <PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />
+                    </Box>
+                    <Spacer />
+                </>
+            }
             <Flex
                 ref={chatRef}
                 position="relative"
@@ -163,12 +152,13 @@ function Chat() {
                 justifyContent="flex-end"
                 p="10"
                 h="full"
-                w="full"
+                w="768px"
                 gap={10}
             >
 
                 {isFilesEnabled && filesList && (
                     <SourcesList
+                        chat_id={chat!.id}
                         filesList={filesList}
                         currentFileIndex={currentFileIndex}
                         setCurrentFileIndex={setCurrentFileIndex}
@@ -207,10 +197,7 @@ function Chat() {
                     <InputGroup
                         setTable={setTable}
                         isLoading={isLoading}
-                        onUploadFiles={onUploadFiles}
-                        multipleFilesEnabled={false}
                         isSourcesExist={isSourcesExist}
-                        isUploadingFile={isUploadingFile}
                         errorMessage={errorMessage}
                         openSourcesHistory={openSourcesHistory}
                     />

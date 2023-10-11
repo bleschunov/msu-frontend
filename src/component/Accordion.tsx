@@ -36,7 +36,7 @@ const Accordion = ({titles, panels, defaultIndex}: IAccordion) => {
     }
 
     return (
-        <ChakraAccordion allowToggle defaultIndex={[defaultIndex]} allowMultiple>
+        <ChakraAccordion defaultIndex={[defaultIndex]} allowMultiple>
             {titles.map((title, i) => <AccordionItem title={title} panel={panels[i]} />)}
         </ChakraAccordion>
     )

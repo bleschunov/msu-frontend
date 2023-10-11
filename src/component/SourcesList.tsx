@@ -6,14 +6,19 @@ import {
     DrawerContent,
     DrawerHeader,
     DrawerOverlay,
-    Flex,
+    Flex, Input,
     Text,
-} from "@chakra-ui/react"
-import { Dispatch, FC, SetStateAction, useRef } from 'react'
+} from '@chakra-ui/react'
+import { ChangeEvent, Dispatch, FC, SetStateAction, useContext, useRef } from 'react'
 import { BsCheck } from "react-icons/bs"
 import FileModel from '../model/FileModel'
+import queryClient from '../api/queryClient'
+import { ModeContext, ModeContextI } from '../context/modeContext'
+import { useFiles } from '../service/fileService'
+import { FaFileUpload } from 'react-icons/fa'
 
 interface ISourcesList {
+    chat_id: number
     filesList: FileModel[]
     currentFileIndex: number
     setCurrentFileIndex: Dispatch<SetStateAction<number>>
@@ -22,13 +27,46 @@ interface ISourcesList {
 }
 
 const SourcesList: FC<ISourcesList> = ({
+    chat_id,
     filesList,
     currentFileIndex,
     setCurrentFileIndex,
     isOpen,
     onClose
 }) => {
-    const lastSourceRef = useRef<HTMLDivElement | null>(null)
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
+    const {
+        setMode,
+        isFilesEnabled
+    } = useContext<ModeContextI>(ModeContext)
+
+    const filesMutation = useFiles()
+
+    const onUploadFiles = async (files: FileList) => {
+        const file = files.item(0)
+        setMode("pdf")
+        await filesMutation.mutateAsync({
+            chat_id: chat_id,
+            file: file!
+        })
+        await queryClient.invalidateQueries("filesList")
+    }
+
+    const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files) {
+            onUploadFiles(files)
+        }
+    }
+
+    const isUploadFileBtnLoading = () => {
+        if (isFilesEnabled)
+            return filesMutation.isLoading
+        return filesMutation.isLoading
+    }
+    const handleUploadFileButtonClick = () => {
+        fileInputRef.current?.click()
+    }
 
     const getShortFileName = (filename: string) => {
         if (filename.length > 30)
@@ -36,27 +74,36 @@ const SourcesList: FC<ISourcesList> = ({
         return filename
     }
 
-    // useEffect(() => {
-    //     if (isOpen) {
-    //         setTimeout(() => {
-    //             lastSourceRef.current?.scrollIntoView({
-    //                 behavior: "smooth"
-    //             })
-    //         }, 0)
-    //     }
-    // }, [isOpen, sourceList])
-
     return (
         <Drawer onClose={onClose} isOpen={isOpen} size="sm">
             <DrawerOverlay />
             <DrawerContent>
                 <DrawerCloseButton />
-                <DrawerHeader>История файлов</DrawerHeader>
+                <DrawerHeader>Библиотека</DrawerHeader>
+
                 <DrawerBody
                     display="flex"
                     flexDirection="column"
                     paddingBottom={10}
                 >
+                    <Button
+                        colorScheme="gray"
+                        onClick={handleUploadFileButtonClick}
+                        isLoading={isUploadFileBtnLoading()}
+                        fontWeight="normal"
+                        gap={2}
+                    >
+                        <FaFileUpload />
+                        Загрузить файл
+                    </Button>
+                    <Input
+                        hidden
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf"
+                        multiple={false}
+                        onChange={handleFileInputChange}
+                    />
                     {filesList?.map((file, index) => (
                         <Flex
                             // ref={index === sourceList.length - 1 ? lastSourceRef : null}
