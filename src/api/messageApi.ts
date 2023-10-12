@@ -1,5 +1,5 @@
 import axiosClient from "api/axiosClient"
-import { MessageCreateModel, MessageModel } from 'model/MessageModel'
+import { MessageCreateModel, MessageModel } from "model/MessageModel"
 
 const createMessage = (body: MessageCreateModel): Promise<MessageModel> => {
     return axiosClient.post("/message", body).then(response => response.data)

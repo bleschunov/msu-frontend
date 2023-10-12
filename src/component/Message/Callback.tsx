@@ -1,10 +1,16 @@
 import { Button, HStack, Textarea, VStack } from '@chakra-ui/react'
+import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
+import { useMutation, useQueryClient } from "react-query"
+import MarkModel from "model/MarkModel"
+import { createMark } from "api/markApi"
+import { UserContext } from "context/userContext"
 import { createReview } from "api/reviewApi"
 import { UserContext } from "context/userContext"
 import { UserModel } from "model/UserModel"
 import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
 import { useMutation, useQueryClient } from "react-query"
-import { ICallback } from './types'
+import { ICallback } from "component/Message/types"
+
 
 const Callback: FC<ICallback> = ({ messageId, markModel }) => {
     const [commentary, setCommentary] = useState<string>("")

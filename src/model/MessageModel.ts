@@ -27,7 +27,6 @@ interface MessageModel extends MessageInModel, MessageCreateModel {
     is_deleted: boolean
 }
 
-
 export type {
     MessageBaseModel,
     MessageCreateModel,

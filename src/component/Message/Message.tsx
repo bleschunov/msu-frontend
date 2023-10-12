@@ -14,7 +14,9 @@ import { UserModel } from "model/UserModel"
 import { FC, ReactNode, useContext, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import { useMutation, useQueryClient } from "react-query"
-import { IMessage } from "./types"
+import Accordion from "component/Accordion"
+import { MessageModel } from "model/MessageModel"
+import { IMessage } from "component/Message/types"
 
 // # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
 //  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
@@ -199,7 +201,9 @@ export const createMessage = (messageModel: MessageModel, key: number): ReactNod
         markModel={messageModel.mark && (messageModel.mark.length === 0 ? undefined : messageModel.mark[0])}
         src={src}
         messageId={messageModel.id}
-        direction={messageModel.answer !== undefined ? "incoming" : "outgoing"}
+        // != не заменять на !==, иначе все аватарки будут по левую сторону
+        // eslint-disable-next-line
+        direction={messageModel.answer != undefined ? "incoming" : "outgoing"}
         key={key}
     >
         <Markdown>{messageContent}</Markdown>
