@@ -5,7 +5,6 @@ import {
     FormLabel, Grid,
     GridItem,
     HStack,
-    Input,
     Select,
     Switch,
     Text,
@@ -50,6 +49,7 @@ const InputGroup: FC<IInputGroup> = ({
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             handleSubmit(query)
+            setQuery("")
         }
     }
 
