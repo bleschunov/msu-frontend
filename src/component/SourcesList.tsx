@@ -9,13 +9,15 @@ import {
     Flex, Input,
     Text,
 } from "@chakra-ui/react"
-import { ChangeEvent, Dispatch, FC, SetStateAction, useContext, useRef } from "react"
+import { ChangeEvent, Dispatch, FC, SetStateAction, useContext, useRef, useState } from "react"
 import { BsCheck } from "react-icons/bs"
 import { FaFileUpload } from "react-icons/fa"
 import FileModel from "model/FileModel"
 import queryClient from "api/queryClient"
 import { ModeContext, ModeContextI } from "context/modeContext"
-import { useFiles } from "service/fileService"
+import { useMutation } from 'react-query'
+import { uploadFile as uploadFileApi } from '../api/fileApi'
+import { AxiosError } from 'axios'
 
 interface ISourcesList {
     chat_id: number
@@ -34,13 +36,19 @@ const SourcesList: FC<ISourcesList> = ({
     isOpen,
     onClose
 }) => {
+    const [errorMessage, setErrorMessage] = useState<string>("")
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const {
         setMode,
         isFilesEnabled
     } = useContext<ModeContextI>(ModeContext)
 
-    const filesMutation = useFiles()
+    const filesMutation = useMutation(uploadFileApi, {
+        onError: (error: AxiosError) => {
+            // @ts-ignore
+            setErrorMessage(error.response.data.detail)
+        }
+    })
 
     const onUploadFiles = async (files: FileList) => {
         const file = files.item(0)
@@ -96,6 +104,7 @@ const SourcesList: FC<ISourcesList> = ({
                         <FaFileUpload />
                         Загрузить файл
                     </Button>
+                    {filesMutation.isError && <Text color="red">{errorMessage}</Text>}
                     <Input
                         hidden
                         ref={fileInputRef}

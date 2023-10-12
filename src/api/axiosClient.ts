@@ -6,23 +6,25 @@ const axiosClient: AxiosInstance = axios.create({
     baseURL: getBaseUrl()
 })
 
-axiosClient.interceptors.request.use(async config => {
-    const { data: { session } } = await supabase.auth.getSession()
+axiosClient.interceptors.request.use(
+    async config => {
+        const { data: { session } } = await supabase.auth.getSession()
 
-    if (session?.access_token) {
-        config.headers["Authorization"] = `Bearer ${session.access_token}`
+        if (session?.access_token) {
+            config.headers["Authorization"] = `Bearer ${session.access_token}`
+        }
+
+        return config
     }
+)
 
-    return config
-})
-
-axiosClient.interceptors.response.use(response => response, (e: AxiosError) => {
-    if (e.response?.status === 401) {
-        signOut()
+axiosClient.interceptors.response.use(response => response, async (error: AxiosError) => {
+    if (error.response?.status === 401) {
+        await signOut()
         return
     }
 
-    throw e
+    throw error
 })
 
 export default axiosClient
