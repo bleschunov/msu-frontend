@@ -3,7 +3,7 @@ import queryClient from "api/queryClient"
 import { INITIAL_MESSAGE_COUNT } from "constant/chatMessages"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import ChatModel from "model/ChatModel"
-import { MessageCreateModel, MessageModel } from 'model/MessageModel'
+import { MessageCreateModel, MessageModel } from "model/MessageModel"
 import { useContext } from "react"
 import { useMutation } from "react-query"
 

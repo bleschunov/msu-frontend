@@ -1,6 +1,6 @@
-import MarkModel from '../../model/MarkModel'
-import { ReactNode } from 'react'
-import { ReviewModelRead } from '../../model/ReviewModel'
+import { ReactNode } from "react"
+import MarkModel from "model/MarkModel"
+import { ReviewModelRead } from "model/ReviewModel"
 
 interface IAvatar {
     name: string

@@ -1,5 +1,5 @@
-import { createContext } from 'react'
-import { IInputGroupContext } from './types'
+import { createContext } from "react"
+import { IInputGroupContext } from "component/InputGroup/types"
 
 const InputGroupContext =
     createContext<IInputGroupContext>({} as IInputGroupContext)
