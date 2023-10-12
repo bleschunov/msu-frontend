@@ -23,7 +23,6 @@ import Accordion from "component/Accordion"
 const InputGroup: FC<IInputGroup> = ({
     setTable,
     isLoading,
-    isSourcesExist,
     errorMessage,
     openSourcesHistory
 }) => {
@@ -31,17 +30,12 @@ const InputGroup: FC<IInputGroup> = ({
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
 
-    const isValueExists = query.trim() === ""
-
     const isTextAreaDisable = () => {
-        if (isFilesEnabled)
-            return isLoading || !isSourcesExist
         return isLoading
     }
+
     const isSubmitBtnDisable = () => {
-        if (isFilesEnabled)
-            return isValueExists || !isSourcesExist
-        return isValueExists
+        return query.trim() === ""
     }
 
     const isSubmitButtonLoading = () => {

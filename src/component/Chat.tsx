@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Spacer, Text, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
-import { getAllSources, getLastSource } from "api/sourceApi"
+import { getAllSources } from "api/sourceApi"
 import InputGroup from "component/InputGroup/InputGroup"
 import { Message, createMessage } from "component/Message/Message"
 import SkeletonMessage from "component/Message/SkeletonMessage"
@@ -63,19 +63,11 @@ function Chat() {
         { enabled: !!chat?.id }
     )
 
-    const { data: currentSource, status: currentSourceQueryStatus } = useQuery<SourceModel>(
-        "currentSource",
-        () => getLastSource(chat!.id),
-        { enabled: !!chat?.id }
-    )
-    const isSourcesExist = Boolean(currentSource)
-
     const isLoading = predictionMutation.isLoading
         || messageCreateMutation.isLoading
         // TODO start: move checking queries loading status to func
         || chatQueryStatus === "loading"
         || sourcesListQueryStatus === "loading"
-        || currentSourceQueryStatus === "loading"
         // TODO end
 
     const errorMessage = predictionMutation.isError ? "Произошла ошибка. Попробуйте ещё раз" : undefined
@@ -197,7 +189,6 @@ function Chat() {
                     <InputGroup
                         setTable={setTable}
                         isLoading={isLoading}
-                        isSourcesExist={isSourcesExist}
                         errorMessage={errorMessage}
                         openSourcesHistory={openSourcesHistory}
                     />

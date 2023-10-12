@@ -3,7 +3,6 @@ import { Dispatch, SetStateAction } from "react"
 interface IInputGroup {
     setTable: Dispatch<SetStateAction<string>>
     isLoading: boolean
-    isSourcesExist: boolean
     errorMessage: string | undefined
     openSourcesHistory: () => void
 }
