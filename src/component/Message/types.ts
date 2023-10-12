@@ -9,7 +9,6 @@ interface IAvatar {
 
 interface ICallback {
     messageId: number;
-    markModel?: MarkModel;
 }
 
 interface IMarkdown {

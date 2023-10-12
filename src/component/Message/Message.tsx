@@ -1,6 +1,5 @@
 import { Box, Button, Card, CardBody, Flex, HStack, Text, VStack } from "@chakra-ui/react"
 import { createMark } from "api/markApi"
-import Accordion from "component/Accordion"
 import Code from "component/Code"
 import Avatar from "component/Message/Avatar"
 import Callback from "component/Message/Callback"
@@ -9,7 +8,6 @@ import { UserContext } from "context/userContext"
 import { formatDate } from "misc/util"
 import ChatModel from "model/ChatModel"
 import MarkModel from "model/MarkModel"
-import { MessageModel } from "model/MessageModel"
 import { UserModel } from "model/UserModel"
 import { FC, ReactNode, useContext, useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -143,7 +141,7 @@ export const Message: FC<IMessage> = ({
                              
                             </HStack>
                             {isCommenting && (          
-                                <Callback markModel={markModel} messageId={messageId} />
+                                <Callback messageId={messageId} />
                             )}
                             <VStack align="start">
                                 {reviewModels && reviewModels.length !== 0 && isCommenting &&
