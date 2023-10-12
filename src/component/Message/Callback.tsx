@@ -1,22 +1,10 @@
-import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
-import { Box, Button, HStack, Textarea, VStack } from '@chakra-ui/react'
-import { useMutation, useQueryClient } from "react-query"
-import MarkModel from "model/MarkModel"
-import { createMark } from "api/markApi"
-import { UserContext } from "context/userContext"
+import { Button, HStack, Textarea, VStack } from '@chakra-ui/react'
 import { createReview } from "api/reviewApi"
-import ChatModel from "model/ChatModel"
+import { UserContext } from "context/userContext"
 import { UserModel } from "model/UserModel"
+import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
+import { useMutation, useQueryClient } from "react-query"
 import { ICallback } from './types'
-
-const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
-    oldChat.message?.forEach((message) => {
-        if (message.id === messageId) {
-            message.mark = [newMark]
-        }
-    })
-    return oldChat
-}
 
 const Callback: FC<ICallback> = ({ messageId, markModel }) => {
     const [commentary, setCommentary] = useState<string>("")
@@ -29,38 +17,12 @@ const Callback: FC<ICallback> = ({ messageId, markModel }) => {
     }
 
     const user = useContext<UserModel>(UserContext)
-    const createMarkMutation = useMutation(createMark, {
-        onMutate: async (newMark: MarkModel) => {
-            await queryClient.cancelQueries("chat")
-            const previousChat = queryClient.getQueryData<ChatModel>("chat")
-            if (previousChat) {
-                queryClient.setQueriesData<ChatModel>("chat", updateMarkInChat(previousChat, messageId, newMark))
-            }
-            return {
-                previousChat,
-            }
-        },
-        onError: (_error, _currentMark, context) => {
-            queryClient.setQueriesData("chat", context?.previousChat)
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries("chat")
-        },
-    })
 
     const reviewMutation = useMutation(createReview, {
         onSuccess: () => {
             queryClient.invalidateQueries("chat")
         },
     })
-
-    const handleMarkButton = (mark: number) => {
-        createMarkMutation.mutate({
-            mark,
-            created_by: user.id,
-            message_id: messageId,
-        } as MarkModel)
-    }
 
     const handleChangeCommentary = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setCommentary(event.target.value)
@@ -73,29 +35,6 @@ const Callback: FC<ICallback> = ({ messageId, markModel }) => {
             created_by: user.id,
         })
         setCommentary("")
-    }
-
-    const LikeDislike = () => {
-        return (
-            <HStack gap="3">
-                <Button
-                    size="xs"
-                    colorScheme="blue"
-                    variant={markModel && markModel.mark === 1 ? "solid" : "outline"}
-                    onClick={() => handleMarkButton(1)}
-                >
-                    👍
-                </Button>
-                <Button
-                    size="xs"
-                    colorScheme="blue"
-                    variant={markModel && markModel.mark === 0 ? "solid" : "outline"}
-                    onClick={() => handleMarkButton(0)}
-                >
-                    👎
-                </Button>
-            </HStack>
-        )
     }
 
     return (
@@ -116,9 +55,6 @@ const Callback: FC<ICallback> = ({ messageId, markModel }) => {
                     >
                         Отправить
                     </Button>
-                    <Box alignSelf="end">
-                        <LikeDislike />
-                    </Box>
                 </VStack>
             </HStack>
         </VStack>

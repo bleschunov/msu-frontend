@@ -1,14 +1,20 @@
-import { Box, Button, Card, CardBody, Flex, Text, VStack } from "@chakra-ui/react"
-import { FC, ReactNode, useState } from "react"
+import { Box, Button, Card, CardBody, Flex, HStack, Text, VStack } from "@chakra-ui/react"
+import { createMark } from "api/markApi"
+import Accordion from "component/Accordion"
+import Code from "component/Code"
 import Avatar from "component/Message/Avatar"
 import Callback from "component/Message/Callback"
-import Code from "component/Code"
 import Markdown from "component/Message/Markdown"
+import { UserContext } from "context/userContext"
 import { formatDate } from "misc/util"
+import ChatModel from "model/ChatModel"
+import MarkModel from "model/MarkModel"
+import { MessageModel } from "model/MessageModel"
+import { UserModel } from "model/UserModel"
+import { FC, ReactNode, useContext, useState } from "react"
 import ReactMarkdown from "react-markdown"
-import Accordion from 'component/Accordion'
-import { MessageModel } from 'model/MessageModel'
-import { IMessage } from './types'
+import { useMutation, useQueryClient } from "react-query"
+import { IMessage } from "./types"
 
 // # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
 //  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
@@ -24,6 +30,8 @@ export const Message: FC<IMessage> = ({
 }) => {
     let justify, flexDirection, name = ""
     const [isCommenting, setIsCommenting] = useState<boolean>(false)
+    const queryClient = useQueryClient()
+    const user = useContext<UserModel>(UserContext)
 
     if (direction === "incoming") {
         justify = "start" as const
@@ -35,6 +43,72 @@ export const Message: FC<IMessage> = ({
         justify = "end" as const
         flexDirection = "row-reverse" as const
         name = "user"
+    }
+
+    const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
+        oldChat.message?.forEach((message) => {
+            if (message.id === messageId) {
+                message.mark = [newMark]
+            }
+        })
+        return oldChat
+    }
+
+    const createMarkMutation = useMutation(createMark, {
+        onMutate: async (newMark: MarkModel) => {
+            await queryClient.cancelQueries("chat")
+            const previousChat = queryClient.getQueryData<ChatModel>("chat")
+            if (previousChat) {
+                queryClient.setQueriesData<ChatModel>("chat", updateMarkInChat(previousChat, messageId, newMark))
+            }
+            return {
+                previousChat,
+            }
+        },
+        onError: (_error, _currentMark, context) => {
+            queryClient.setQueriesData("chat", context?.previousChat)
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries("chat")
+        },
+    })
+
+    const handleMarkButton = (mark: number) => {
+        createMarkMutation.mutate({
+            mark,
+            created_by: user.id,
+            message_id: messageId,
+        } as MarkModel)
+    }
+
+    const LikeDislike = () => {
+        return (
+            <HStack gap="3">
+                <Button
+                    size="sm"
+                    colorScheme="blue"
+                    variant={markModel && markModel.mark === 1 ? "solid" : "outline"}
+                    onClick={() => handleMarkButton(1)}
+                >
+                    👍
+                </Button>
+                <Button
+                    size="sm"
+                    colorScheme="blue"
+                    variant={markModel && markModel.mark === 0 ? "solid" : "outline"}
+                    onClick={() => handleMarkButton(0)}
+                >
+                    👎
+                </Button>
+            </HStack>
+        )
+    }
+
+    function handleClick() {
+        if (isCommenting) {
+            setIsCommenting(false)
+        }
+        else setIsCommenting(true)
     }
 
     return (
@@ -50,29 +124,25 @@ export const Message: FC<IMessage> = ({
 
                     {direction === "incoming" && callback &&
                         <>
-                            <Box mt="0">
-                                {!isCommenting && (
-                                    <Button
-                                        size="sm"
-                                        mt={3}
-                                        onClick={() => setIsCommenting(true)}
-                                    >
-                                    Открыть комментарии
-                                    </Button>
-                                )}
-                                {isCommenting && (
-                                    <>
-                                        <Button
-                                            size="sm"
-                                            mt={3}
-                                            onClick={() => setIsCommenting(false)}
-                                        >
-                                            Закрыть комментарии
-                                        </Button>
-                                        <Callback markModel={markModel} messageId={messageId} />
-                                    </>
-                                )}
-                            </Box>
+                            <HStack mt="0">
+                                
+                                <Button
+                                    aria-label=""
+                                    colorScheme="blue"
+                                    size="sm"
+                                    mt={3}
+                                    onClick={() => handleClick()}
+                                >
+                                    {!isCommenting ? "Открыть комментарии" : "Закрыть комментарии"}
+                                </Button>
+                                <Box alignSelf="end">
+                                    <LikeDislike />
+                                </Box>
+                             
+                            </HStack>
+                            {isCommenting && (          
+                                <Callback markModel={markModel} messageId={messageId} />
+                            )}
                             <VStack align="start">
                                 {reviewModels && reviewModels.length !== 0 && isCommenting &&
                                     <>
@@ -129,7 +199,7 @@ export const createMessage = (messageModel: MessageModel, key: number): ReactNod
         markModel={messageModel.mark && (messageModel.mark.length === 0 ? undefined : messageModel.mark[0])}
         src={src}
         messageId={messageModel.id}
-        direction={messageModel.answer != undefined ? "incoming" : "outgoing"}
+        direction={messageModel.answer !== undefined ? "incoming" : "outgoing"}
         key={key}
     >
         <Markdown>{messageContent}</Markdown>
