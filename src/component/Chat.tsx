@@ -129,7 +129,7 @@ function Chat() {
             // gap={10}
             h="full"
         >
-            {isFilesEnabled && filesList && currentFileIndex >= 0 &&
+            {isFilesEnabled && filesList && currentFileIndex >= 0 && isFilesMode &&
                 <>
                     <Box position="fixed" left="0" top="80px">
                         <PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />
@@ -194,11 +194,11 @@ function Chat() {
                     />
                 </InputGroupContext.Provider>
 
-                {isFilesEnabled && (
+                {isFilesEnabled && isFilesMode && (
                     isFilesMode ? filesList && currentFileIndex >= 0 ? (
                         <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
                     ) : (
-                        <Text color="gray" fontStyle="italic">Загрузите файл</Text>
+                        <Text color="gray" fontStyle="italic">Выберите файл через кнопку «Документы»</Text>
                     ) : filesList && currentFileIndex >= 0 && (
                         <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
                     )

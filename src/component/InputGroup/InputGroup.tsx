@@ -5,7 +5,6 @@ import {
     FormLabel, Grid,
     GridItem,
     HStack,
-    IconButton,
     Select,
     Switch,
     Text,
@@ -14,7 +13,6 @@ import {
 } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
-import { MdOutlineHistory } from "react-icons/md"
 import { IInputGroup, IInputGroupContext } from "component/InputGroup/types"
 import InputGroupContext from "component/InputGroup/context"
 import AskQueryButton from "component/InputGroup/AskQueryButton"
@@ -105,29 +103,31 @@ const InputGroup: FC<IInputGroup> = ({
                     >
                         Отправить
                     </Button>
-                    <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
-                        <option value='платежи' selected>Платежи</option>
-                        <option value='сотрудники'>Сотрудники</option>
-                    </Select>
+                    {mode !== "pdf" && (
+                        <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
+                            <option value='платежи' selected>Платежи</option>
+                            <option value='сотрудники'>Сотрудники</option>
+                        </Select>
+                    )}
 
-                    {isFilesEnabled && (
-                        <Flex direction="row" gap={1}>
-                            <IconButton
-                                aria-label="open files history"
-                                onClick={openSourcesHistory}
-                                icon={<MdOutlineHistory size={24} />}
-                            />
-                        </Flex>
+                    {isFilesEnabled && mode === "pdf" && (
+                        <Button
+                            aria-label="open files history"
+                            onClick={openSourcesHistory}
+                            children="Документы"
+                        />
                     )}
                 </VStack>
             </HStack>
             {errorMessage && <Text color="red">{errorMessage}</Text>}
-            
-            <Accordion
-                titles={["Дополнительные настройки"]}
-                panels={[<Button onClick={handleClick}>Не учитывать NULL</Button>]}
-                defaultIndex={-1}
-            />
+
+            {mode !== "pdf" && (
+                <Accordion
+                    titles={["Дополнительные настройки"]}
+                    panels={[<Button onClick={handleClick}>Не учитывать NULL</Button>]}
+                    defaultIndex={-1}
+                />
+            )}
 
             {/* Toggle for files */}
             {isFilesEnabled && (
