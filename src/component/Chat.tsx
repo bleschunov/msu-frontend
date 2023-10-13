@@ -79,7 +79,7 @@ function Chat() {
         })
     }, [chat?.message?.length])
 
-    const handleSubmit = async (finalQuery: string) => {
+    const handleSubmit = async (finalQuery: string, limit: number) => {
         if (chat && finalQuery.trim() !== "") {
             const { id: queryMessageId } = await messageCreateMutation.mutateAsync({
                 query: finalQuery,
@@ -87,7 +87,8 @@ function Chat() {
             })
 
             const body: Omit<QueryModel, "chat_id"> = {
-                query: finalQuery
+                query: finalQuery,
+                limit
             }
 
             if (isFilesMode && filesList) {

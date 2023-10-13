@@ -5,13 +5,14 @@ import InputGroupContext from "component/InputGroup/context"
 
 interface IAskQueryButton {
     query: string
+    limit: number
 }
 
-const AskQueryButton = ({ query }: IAskQueryButton) => {
+const AskQueryButton = ({ query, limit }: IAskQueryButton) => {
     const { handleSubmit } = useContext<IInputGroupContext>(InputGroupContext)
 
     const handleClick = (_: MouseEvent<HTMLButtonElement>) => {
-        handleSubmit(query)
+        handleSubmit(query, limit)
     }
 
     return (

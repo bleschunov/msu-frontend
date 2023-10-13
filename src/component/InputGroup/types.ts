@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react"
+import { ChangeEvent, Dispatch, SetStateAction } from "react"
 
 interface IInputGroup {
     setTable: Dispatch<SetStateAction<string>>
@@ -8,11 +8,18 @@ interface IInputGroup {
 }
 
 interface IInputGroupContext {
-    handleSubmit: (query: string) => void
+    handleSubmit: (query: string, limit: number) => void
     similarQueries: string[]
+}
+
+interface IAdvancedSettings {
+    handleIgnoreNullButtonClick: () => void
+    limit: number
+    handleLimitChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export type {
     IInputGroup,
-    IInputGroupContext
+    IInputGroupContext,
+    IAdvancedSettings
 }

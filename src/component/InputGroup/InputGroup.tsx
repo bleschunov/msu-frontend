@@ -1,10 +1,11 @@
 import {
+    Box,
     Button,
     Flex,
     FormControl,
     FormLabel, Grid,
     GridItem,
-    HStack,
+    HStack, Input,
     Select,
     Switch,
     Text,
@@ -12,11 +13,10 @@ import {
     VStack,
 } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
-import { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
+import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
 import { IInputGroup, IInputGroupContext } from "component/InputGroup/types"
 import InputGroupContext from "component/InputGroup/context"
 import AskQueryButton from "component/InputGroup/AskQueryButton"
-import Accordion from "component/Accordion"
 
 const InputGroup: FC<IInputGroup> = ({
     setTable,
@@ -24,9 +24,14 @@ const InputGroup: FC<IInputGroup> = ({
     errorMessage,
     openSourcesHistory
 }) => {
+    const [limit, setLimit] = useState<number>(100)
     const [query, setQuery] = useState<string>("")
     const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
+
+    const handleLimitChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setLimit(Number.parseInt(e.target.value))
+    }
 
     const isTextAreaDisable = () => {
         return isLoading
@@ -48,7 +53,7 @@ const InputGroup: FC<IInputGroup> = ({
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
-            handleSubmit(query)
+            handleSubmit(query, limit)
             setQuery("")
         }
     }
@@ -57,16 +62,16 @@ const InputGroup: FC<IInputGroup> = ({
         setQuery(event.target.value)
     }
 
-    const handleClick = () => {
-        setQuery(value => value + " Не учитывай NULL.")
-    }
+    // const handleIgnoreNullButtonClick = () => {
+    //     setQuery(value => value + " Не учитывай NULL.")
+    // }
 
     const handleSwitchMode = () => {
         setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
     }
 
     const handleSubmitClick = () => {
-        handleSubmit(query)
+        handleSubmit(query, limit)
         setQuery("")
     }
 
@@ -80,7 +85,7 @@ const InputGroup: FC<IInputGroup> = ({
             >
                 {similarQueries.map((query: string) => (
                     <GridItem>
-                        <AskQueryButton query={query} />
+                        <AskQueryButton query={query} limit={limit} />
                     </GridItem>
                 ))}
             </Grid>
@@ -123,11 +128,15 @@ const InputGroup: FC<IInputGroup> = ({
             {errorMessage && <Text color="red">{errorMessage}</Text>}
 
             {mode !== "pdf" && (
-                <Accordion
-                    titles={["Дополнительные настройки"]}
-                    panels={[<Button onClick={handleClick}>Не учитывать NULL</Button>]}
-                    defaultIndex={-1}
-                />
+                // <AdvancedSettings
+                //     limit={limit}
+                //     handleLimitChange={handleLimitChange}
+                //     handleIgnoreNullButtonClick={handleIgnoreNullButtonClick}
+                // />
+                <Box>
+                    <Text>Максимальное количество строк в ответе</Text>
+                    <Input name="limit" type="number" value={limit} onChange={handleLimitChange} />
+                </Box>
             )}
 
             {/* Toggle for files */}

@@ -15,9 +15,9 @@ import { FaFileUpload } from "react-icons/fa"
 import FileModel from "model/FileModel"
 import queryClient from "api/queryClient"
 import { ModeContext, ModeContextI } from "context/modeContext"
-import { useMutation } from 'react-query'
-import { uploadFile as uploadFileApi } from '../api/fileApi'
-import { AxiosError } from 'axios'
+import { useMutation } from "react-query"
+import { AxiosError } from "axios"
+import { uploadFile as uploadFileApi } from "api/fileApi"
 
 interface ISourcesList {
     chat_id: number

@@ -3,6 +3,7 @@ interface QueryModel {
     query: string
     filename?: string
     tables?: string[]
+    limit?: number
 }
 
 export default QueryModel
