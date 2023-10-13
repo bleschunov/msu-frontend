@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Drawer,
     DrawerBody,
@@ -77,13 +78,13 @@ const SourcesList: FC<ISourcesList> = ({
     }
 
     const getShortFileName = (filename: string) => {
-        if (filename.length > 30)
-            return filename.substring(0, 10) + "..." + filename.substring(filename.length - 10)
+        // if (filename.length > 30)
+        //     return filename.substring(0, 10) + "..." + filename.substring(filename.length - 10)
         return filename
     }
 
     return (
-        <Drawer onClose={onClose} isOpen={isOpen} size="sm">
+        <Drawer onClose={onClose} isOpen={isOpen} size="xl">
             <DrawerOverlay />
             <DrawerContent>
                 <DrawerCloseButton />
@@ -94,16 +95,18 @@ const SourcesList: FC<ISourcesList> = ({
                     flexDirection="column"
                     paddingBottom={10}
                 >
-                    <Button
-                        colorScheme="gray"
-                        onClick={handleUploadFileButtonClick}
-                        isLoading={isUploadFileBtnLoading()}
-                        fontWeight="normal"
-                        gap={2}
-                    >
-                        <FaFileUpload />
-                        Загрузить файл
-                    </Button>
+                    <Box alignSelf="flex-end" mb="5">
+                        <Button
+                            colorScheme="gray"
+                            onClick={handleUploadFileButtonClick}
+                            isLoading={isUploadFileBtnLoading()}
+                            fontWeight="normal"
+                            gap={2}
+                        >
+                            <FaFileUpload />
+                            Загрузить файл
+                        </Button>
+                    </Box>
                     {filesMutation.isError && <Text color="red">{errorMessage}</Text>}
                     <Input
                         hidden
