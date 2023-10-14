@@ -17,7 +17,14 @@ const uploadFile = (body: Omit<FileModel, "id" | "name_ru" | "name_en" | "url">)
     ).then(response => response.data)
 }
 
+const removeFile = (body: Omit<FileModel, "file">) => {
+    return axiosClient.delete("/file/", {
+        data: body
+    })
+}
+
 export {
     getAllFiles,
-    uploadFile
+    uploadFile,
+    removeFile
 }
