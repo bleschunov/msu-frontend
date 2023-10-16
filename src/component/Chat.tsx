@@ -5,7 +5,7 @@ import { getAllSources } from "api/sourceApi"
 import InputGroup from "component/InputGroup/InputGroup"
 import { Message, createMessage } from "component/Message/Message"
 import SkeletonMessage from "component/Message/SkeletonMessage"
-import SourcesList from "component/SourcesList"
+import FilesHistory from "component/FilesHistory"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
@@ -150,7 +150,7 @@ function Chat() {
             >
 
                 {isFilesEnabled && filesList && (
-                    <SourcesList
+                    <FilesHistory
                         chat_id={chat!.id}
                         filesList={filesList}
                         currentFileIndex={currentFileIndex}
