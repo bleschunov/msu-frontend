@@ -62,9 +62,9 @@ const InputGroup: FC<IInputGroup> = ({
         setQuery(event.target.value)
     }
 
-    // const handleIgnoreNullButtonClick = () => {
-    //     setQuery(value => value + " Не учитывай NULL.")
-    // }
+    const handleIgnoreNullButtonClick = () => {
+        setQuery(value => value + " Не учитывай NULL.")
+    }
 
     const handleSwitchMode = () => {
         setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
@@ -128,12 +128,8 @@ const InputGroup: FC<IInputGroup> = ({
             {errorMessage && <Text color="red">{errorMessage}</Text>}
 
             {mode !== "pdf" && (
-                // <AdvancedSettings
-                //     limit={limit}
-                //     handleLimitChange={handleLimitChange}
-                //     handleIgnoreNullButtonClick={handleIgnoreNullButtonClick}
-                // />
                 <Box>
+                    <Button onClick={handleIgnoreNullButtonClick}>Не учитывать NULL</Button>
                     <Text>Максимальное количество строк в ответе</Text>
                     <Input name="limit" type="number" value={limit} onChange={handleLimitChange} />
                 </Box>
