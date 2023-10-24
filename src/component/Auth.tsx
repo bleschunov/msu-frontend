@@ -3,7 +3,6 @@ import { Session, createClient } from "@supabase/supabase-js"
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react"
 import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { Center, Container, Grid } from "@chakra-ui/react"
-import Logo from "component/Logo"
 
 interface IAuth {
     children: ReactNode
