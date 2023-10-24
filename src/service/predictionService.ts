@@ -4,8 +4,8 @@ import { ModeContext, ModeContextI } from "context/modeContext"
 import { getChatPdfPrediction, getDatastepPrediction } from "api/predictionApi"
 
 const usePrediction = () => {
-    const { mode } = useContext<ModeContextI>(ModeContext)
-    const predictionFunc = mode === "datastep" ? getDatastepPrediction : getChatPdfPrediction
+    const { currentMode } = useContext<ModeContextI>(ModeContext)
+    const predictionFunc = currentMode === "databases" ? getDatastepPrediction : getChatPdfPrediction
     return useMutation(predictionFunc)
 }
 

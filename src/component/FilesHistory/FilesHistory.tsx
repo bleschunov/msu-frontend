@@ -62,7 +62,7 @@ const FilesHistory: FC<IFilesHistory> = ({
 
     const onUploadFiles = async (files: FileList) => {
         const file = files.item(0)
-        setMode("pdf")
+        setMode("wiki")
         await filesMutation.mutateAsync({
             chat_id: chat_id,
             file: file!,

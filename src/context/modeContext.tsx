@@ -1,21 +1,19 @@
 import { getOrCreateChat } from "api/chatApi"
 import { INITIAL_MESSAGE_COUNT } from "constant/chatMessages"
-import { useSearchQuery } from "misc/util"
 import ChatModel from "model/ChatModel"
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from "react"
 import { useQuery } from "react-query"
-import { FF_CHAT_PDF } from "types/FeatureFlags"
 import { UserContext } from "context/userContext"
-
-type ModeT = "datastep" | "pdf"
+import { ModeT } from "model/UserModel"
 
 interface ModeContextI {
-    mode: ModeT
+    currentMode: ModeT
     setMode: Dispatch<SetStateAction<ModeT>>
     shownMessageCount: number
     setShownMessageCount: Dispatch<SetStateAction<number>>
     chatID: number | undefined
     isFilesEnabled: boolean
+    isDatabaseEnabled: boolean
 }
 
 const ModeContext = createContext<ModeContextI>({} as ModeContextI)
@@ -25,26 +23,28 @@ interface ModeContextProviderProps {
 }
 
 const ModeContextProvider: FC<ModeContextProviderProps> = ({ children }) => {
-    const [mode, setMode] = useState<ModeT>("datastep")
-    const [shownMessageCount, setShownMessageCount] = useState<number>(INITIAL_MESSAGE_COUNT)
     const user = useContext(UserContext)
+    const defaultMode = user.available_modes.includes("databases") ? "databases" : "wiki"
+    const [mode, setMode] = useState<ModeT>(defaultMode)
+    const [shownMessageCount, setShownMessageCount] = useState<number>(INITIAL_MESSAGE_COUNT)
     const { data: chat } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
     })
     const chatID = chat?.id
 
-    const searchQuery = useSearchQuery()
-    const isFilesEnabled = String(searchQuery.get(FF_CHAT_PDF)).toLowerCase() === "true"
+    const isFilesEnabled = user.available_modes.includes("wiki")
+    const isDatabaseEnabled = user.available_modes.includes("databases")
 
     return (
         <ModeContext.Provider
             value={{
-                mode,
+                currentMode: mode,
                 setMode,
                 shownMessageCount,
                 setShownMessageCount,
                 chatID,
-                isFilesEnabled
+                isFilesEnabled,
+                isDatabaseEnabled
             }}
         >
             {children}
