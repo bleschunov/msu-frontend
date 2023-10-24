@@ -11,8 +11,8 @@ import { FileUploadTaskModel } from "model/FileUploadTaskModel"
 export const FileUploadingProgress: FC<IFileUploadingProgress> = ({ task }) => {
     const [progress, setProgress] = useState<number>(0)
 
-    const { lastMessage, readyState } = useWebSocket(`ws://localhost:8080/task/ws/${task.id}`)
-    // const { lastMessage, readyState } = useWebSocket(`wss://datastep-backend-mock.fly.dev/task/ws/${task.id}`)
+    const websocket_url = process.env["REACT_APP_WEBSOCKET"]
+    const { lastMessage, readyState } = useWebSocket(`${websocket_url}/${task.id}`)
 
     const interruptTaskMutation = useMutation("interruptTask", interruptTaskById)
 
