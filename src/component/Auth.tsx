@@ -32,7 +32,7 @@ const Auth: FC<IAuth> = ({ children }) => {
         return (
             <Grid placeItems="center" h="100vh">
                 <Container maxW="lg" flexGrow="1">
-                    <Center><Logo /></Center>
+                    <Center></Center>
                     <SupabaseAuth
                         supabaseClient={supabase}
                         appearance={{

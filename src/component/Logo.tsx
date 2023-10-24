@@ -8,14 +8,21 @@ import { UserContext } from "context/userContext"
 const Logo = () => {
     const user = useContext(UserContext)
 
-    const { status: queryStatus } = useQuery<string>("logo", () => getLogo(user?.id), { enabled: !!user.id })
+    const { data: logo, status: queryStatus } = useQuery<string>("logo", () => getLogo(user?.id), { enabled: !!user.id })
 
     if (queryStatus === "loading") {
         return <div></div>
     }
 
-    return (
-        <Image src={LOGO_DEFAULT_PATH} alt="logo" />
+    const getLogoPath = () => {
+        if (logo) {
+            return logo
+        }
+        return LOGO_DEFAULT_PATH
+    }
+
+    return ( 
+        <Image src={getLogoPath()} alt="logo" />
     )
 }
 
