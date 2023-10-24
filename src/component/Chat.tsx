@@ -33,7 +33,6 @@ function Chat() {
     const {
         currentMode,
         isFilesEnabled,
-        isDatabaseEnabled,
         shownMessageCount,
         setShownMessageCount
     } = useContext<ModeContextI>(ModeContext)
@@ -193,10 +192,11 @@ function Chat() {
                         isLoading={isLoading}
                         errorMessage={errorMessage}
                         openSourcesHistory={openSourcesHistory}
+                        currentFileIndex={currentFileIndex}
                     />
                 </InputGroupContext.Provider>
 
-                {isFilesEnabled && isDatabaseEnabled && isFilesMode && (
+                {isFilesEnabled && isFilesMode && (
                     isFilesMode ? filesList && currentFileIndex >= 0 ? (
                         <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
                     ) : (

@@ -5,6 +5,7 @@ interface IInputGroup {
     isLoading: boolean
     errorMessage: string | undefined
     openSourcesHistory: () => void
+    currentFileIndex: number
 }
 
 interface IInputGroupContext {

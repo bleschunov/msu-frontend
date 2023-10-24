@@ -22,7 +22,8 @@ const InputGroup: FC<IInputGroup> = ({
     setTable,
     isLoading,
     errorMessage,
-    openSourcesHistory
+    openSourcesHistory,
+    currentFileIndex
 }) => {
     const [limit, setLimit] = useState<number>(100)
     const [query, setQuery] = useState<string>("")
@@ -34,6 +35,9 @@ const InputGroup: FC<IInputGroup> = ({
     }
 
     const isTextAreaDisable = () => {
+        if (isFilesEnabled && currentFileIndex < 0) {
+            return true
+        }
         return isLoading
     }
 
