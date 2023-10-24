@@ -133,7 +133,7 @@ function Chat() {
         >
             {isFilesEnabled && filesList && currentFileIndex >= 0 && isFilesMode &&
                 <>
-                    <Box position="fixed" left="0" top="80px">
+                    <Box position="fixed" left="0" top="80px" w="45vw" h="100vh">
                         <PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />
                     </Box>
                     <Spacer />
@@ -146,7 +146,7 @@ function Chat() {
                 justifyContent="flex-end"
                 p="10"
                 h="full"
-                w="768px"
+                w="45vw"
                 gap={10}
             >
 
