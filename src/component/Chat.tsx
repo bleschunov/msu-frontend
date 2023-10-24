@@ -205,7 +205,6 @@ function Chat() {
                     )
                 )}
             </Flex>
-
         </Flex>
     )
 }

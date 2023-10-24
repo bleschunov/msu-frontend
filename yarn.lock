@@ -1357,6 +1357,20 @@
   dependencies:
     "@chakra-ui/shared-utils" "2.0.5"
 
+"@chakra-ui/icon@3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/icon/-/icon-3.2.0.tgz#92b9454aa0d561b4994bcd6a1b3bb1fdd5c67bef"
+  integrity sha512-xxjGLvlX2Ys4H0iHrI16t74rG9EBcpFvJ3Y3B7KMQTrnW34Kf7Da/UC8J67Gtx85mTHW020ml85SVPKORWNNKQ==
+  dependencies:
+    "@chakra-ui/shared-utils" "2.0.5"
+
+"@chakra-ui/icons@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/icons/-/icons-2.1.1.tgz#58ff0f9e703f2f4f89debd600ce4e438f43f9c9a"
+  integrity sha512-3p30hdo4LlRZTT5CwoAJq3G9fHI0wDc0pBaMHj4SUn0yomO+RcDRlzhdXqdr5cVnzax44sqXJVnf3oQG0eI+4g==
+  dependencies:
+    "@chakra-ui/icon" "3.2.0"
+
 "@chakra-ui/image@2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@chakra-ui/image/-/image-2.1.0.tgz#6c205f1ca148e3bf58345b0b5d4eb3d959eb9f87"
@@ -11952,6 +11966,11 @@ react-syntax-highlighter@^15.5.0:
     lowlight "^1.17.0"
     prismjs "^1.27.0"
     refractor "^3.6.0"
+
+react-use-websocket@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/react-use-websocket/-/react-use-websocket-4.5.0.tgz#8e3a18c51328522876bfea28661521292d6f210a"
+  integrity sha512-oxYVLWM3Lv0InCfjW7hG/Hk0hkE0P1SiLd5/I3d5x0W4riAnDUkD4VEu7qNVAqxNjBF3nU7k0jLMOetLXpwfsA==
 
 react@^16.2.0:
   version "16.14.0"

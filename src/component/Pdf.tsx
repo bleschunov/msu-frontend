@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { Document, Page, pdfjs } from 'react-pdf';
+import React, { useCallback, useEffect, useState } from "react"
+import { Document, Page, pdfjs } from "react-pdf"
 
 function highlightPattern(text: string, pattern: string) {
-    console.log(text)
-    return text.replace(pattern, (value) => `<mark>${value}</mark>`);
+    return text.replace(pattern, (value) => `<mark>${value}</mark>`)
 }
 
 export default function Pdf({ fileUrl }: { fileUrl: string }) {
-    const [numPages, setNumPages] = useState<number | null>(null);
-    const [pageNumber, setPageNumber] = useState<number>(1);
+    const [numPages, setNumPages] = useState<number | null>(null)
+    const [pageNumber, setPageNumber] = useState<number>(1)
 
     const searchText = "В"
 
@@ -20,23 +19,23 @@ export default function Pdf({ fileUrl }: { fileUrl: string }) {
     const textRenderer = useCallback(
         (textItem: any) => highlightPattern(textItem.str, searchText),
         [searchText]
-    );
+    )
 
     function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-        setNumPages(numPages);
-        setPageNumber(1);
+        setNumPages(numPages)
+        setPageNumber(1)
     }
 
     function changePage(offset: number) {
-        setPageNumber(prevPageNumber => prevPageNumber + offset);
+        setPageNumber(prevPageNumber => prevPageNumber + offset)
     }
 
     function previousPage() {
-        changePage(-1);
+        changePage(-1)
     }
 
     function nextPage() {
-        changePage(1);
+        changePage(1)
     }
 
     return (
@@ -52,7 +51,7 @@ export default function Pdf({ fileUrl }: { fileUrl: string }) {
             </Document>
             <div>
                 <p>
-                    Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
+                    Page {pageNumber || (numPages ? 1 : "--")} of {numPages || "--"}
                 </p>
                 <button
                     type="button"
@@ -70,5 +69,5 @@ export default function Pdf({ fileUrl }: { fileUrl: string }) {
                 </button>
             </div>
         </>
-    );
+    )
 }

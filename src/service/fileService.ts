@@ -1,7 +1,7 @@
-import { removeFile as removeFileApi, uploadFile as uploadFileApi } from 'api/fileApi'
+import { removeFile as removeFileApi, uploadFile as uploadFileApi } from "api/fileApi"
 import { useMutation } from "react-query"
 import { AxiosError } from "axios"
-import queryClient from '../api/queryClient'
+import queryClient from "api/queryClient"
 
 const useFiles = () => {
     return useMutation(uploadFileApi, {

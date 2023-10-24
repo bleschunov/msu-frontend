@@ -1,4 +1,5 @@
-import FileModel from '../../model/FileModel'
+import FileModel from "model/FileModel"
+import { FileUploadTaskModel } from "model/FileUploadTaskModel"
 
 interface IDeleteFileModal {
     handleDeleteFile: () => void
@@ -12,12 +13,12 @@ interface IFileRow {
     setThisFileIndex: () => void
 }
 
-interface IFileRowContext {
-
+interface IFileUploadingProgress {
+    task: FileUploadTaskModel
 }
 
 export type {
     IDeleteFileModal,
     IFileRow,
-    IFileRowContext
+    IFileUploadingProgress
 }
