@@ -25,10 +25,7 @@ export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
 
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-            <VStack
-                width="40vw"
-                height="100vh"
-            >
+            <VStack>
                 <Viewer
                     fileUrl={fileUrl}
                     plugins={[
