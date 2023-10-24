@@ -94,7 +94,7 @@ const FilesHistory: FC<IFilesHistory> = ({
                 <DrawerCloseButton />
                 <DrawerHeader>Библиотека</DrawerHeader>
                 <DrawerBody display="flex" flexDirection="column" paddingBottom={10}>
-                    {activeFileUploadTasks && activeFileUploadTasks.length !== 0
+                    {activeFileUploadTasks && activeFileUploadTasks.length != 0
                         ? <Box mb="5"><FileUploadingProgress task={activeFileUploadTasks[0]} /></Box>
                         : <Box alignSelf="flex-end" mb="5">
                             <Button

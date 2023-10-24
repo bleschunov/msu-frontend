@@ -1,10 +1,8 @@
 interface FileUploadTaskModel {
     id: number
-    progress: number
-    full_work: number
-    status: "active" | "interrupted" | "finished"
-    file_id: number
-    created_at: string
+    progress: number | null
+    full_work: number | null
+    status: string
 }
 
 export type {
