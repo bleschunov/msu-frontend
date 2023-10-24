@@ -1,4 +1,4 @@
-import React, { FC, MouseEventHandler } from 'react'
+import React, { FC, MouseEventHandler } from "react"
 import {
     Button,
     Modal,
@@ -7,8 +7,8 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
-} from '@chakra-ui/react'
-import { IDeleteFileModal } from './types'
+} from "@chakra-ui/react"
+import { IDeleteFileModal } from "component/FilesHistory/types"
 
 const DeleteFileModal: FC<IDeleteFileModal> = ({ isOpenModal, onCloseModal, handleDeleteFile }) => {
     const handleDeleteButtonClick: MouseEventHandler<HTMLButtonElement> = (_) => {

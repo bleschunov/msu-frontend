@@ -1,16 +1,16 @@
-import React, { FC, MouseEventHandler, useContext } from 'react'
+import React, { FC, MouseEventHandler, useContext } from "react"
 import {
     Button,
     Flex,
     IconButton,
     Text, useDisclosure,
-} from '@chakra-ui/react'
-import { BsCheck } from 'react-icons/bs'
-import { FaTrashAlt } from 'react-icons/fa'
-import DeleteFileModal from './DeleteFileModal'
-import { ModeContext } from '../../context/modeContext'
-import { IFileRow } from './types'
-import { useDeleteFileMutation } from '../../service/fileService'
+} from "@chakra-ui/react"
+import { BsCheck } from "react-icons/bs"
+import { FaTrashAlt } from "react-icons/fa"
+import DeleteFileModal from "component/FilesHistory/DeleteFileModal"
+import { IFileRow } from "component/FilesHistory/types"
+import { ModeContext } from "context/modeContext"
+import { useDeleteFileMutation } from "service/fileService"
 
 const getShortFileName = (filename: string) => {
     if (filename.length > 50)
@@ -49,7 +49,7 @@ const FileRow: FC<IFileRow> = ({
         setThisFileIndex()
     }
 
-    let buttons;
+    let buttons
     if (isSelected) {
         buttons = <BsCheck size={24} />
     } else {
@@ -81,20 +81,20 @@ const FileRow: FC<IFileRow> = ({
     }
 
     return (
-            <Flex
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                backgroundColor={backgroundColor}
-                padding={3}
-                borderRadius={10}
-            >
-                <Flex direction="column">
-                    <Text>{getShortFileName(file.name_ru)}</Text>
-                </Flex>
-                {buttons}
+        <Flex
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            backgroundColor={backgroundColor}
+            padding={3}
+            borderRadius={10}
+        >
+            <Flex direction="column">
+                <Text>{getShortFileName(file.name_ru)}</Text>
             </Flex>
-        )
+            {buttons}
+        </Flex>
+    )
 }
 
 export default FileRow
