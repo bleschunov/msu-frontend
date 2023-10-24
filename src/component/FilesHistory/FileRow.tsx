@@ -45,7 +45,7 @@ const FileRow: FC<IFileRow> = ({
     const backgroundColor = isSelected ? "gray.100" : "transparent"
 
     const handleSelectButtonClick: MouseEventHandler<HTMLButtonElement> = () => {
-        setMode("pdf")
+        setMode("wiki")
         setThisFileIndex()
     }
 

@@ -26,7 +26,7 @@ const InputGroup: FC<IInputGroup> = ({
 }) => {
     const [limit, setLimit] = useState<number>(100)
     const [query, setQuery] = useState<string>("")
-    const { mode, setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
+    const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled } = useContext<ModeContextI>(ModeContext)
     const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
 
     const handleLimitChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +67,7 @@ const InputGroup: FC<IInputGroup> = ({
     }
 
     const handleSwitchMode = () => {
-        setMode((prevMode) => prevMode === "datastep" ? "pdf" : "datastep")
+        setMode((prevMode) => prevMode === "databases" ? "wiki" : "databases")
     }
 
     const handleSubmitClick = () => {
@@ -109,14 +109,14 @@ const InputGroup: FC<IInputGroup> = ({
                     >
                         Отправить
                     </Button>
-                    {mode !== "pdf" && (
+                    {currentMode !== "wiki" && (
                         <Select placeholder='Выберите таблицу' onChange={handleTableSelectChange}>
                             <option value='платежи' selected>Платежи</option>
                             <option value='сотрудники'>Сотрудники</option>
                         </Select>
                     )}
 
-                    {isFilesEnabled && mode === "pdf" && (
+                    {isFilesEnabled && currentMode === "wiki" && (
                         <Button
                             aria-label="open files history"
                             onClick={openSourcesHistory}
@@ -127,7 +127,7 @@ const InputGroup: FC<IInputGroup> = ({
             </HStack>
             {errorMessage && <Text color="red">{errorMessage}</Text>}
 
-            {mode !== "pdf" && (
+            {currentMode !== "wiki" && (
                 <Box>
                     <Button onClick={handleIgnoreNullButtonClick}>Не учитывать NULL</Button>
                     <Text>Максимальное количество строк в ответе</Text>
@@ -136,13 +136,13 @@ const InputGroup: FC<IInputGroup> = ({
             )}
 
             {/* Toggle for files */}
-            {isFilesEnabled && (
+            {isFilesEnabled && isDatabaseEnabled && (
                 <FormControl display='flex' alignItems='center'>
                     <FormLabel mb='0'>
                             Режим работы по документам
                     </FormLabel>
                     <Switch
-                        isChecked={mode === "pdf"}
+                        isChecked={currentMode === "wiki"}
                         onChange={handleSwitchMode}
                     />
                 </FormControl>

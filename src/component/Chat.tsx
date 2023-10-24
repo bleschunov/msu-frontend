@@ -31,8 +31,9 @@ function Chat() {
     const user = useContext<UserModel>(UserContext)
     const [similarQueries, setSimilarQueries] = useState<string[]>([])
     const {
-        mode,
+        currentMode,
         isFilesEnabled,
+        isDatabaseEnabled,
         shownMessageCount,
         setShownMessageCount
     } = useContext<ModeContextI>(ModeContext)
@@ -45,7 +46,7 @@ function Chat() {
     const messageCreateMutation = useCreateMessage()
     const predictionMutation = usePrediction()
 
-    const isFilesMode = mode === "pdf"
+    const isFilesMode = currentMode === "wiki"
 
     const { data: chat, status: chatQueryStatus } = useQuery<ChatModel>("chat", () => {
         return getOrCreateChat(user.id)
@@ -195,7 +196,7 @@ function Chat() {
                     />
                 </InputGroupContext.Provider>
 
-                {isFilesEnabled && isFilesMode && (
+                {isFilesEnabled && isDatabaseEnabled && isFilesMode && (
                     isFilesMode ? filesList && currentFileIndex >= 0 ? (
                         <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
                     ) : (
