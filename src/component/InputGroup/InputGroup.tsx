@@ -35,7 +35,7 @@ const InputGroup: FC<IInputGroup> = ({
     }
 
     const isTextAreaDisable = () => {
-        if (isFilesEnabled && currentFileIndex < 0) {
+        if (isFilesEnabled && currentMode === "wiki" && currentFileIndex < 0) {
             return true
         }
         return isLoading
