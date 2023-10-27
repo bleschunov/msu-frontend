@@ -4,8 +4,6 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react"
 import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { Center, Container, Grid } from "@chakra-ui/react"
 import { create_tenant_with_user_id } from "api/tenantApi"
-import { useSearchQuery } from "misc/util"
-import { USER_REGISTRATION } from "constant/userRegistration"
 
 interface IAuth {
     children: ReactNode
@@ -15,8 +13,6 @@ const supabase = createClient("https://jkhlwowgrekoqgvfruhq.supabase.co", "eyJhb
 
 const Auth: FC<IAuth> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null)
-    const query = useSearchQuery()
-    const isRegistrationEnabled = String(query.get(USER_REGISTRATION)).toLowerCase() === "true"
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -25,9 +21,8 @@ const Auth: FC<IAuth> = ({ children }) => {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (_event, session) => {
-                if (isRegistrationEnabled)
-                    if(session)
-                        await create_tenant_with_user_id(session.user.id)
+                if(session)
+                    await create_tenant_with_user_id(session.user.id)
                 setSession(session)
             }
         )
@@ -42,8 +37,7 @@ const Auth: FC<IAuth> = ({ children }) => {
                     <Center></Center>
                     <SupabaseAuth
                         supabaseClient={supabase}
-                        view={isRegistrationEnabled ? "sign_up" : "sign_in"}
-                        showLinks={isRegistrationEnabled}
+                        view="sign_up"
                         appearance={{
                             theme: ThemeSupa,
                         }}
@@ -57,7 +51,6 @@ const Auth: FC<IAuth> = ({ children }) => {
                                     password_input_placeholder: "",
                                     button_label: "Войти",
                                     loading_button_label: "Пожалуйста, подождите...",
-                                    link_text: "Уже есть аккаунт? Войдите"
                                 },
                                 sign_up: {
                                     email_label: "Почта",
@@ -66,10 +59,6 @@ const Auth: FC<IAuth> = ({ children }) => {
                                     password_input_placeholder: "",
                                     button_label: "Зарегистрироваться",
                                     loading_button_label: "Пожалуйста, подождите...",
-                                    link_text: "Нет аккаунта? Зарегистрируйтесь"
-                                },
-                                forgotten_password: {
-                                    link_text: ""
                                 }
                             },
                         }}
