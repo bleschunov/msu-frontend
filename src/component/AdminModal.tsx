@@ -12,7 +12,7 @@ import { FC } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { DatabasePredictionConfigModel } from '../model/DatabasePredictionConfigModel'
 import queryClient from "api/queryClient"
-import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from '../api/datastepPredictionConfigApi'
+import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from '../api/databasePredictionConfigApi'
 
 interface IAdminModal {
     adminModalFunctions: ReturnType<typeof useDisclosure>
