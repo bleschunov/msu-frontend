@@ -2,12 +2,10 @@ import {
     Box,
     Button,
     Flex,
-    FormControl,
-    FormLabel, Grid,
+    Grid,
     GridItem,
     HStack, Input,
     Select,
-    Switch,
     Text,
     Textarea,
     VStack,
@@ -27,7 +25,7 @@ const InputGroup: FC<IInputGroup> = ({
 }) => {
     const [limit, setLimit] = useState<number>(100)
     const [query, setQuery] = useState<string>("")
-    const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled } = useContext<ModeContextI>(ModeContext)
+    const { currentMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
 
     const handleLimitChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -68,10 +66,6 @@ const InputGroup: FC<IInputGroup> = ({
 
     const handleIgnoreNullButtonClick = () => {
         setQuery(value => value + " Не учитывай NULL.")
-    }
-
-    const handleSwitchMode = () => {
-        setMode((prevMode) => prevMode === "databases" ? "wiki" : "databases")
     }
 
     const handleSubmitClick = () => {
@@ -132,24 +126,13 @@ const InputGroup: FC<IInputGroup> = ({
             {errorMessage && <Text color="red">{errorMessage}</Text>}
 
             {currentMode !== "wiki" && (
-                <Box>
+                <HStack gap="55">
                     <Button onClick={handleIgnoreNullButtonClick}>Не учитывать NULL</Button>
-                    <Text>Максимальное количество строк в ответе</Text>
-                    <Input name="limit" type="number" value={limit} onChange={handleLimitChange} />
-                </Box>
-            )}
-
-            {/* Toggle for files */}
-            {isFilesEnabled && isDatabaseEnabled && (
-                <FormControl display='flex' alignItems='center'>
-                    <FormLabel mb='0'>
-                            Режим работы по документам
-                    </FormLabel>
-                    <Switch
-                        isChecked={currentMode === "wiki"}
-                        onChange={handleSwitchMode}
-                    />
-                </FormControl>
+                    <Box>
+                        <Text>Максимальное количество строк в ответе</Text>
+                        <Input name="limit" type="number" value={limit} onChange={handleLimitChange} />
+                    </Box>
+                </HStack>
             )}
         </Flex>
     )
