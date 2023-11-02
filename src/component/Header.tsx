@@ -1,4 +1,17 @@
-import { Avatar, Button, Flex, HStack, Menu, MenuButton, MenuGroup, MenuItem, MenuList, UseToastOptions, useToast } from "@chakra-ui/react"
+import {
+    Avatar,
+    Button,
+    Flex,
+    HStack,
+    Menu,
+    MenuButton,
+    MenuGroup,
+    MenuItem,
+    MenuList,
+    UseToastOptions,
+    useToast,
+    FormControl, FormLabel, Switch,
+} from "@chakra-ui/react"
 import { signOut } from "api/supabase"
 import Logo from "component/Logo"
 import { ModeContext, ModeContextI } from "context/modeContext"
@@ -12,7 +25,7 @@ import { useClearMessages } from "service/messageService"
 const Header = () => {
     const queryClient = useQueryClient()
     const user = useContext(UserContext)
-    const { chatID } = useContext<ModeContextI>(ModeContext)
+    const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
 
     const toast = useToast()
@@ -23,6 +36,10 @@ const Header = () => {
     const handleSignOut = () => {
         signOut()
         queryClient.clear()
+    }
+
+    const handleSwitchMode = () => {
+        setMode((prevMode) => prevMode === "databases" ? "wiki" : "databases")
     }
 
     const handleChatClear = () => {
@@ -110,6 +127,20 @@ const Header = () => {
         <HStack bg="gray.100" h="48px" flexShrink="0" justify="space-between" px="165" py="10" position="fixed" w="100%" zIndex={100}>
             <Logo />
             <HStack>
+                {isFilesEnabled && isDatabaseEnabled && (
+                    <FormControl display='flex' alignItems='center'>
+                        <FormLabel mb="0">
+                            Базы данных
+                        </FormLabel>
+                        <Switch
+                            isChecked={currentMode === "wiki"}
+                            onChange={handleSwitchMode}
+                        />
+                        <FormLabel mb="0" ml="4">
+                            Файлы
+                        </FormLabel>
+                    </FormControl>
+                )}
                 <Button
                     variant="outline"
                     colorScheme="blue"
