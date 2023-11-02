@@ -10,8 +10,8 @@ import {
     MenuList,
     UseToastOptions,
     useToast,
-    FormControl, FormLabel, Switch,
-} from "@chakra-ui/react"
+    FormControl, FormLabel, Switch, useDisclosure,
+} from '@chakra-ui/react'
 import { signOut } from "api/supabase"
 import Logo from "component/Logo"
 import { ModeContext, ModeContextI } from "context/modeContext"
@@ -21,12 +21,14 @@ import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
+import { AdminModal } from './AdminModal'
 
 const Header = () => {
     const queryClient = useQueryClient()
     const user = useContext(UserContext)
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
+    const adminModalFunctions = useDisclosure()
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
@@ -154,10 +156,13 @@ const Header = () => {
                     </MenuButton>
                     <MenuList>
                         <MenuGroup title={user.email}>
+                            <MenuItem onClick={adminModalFunctions.onOpen}>admin</MenuItem>
                             <MenuItem onClick={handleSignOut}>Log out</MenuItem>
                         </MenuGroup>
                     </MenuList>
                 </Menu>
+
+                { adminModalFunctions.isOpen && <AdminModal adminModalFunctions={adminModalFunctions} /> }
             </HStack>
         </HStack>
     )
