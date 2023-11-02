@@ -15,7 +15,7 @@ import {
     Dispatch,
     FC,
     SetStateAction,
-    useContext,
+    useContext, useEffect,
     useRef,
     useState,
 } from "react"
@@ -29,6 +29,7 @@ import { uploadFile as uploadFileApi } from "api/fileApi"
 import FileRow from "component/FilesHistory/FileRow"
 import { FileUploadingProgress } from "component/FilesHistory/FileUploadingProgress"
 import { getActiveFileUploadTasks } from "api/taskApi"
+import { useSearchQuery } from "misc/util"
 
 interface IFilesHistory {
   chat_id: number;
@@ -50,6 +51,12 @@ const FilesHistory: FC<IFilesHistory> = ({
     const [errorMessage, setErrorMessage] = useState<string>("")
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const { setMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
+    const [isLoadingFilesEnabled, setIsLoadingFilesEnabled] = useState<boolean>(false)
+    const query = useSearchQuery()
+
+    useEffect(() => {
+        setIsLoadingFilesEnabled(query.get("FF_LOADING_FILES")?.toLowerCase() === "true")
+    }, [query])
 
     const filesMutation = useMutation(uploadFileApi, {
         onError: (error: AxiosError) => {
@@ -96,7 +103,7 @@ const FilesHistory: FC<IFilesHistory> = ({
                 <DrawerBody display="flex" flexDirection="column" paddingBottom={10}>
                     {activeFileUploadTasks && activeFileUploadTasks.length !== 0
                         ? <Box mb="5"><FileUploadingProgress task={activeFileUploadTasks[0]} /></Box>
-                        : <Box alignSelf="flex-end" mb="5">
+                        : isLoadingFilesEnabled && <Box alignSelf="flex-end" mb="5">
                             <Button
                                 colorScheme="gray"
                                 onClick={handleUploadFileButtonClick}
