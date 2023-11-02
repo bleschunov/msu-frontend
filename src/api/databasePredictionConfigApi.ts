@@ -20,7 +20,7 @@ const updateDatabasePredictionConfig = (body: DatabasePredictionConfigModel): Pr
         is_check_data: true,
         is_alternative_questions: true
     })
-    // return axiosClient.post("/config/database_prediction", body).then(response => response.data)
+    // return axiosClient.put("/config/database_prediction", body).then(response => response.data)
 }
 
 export {
