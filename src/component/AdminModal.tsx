@@ -1,4 +1,5 @@
 import {
+    Box,
     Button, FormControl, FormLabel,
     Modal,
     ModalBody,
@@ -44,34 +45,40 @@ export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions }) => {
                     <ModalCloseButton />
                     <ModalBody>
                         <FormControl>
-                            <FormLabel>Проверять, есть ли информация в базе данных?</FormLabel>
-                            <Switch
-                                id="is_check_data"
-                                defaultChecked={databasePredictionConfig?.is_check_data}
-                                onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
-                                    return {...prev_data!, is_check_data: event.target.checked}
-                                })}
-                            />
-                            <FormLabel>Объяснять, как получился ответ?</FormLabel>
-                            <Switch
-                                id="is_sql_description"
-                                defaultChecked={databasePredictionConfig?.is_sql_description}
-                                onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
-                                    return {...prev_data!, is_sql_description: event.target.checked}
-                                })}
-                            />
-                            <FormLabel>Генерировать похожие вопросы?</FormLabel>
-                            <Switch
-                                id="is_alternative_questions"
-                                defaultChecked={databasePredictionConfig?.is_alternative_questions}
-                                onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
-                                    return {...prev_data!, is_alternative_questions: event.target.checked}
-                                })}
-                            />
+                            <Box>
+                                <FormLabel>Проверять, есть ли информация в базе данных?</FormLabel>
+                                <Switch
+                                    id="is_check_data"
+                                    defaultChecked={databasePredictionConfig?.is_data_check}
+                                    onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
+                                        return {...prev_data!, is_data_check: event.target.checked}
+                                    })}
+                                />
+                            </Box>
+                            <Box mt="5">
+                                <FormLabel>Объяснять, как получился ответ?</FormLabel>
+                                <Switch
+                                    id="is_sql_description"
+                                    defaultChecked={databasePredictionConfig?.is_sql_description}
+                                    onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
+                                        return {...prev_data!, is_sql_description: event.target.checked}
+                                    })}
+                                />
+                            </Box>
+                            <Box mt="5">
+                                <FormLabel>Генерировать похожие вопросы?</FormLabel>
+                                <Switch
+                                    id="is_alternative_questions"
+                                    defaultChecked={databasePredictionConfig?.is_alternative_questions}
+                                    onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
+                                        return {...prev_data!, is_alternative_questions: event.target.checked}
+                                    })}
+                                />
+                            </Box>
                         </FormControl>
                     </ModalBody>
-                    <ModalFooter>
-                        <Button onClick={handleSaveDatabasePredictionConfig}>Сохранить</Button>
+                    <ModalFooter gap="5">
+                        <Button onClick={handleSaveDatabasePredictionConfig} isLoading={updateDatabasePredictionConfigMutation.isLoading}>Сохранить</Button>
                         <Button onClick={handleCloseButtonClick}>Закрыть</Button>
                     </ModalFooter>
                 </ModalContent>

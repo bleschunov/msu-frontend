@@ -10,7 +10,11 @@ import {
     MenuList,
     UseToastOptions,
     useToast,
-    FormControl, FormLabel, Switch, useDisclosure,
+    FormControl,
+    FormLabel,
+    Switch,
+    useDisclosure,
+    Box,
 } from '@chakra-ui/react'
 import { signOut } from "api/supabase"
 import Logo from "component/Logo"
@@ -143,21 +147,23 @@ const Header = () => {
                         </FormLabel>
                     </FormControl>
                 )}
-                <Button
-                    variant="outline"
-                    colorScheme="blue"
-                    onClick={handleChatClear}
-                >
-                    Очистить чат
-                </Button>
+                <Box>
+                    <Button
+                        variant="outline"
+                        colorScheme="blue"
+                        onClick={handleChatClear}
+                    >
+                        Очистить чат
+                    </Button>
+                </Box>
                 <Menu>
                     <MenuButton as={Button} rightIcon={<AiOutlineDown />} variant="link">
                         <Avatar></Avatar>
                     </MenuButton>
                     <MenuList>
                         <MenuGroup title={user.email}>
-                            <MenuItem onClick={adminModalFunctions.onOpen}>admin</MenuItem>
-                            <MenuItem onClick={handleSignOut}>Log out</MenuItem>
+                            <MenuItem onClick={adminModalFunctions.onOpen}>Админка</MenuItem>
+                            <MenuItem onClick={handleSignOut}>Выйти</MenuItem>
                         </MenuGroup>
                     </MenuList>
                 </Menu>
