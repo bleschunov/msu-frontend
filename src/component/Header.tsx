@@ -10,7 +10,11 @@ import {
     MenuList,
     UseToastOptions,
     useToast,
-    FormControl, FormLabel, Switch,
+    FormControl,
+    FormLabel,
+    Switch,
+    useDisclosure,
+    Box,
 } from "@chakra-ui/react"
 import { signOut } from "api/supabase"
 import Logo from "component/Logo"
@@ -21,12 +25,14 @@ import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
+import { AdminModal } from "component/AdminModal"
 
 const Header = () => {
     const queryClient = useQueryClient()
     const user = useContext(UserContext)
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
+    const adminModalFunctions = useDisclosure()
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
@@ -141,23 +147,28 @@ const Header = () => {
                         </FormLabel>
                     </FormControl>
                 )}
-                <Button
-                    variant="outline"
-                    colorScheme="blue"
-                    onClick={handleChatClear}
-                >
-                    Очистить чат
-                </Button>
+                <Box>
+                    <Button
+                        variant="outline"
+                        colorScheme="blue"
+                        onClick={handleChatClear}
+                    >
+                        Очистить чат
+                    </Button>
+                </Box>
                 <Menu>
                     <MenuButton as={Button} rightIcon={<AiOutlineDown />} variant="link">
                         <Avatar></Avatar>
                     </MenuButton>
                     <MenuList>
                         <MenuGroup title={user.email}>
-                            <MenuItem onClick={handleSignOut}>Log out</MenuItem>
+                            <MenuItem onClick={adminModalFunctions.onOpen}>Админка</MenuItem>
+                            <MenuItem onClick={handleSignOut}>Выйти</MenuItem>
                         </MenuGroup>
                     </MenuList>
                 </Menu>
+
+                { adminModalFunctions.isOpen && <AdminModal adminModalFunctions={adminModalFunctions} /> }
             </HStack>
         </HStack>
     )
