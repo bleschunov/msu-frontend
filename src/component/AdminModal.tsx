@@ -1,19 +1,20 @@
 import {
     Box,
-    Button, FormControl, FormLabel,
+    Button, FormControl, HStack,
     Modal,
     ModalBody,
     ModalCloseButton,
     ModalContent, ModalFooter,
     ModalHeader,
-    ModalOverlay, Switch,
-    useDisclosure,
+    ModalOverlay, Switch, Tooltip,
+    useDisclosure
 } from "@chakra-ui/react"
 import { FC } from "react"
 import { useMutation, useQuery } from "react-query"
 import queryClient from "api/queryClient"
 import { DatabasePredictionConfigModel } from "model/DatabasePredictionConfigModel"
 import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from "api/databasePredictionConfigApi"
+import { QuestionIcon } from "@chakra-ui/icons"
 
 interface IAdminModal {
     adminModalFunctions: ReturnType<typeof useDisclosure>
@@ -45,36 +46,48 @@ export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions }) => {
                     <ModalCloseButton />
                     <ModalBody>
                         <FormControl>
-                            <Box>
-                                <FormLabel>Проверять, есть ли информация в базе данных?</FormLabel>
+                            <HStack alignItems="center">
+                                <Box>Проверка наличия нужных данных для ответа на вопрос</Box>
+                                <Tooltip ml="5" label="Повышает точность ответа, но ответ генерируется дольше." aria-label="alternative questions tooltip">
+                                    <QuestionIcon />
+                                </Tooltip>
                                 <Switch
+                                    ml="2"
                                     id="is_check_data"
                                     defaultChecked={databasePredictionConfig?.is_data_check}
                                     onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
                                         return { ...prev_data!, is_data_check: event.target.checked }
                                     })}
                                 />
-                            </Box>
-                            <Box mt="5">
-                                <FormLabel>Объяснять, как получился ответ?</FormLabel>
+                            </HStack>
+                            <HStack mt="5">
+                                <Box>Словесное описание алгоритма для получения ответа</Box>
+                                <Tooltip label="Вы сможете проверить логику получения ответа, но ответ будет генерироваться дольше." aria-label="alternative questions tooltip">
+                                    <QuestionIcon />
+                                </Tooltip>
                                 <Switch
+                                    ml="2"
                                     id="is_sql_description"
                                     defaultChecked={databasePredictionConfig?.is_sql_description}
                                     onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
                                         return { ...prev_data!, is_sql_description: event.target.checked }
                                     })}
                                 />
-                            </Box>
-                            <Box mt="5">
-                                <FormLabel>Генерировать похожие вопросы?</FormLabel>
+                            </HStack>
+                            <HStack mt="5">
+                                <Box>Генерация похожих вопросов</Box>
+                                <Tooltip label="Не влияет на скорость получения ответа." aria-label="alternative questions tooltip">
+                                    <QuestionIcon />
+                                </Tooltip>
                                 <Switch
+                                    ml="2"
                                     id="is_alternative_questions"
                                     defaultChecked={databasePredictionConfig?.is_alternative_questions}
                                     onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
                                         return { ...prev_data!, is_alternative_questions: event.target.checked }
                                     })}
                                 />
-                            </Box>
+                            </HStack>
                         </FormControl>
                     </ModalBody>
                     <ModalFooter gap="5">
