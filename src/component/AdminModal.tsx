@@ -8,12 +8,12 @@ import {
     ModalHeader,
     ModalOverlay, Switch,
     useDisclosure,
-} from '@chakra-ui/react'
-import { FC } from 'react'
-import { useMutation, useQuery } from 'react-query'
-import { DatabasePredictionConfigModel } from '../model/DatabasePredictionConfigModel'
+} from "@chakra-ui/react"
+import { FC } from "react"
+import { useMutation, useQuery } from "react-query"
 import queryClient from "api/queryClient"
-import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from '../api/databasePredictionConfigApi'
+import { DatabasePredictionConfigModel } from "model/DatabasePredictionConfigModel"
+import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from "api/databasePredictionConfigApi"
 
 interface IAdminModal {
     adminModalFunctions: ReturnType<typeof useDisclosure>
@@ -51,7 +51,7 @@ export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions }) => {
                                     id="is_check_data"
                                     defaultChecked={databasePredictionConfig?.is_data_check}
                                     onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
-                                        return {...prev_data!, is_data_check: event.target.checked}
+                                        return { ...prev_data!, is_data_check: event.target.checked }
                                     })}
                                 />
                             </Box>
@@ -61,7 +61,7 @@ export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions }) => {
                                     id="is_sql_description"
                                     defaultChecked={databasePredictionConfig?.is_sql_description}
                                     onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
-                                        return {...prev_data!, is_sql_description: event.target.checked}
+                                        return { ...prev_data!, is_sql_description: event.target.checked }
                                     })}
                                 />
                             </Box>
@@ -71,7 +71,7 @@ export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions }) => {
                                     id="is_alternative_questions"
                                     defaultChecked={databasePredictionConfig?.is_alternative_questions}
                                     onChange={(event) => queryClient.setQueryData<DatabasePredictionConfigModel>("getDatabasePredictionConfig", (prev_data) => {
-                                        return {...prev_data!, is_alternative_questions: event.target.checked}
+                                        return { ...prev_data!, is_alternative_questions: event.target.checked }
                                     })}
                                 />
                             </Box>

@@ -1,9 +1,8 @@
-import axiosClient from './axiosClient'
-import { DatabasePredictionConfigModel } from '../model/DatabasePredictionConfigModel'
-
+import axiosClient from "api/axiosClient"
+import { DatabasePredictionConfigModel } from "model/DatabasePredictionConfigModel"
 
 const getDatabasePredictionConfig = async (): Promise<DatabasePredictionConfigModel> => {
-    const { data: config } = await axiosClient.get(`/config/database_prediction`)
+    const { data: config } = await axiosClient.get("/config/database_prediction")
     return config
 }
 
