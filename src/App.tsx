@@ -8,6 +8,7 @@ import { ModeContextProvider } from "context/modeContext"
 import { UserContextProvider } from "context/userContext"
 import { QueryClientProvider } from "react-query"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { NomenclatureTable } from './component/nomenclature/NomenclatureTable'
 
 function App() {
     return (
@@ -25,7 +26,9 @@ function App() {
                                             </Box>
                                         } />
                                         <Route index element={<Chat />} />
-                                        {/* <Route path="/PDFChat" element={<PDFChat />} /> */}
+                                         <Route path="/nomenclature" element={
+                                             <Box mt={40}><NomenclatureTable /></Box>
+                                         } />
                                     </Route>
                                 </Routes>
                             </ModeContextProvider>
