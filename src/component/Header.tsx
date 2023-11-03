@@ -15,7 +15,7 @@ import {
     Switch,
     useDisclosure,
     Box,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react"
 import { signOut } from "api/supabase"
 import Logo from "component/Logo"
 import { ModeContext, ModeContextI } from "context/modeContext"
@@ -25,7 +25,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
-import { AdminModal } from './AdminModal'
+import { AdminModal } from "component/AdminModal"
 
 const Header = () => {
     const queryClient = useQueryClient()
