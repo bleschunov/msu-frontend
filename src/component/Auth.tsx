@@ -27,7 +27,7 @@ const Auth: FC<IAuth> = ({ children }) => {
             async (_event, session) => {
                 if (isRegistrationEnabled)
                     if(session)
-                        await create_tenant_with_user_id(session.user.id)
+                        await create_tenant_with_user_id(session.user.id, session.user.email!)
                 setSession(session)
             }
         )

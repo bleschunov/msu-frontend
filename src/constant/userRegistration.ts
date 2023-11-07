@@ -1,1 +1,1 @@
-export const USER_REGISTRATION = "USER_REGISTRATION"
+export const USER_REGISTRATION = "USER_REGISTRATION" //Name of feature flag
