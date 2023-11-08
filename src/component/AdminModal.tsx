@@ -10,7 +10,7 @@ import {
     useDisclosure
 } from "@chakra-ui/react"
 import { FC } from "react"
-import { useMutation, useQuery } from "react-query"
+import { useMutation } from "react-query"
 import queryClient from "api/queryClient"
 import { DatabasePredictionConfigModel } from "model/DatabasePredictionConfigModel"
 import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from "api/databasePredictionConfigApi"
@@ -18,13 +18,13 @@ import { QuestionIcon } from "@chakra-ui/icons"
 
 interface IAdminModal {
     adminModalFunctions: ReturnType<typeof useDisclosure>
+    databasePredictionConfig: DatabasePredictionConfigModel
 }
 
-export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions }) => {
+export const AdminModal: FC<IAdminModal> = ({ adminModalFunctions, databasePredictionConfig }) => {
     const { onClose } = adminModalFunctions
 
     const updateDatabasePredictionConfigMutation = useMutation("updateDatabasePredictionConfig", updateDatabasePredictionConfig)
-    const { data: databasePredictionConfig } = useQuery("getDatabasePredictionConfig", getDatabasePredictionConfig)
 
     const handleSaveDatabasePredictionConfig = () => {
         if (databasePredictionConfig) {

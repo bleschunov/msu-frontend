@@ -23,9 +23,10 @@ import { UserContext } from "context/userContext"
 import ChatModel from "model/ChatModel"
 import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
-import { useQueryClient } from "react-query"
+import { useQuery, useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
 import { AdminModal } from "component/AdminModal"
+import { getDatabasePredictionConfig } from "api/databasePredictionConfigApi"
 
 const Header = () => {
     const queryClient = useQueryClient()
@@ -38,6 +39,8 @@ const Header = () => {
     const toastIdRef = React.useRef<string | number | undefined>()
     const [isTimerActive, setTimerActive] = useState<boolean>(false)
     const [warningToastCountdown, setWarningToastCountdown] = useState<number>(5)
+
+    const { data: databasePredictionConfig } = useQuery("getDatabasePredictionConfig", getDatabasePredictionConfig)
 
     const handleSignOut = () => {
         signOut()
@@ -162,13 +165,18 @@ const Header = () => {
                     </MenuButton>
                     <MenuList>
                         <MenuGroup title={user.email}>
-                            <MenuItem onClick={adminModalFunctions.onOpen}>Админка</MenuItem>
+                            {databasePredictionConfig && <MenuItem onClick={adminModalFunctions.onOpen}>Админка</MenuItem>}
                             <MenuItem onClick={handleSignOut}>Выйти</MenuItem>
                         </MenuGroup>
                     </MenuList>
                 </Menu>
 
-                { adminModalFunctions.isOpen && <AdminModal adminModalFunctions={adminModalFunctions} /> }
+                { adminModalFunctions.isOpen &&
+                    <AdminModal
+                        adminModalFunctions={adminModalFunctions}
+                        databasePredictionConfig={databasePredictionConfig!}
+                    />
+                }
             </HStack>
         </HStack>
     )
