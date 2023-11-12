@@ -11,7 +11,7 @@ import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
 import SourceModel from "model/SourceModel"
-import { useContext, useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
 import { usePrediction } from "service/predictionService"
@@ -21,6 +21,7 @@ import { PDFViewer } from "component/PDFViewer"
 import FileModel from "model/FileModel"
 import { getAllFiles } from "api/fileApi"
 import QueryModel from "model/QueryModel"
+import LoadingMessage from "component/InputGroup/LoadingMessage"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -185,6 +186,15 @@ function Chat() {
                         callback={false}
                     >
                         Какой у вас запрос?
+                    </Message>}
+                { isLoading &&
+                    <Message
+                        direction='incoming'
+                        messageId={-1}
+                        src={"/image/avatar/bot.png"}
+                        callback={false}
+                    >
+                        <LoadingMessage />
                     </Message>}
                 <InputGroupContext.Provider value={{ handleSubmit, similarQueries }}>
                     <InputGroup
