@@ -37,7 +37,7 @@ const Header = () => {
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
     const adminModalFunctions = useDisclosure()
-    const {setSelectedFavoriteQuery} = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
+    const { setSelectedFavoriteQuery } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()

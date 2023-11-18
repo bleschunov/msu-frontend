@@ -1,6 +1,6 @@
 import { ReviewModelRead } from "model/ReviewModel"
 import MarkModel from "model/MarkModel"
-import { ModeT } from "./UserModel"
+import { ModeT } from "model/UserModel"
 
 interface MessageBaseModel {
     answer?: string
