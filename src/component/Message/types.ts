@@ -23,6 +23,7 @@ interface IMessage {
     reviewModels?: ReviewModelRead[]
     markModel?: MarkModel
     callback?: boolean
+    query?: string
 }
 
 interface ISkeletonMessage {
