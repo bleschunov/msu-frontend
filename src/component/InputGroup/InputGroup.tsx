@@ -11,10 +11,11 @@ import {
     VStack,
 } from "@chakra-ui/react"
 import { ModeContext, ModeContextI } from "context/modeContext"
-import React, { ChangeEvent, FC, KeyboardEvent, useContext, useState } from "react"
+import React, { ChangeEvent, FC, KeyboardEvent, useContext, useEffect, useState } from "react"
 import { IInputGroup, IInputGroupContext } from "component/InputGroup/types"
 import InputGroupContext from "component/InputGroup/context"
 import AskQueryButton from "component/InputGroup/AskQueryButton"
+import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
 
 const InputGroup: FC<IInputGroup> = ({
     setTable,
@@ -27,6 +28,7 @@ const InputGroup: FC<IInputGroup> = ({
     const [query, setQuery] = useState<string>("")
     const { currentMode, isFilesEnabled } = useContext<ModeContextI>(ModeContext)
     const { handleSubmit, similarQueries } = useContext<IInputGroupContext>(InputGroupContext)
+    const { selectedFavoriteQuery } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     const handleLimitChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLimit(Number.parseInt(e.target.value))
@@ -72,6 +74,10 @@ const InputGroup: FC<IInputGroup> = ({
         handleSubmit(query, limit)
         setQuery("")
     }
+
+    useEffect(() => {
+        setQuery(selectedFavoriteQuery)
+    },[selectedFavoriteQuery])
 
     return (
         <Flex direction="column" gap="5">

@@ -21,6 +21,7 @@ import { getFavoriteMessages } from "api/messageApi"
 import { signOut } from "api/supabase"
 import { AdminModal } from "component/AdminModal"
 import Logo from "component/Logo"
+import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import ChatModel from "model/ChatModel"
@@ -36,6 +37,7 @@ const Header = () => {
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
     const adminModalFunctions = useDisclosure()
+    const {setSelectedFavoriteQuery} = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
@@ -153,13 +155,13 @@ const Header = () => {
                     <MenuList>
                         <MenuGroup title="Платежи">
                             {databasesFavoriteList?.map((item, index: number) => (
-                                <MenuItem justifyContent="space-between" gap={5} key={index}>
+                                <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
                                     {item.query}
                                 </MenuItem>))}
                         </MenuGroup>
                         <MenuGroup title="Файлы">
                             {wikiFavoriteList?.map((item, index: number) => (
-                                <MenuItem justifyContent="space-between" gap={5} key={index}>
+                                <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
                                     {item.query}
                                 </MenuItem>))}
                         </MenuGroup>
