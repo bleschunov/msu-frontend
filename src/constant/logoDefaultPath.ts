@@ -1,1 +1,1 @@
-export const LOGO_DEFAULT_PATH = "/image/logo/msuLogo.svg"
+export const LOGO_DEFAULT_PATH = "/image/logo/defaultLogo.svg"
