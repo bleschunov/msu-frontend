@@ -20,8 +20,10 @@ const UserContextProvider: FC<UserContextProviderProps> = ({ children }) => {
                 throw Error("User is not found or user is not under any tenant.")
             }
 
+            signOut()
         },
-        cacheTime: 0
+        cacheTime: 0,
+        retry: false
     })
 
     if (!user || !isSuccess) {
