@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Spacer, Text, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
-import { getAllSources } from "api/sourceApi"
 import InputGroup from "component/InputGroup/InputGroup"
 import { Message, createMessage } from "component/Message/Message"
 import SkeletonMessage from "component/Message/SkeletonMessage"
@@ -10,7 +9,6 @@ import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import { getLastN } from "misc/util"
 import ChatModel from "model/ChatModel"
-import SourceModel from "model/SourceModel"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 import { useCreateMessage } from "service/messageService"
@@ -58,18 +56,9 @@ function Chat() {
         { enabled: !!chat?.id }
     )
 
-    const { status: sourcesListQueryStatus } = useQuery<SourceModel[]>(
-        "sourcesList",
-        () => getAllSources(chat!.id),
-        { enabled: !!chat?.id }
-    )
-
     const isLoading = predictionMutation.isLoading
         || messageCreateMutation.isLoading
-        // TODO start: move checking queries loading status to func
         || chatQueryStatus === "loading"
-        || sourcesListQueryStatus === "loading"
-        // TODO end
 
     const errorMessage = predictionMutation.isError ? "Произошла ошибка. Попробуйте ещё раз" : undefined
 
@@ -128,7 +117,6 @@ function Chat() {
             alignItems="flex-end"
             pt="100"
             pb="10"
-            // gap={10}
             h="full"
         >
             {isFilesEnabled && filesList && currentFileIndex >= 0 && isFilesMode &&

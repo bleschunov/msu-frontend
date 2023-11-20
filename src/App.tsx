@@ -25,7 +25,6 @@ function App() {
                                             </Box>
                                         } />
                                         <Route index element={<Chat />} />
-                                        {/* <Route path="/PDFChat" element={<PDFChat />} /> */}
                                     </Route>
                                 </Routes>
                             </ModeContextProvider>
