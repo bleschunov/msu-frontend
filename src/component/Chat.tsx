@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Spacer, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, Spacer, Text, position, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
 import { getAllSources } from "api/sourceApi"
@@ -22,6 +22,7 @@ import FileModel from "model/FileModel"
 import { getAllFiles } from "api/fileApi"
 import QueryModel from "model/QueryModel"
 import LoadingMessage from "component/InputGroup/LoadingMessage"
+import { FAQ } from "component/FAQ"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -205,7 +206,7 @@ function Chat() {
                         currentFileIndex={currentFileIndex}
                     />
                 </InputGroupContext.Provider>
-
+                
                 {isFilesEnabled && isFilesMode && (
                     isFilesMode ? filesList && currentFileIndex >= 0 ? (
                         <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
@@ -214,7 +215,10 @@ function Chat() {
                     ) : filesList && currentFileIndex >= 0 && (
                         <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
                     )
-                )}
+                )}                
+            </Flex>
+            <Flex position="absolute" right="50">
+                <FAQ/>
             </Flex>
         </Flex>
     )
