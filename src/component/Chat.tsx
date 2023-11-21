@@ -8,7 +8,7 @@ import SkeletonMessage from "component/Message/SkeletonMessage"
 import FilesHistory from "component/FilesHistory/FilesHistory"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
-import { getLastN } from "misc/util"
+import { getLastN, useSearchQuery } from "misc/util"
 import ChatModel from "model/ChatModel"
 import SourceModel from "model/SourceModel"
 import React, { useContext, useEffect, useRef, useState } from "react"
@@ -23,6 +23,7 @@ import { getAllFiles } from "api/fileApi"
 import QueryModel from "model/QueryModel"
 import LoadingMessage from "component/InputGroup/LoadingMessage"
 import { FAQ } from "component/FAQ"
+import { INSTRUCTION } from "constant/instruction"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -32,6 +33,8 @@ function Chat() {
     const [currentFileIndex, setCurrentFileIndex] = useState<number>(-1)
     const user = useContext<UserModel>(UserContext)
     const [similarQueries, setSimilarQueries] = useState<string[]>([])
+    const query = useSearchQuery()
+    const isInstructionEnabled = String(query.get(INSTRUCTION)).toLowerCase() === "true"
     const {
         currentMode,
         isFilesEnabled,
@@ -218,7 +221,7 @@ function Chat() {
                 )}                
             </Flex>
             <Flex position="absolute" right="50">
-                <FAQ/>
+                {isInstructionEnabled && <FAQ/>}
             </Flex>
         </Flex>
     )
