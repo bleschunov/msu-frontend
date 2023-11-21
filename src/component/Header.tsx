@@ -37,7 +37,7 @@ const Header = () => {
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
     const adminModalFunctions = useDisclosure()
-    const { setSelectedFavoriteQuery } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
+    const { setSelectedFavoriteQuery, isFavoriteListEnabled } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
@@ -148,25 +148,27 @@ const Header = () => {
         <HStack bg="gray.100" h="48px" flexShrink="0" justify="space-between" px="165" py="10" position="fixed" w="100%" zIndex={100}>
             <Logo />
             <HStack>
-                <Menu>
-                    <MenuButton as={Button} variant="ghost" w={230}>
+                {isFavoriteListEnabled && (
+                    <Menu>
+                        <MenuButton as={Button} variant="ghost" w={230}>
                         Избранное ⭐️
-                    </MenuButton>
-                    <MenuList>
-                        <MenuGroup title="Платежи">
-                            {databasesFavoriteList?.map((item, index: number) => (
-                                <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
-                                    {item.query}
-                                </MenuItem>))}
-                        </MenuGroup>
-                        <MenuGroup title="Файлы">
-                            {wikiFavoriteList?.map((item, index: number) => (
-                                <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
-                                    {item.query}
-                                </MenuItem>))}
-                        </MenuGroup>
-                    </MenuList>
-                </Menu>
+                        </MenuButton>
+                        <MenuList>
+                            <MenuGroup title="Платежи">
+                                {databasesFavoriteList?.map((item, index: number) => (
+                                    <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
+                                        {item.query}
+                                    </MenuItem>))}
+                            </MenuGroup>
+                            <MenuGroup title="Файлы">
+                                {wikiFavoriteList?.map((item, index: number) => (
+                                    <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
+                                        {item.query}
+                                    </MenuItem>))}
+                            </MenuGroup>
+                        </MenuList>
+                    </Menu>
+                )}
                 {isFilesEnabled && isDatabaseEnabled && (
                     <FormControl display='flex' alignItems='center'>
                         <FormLabel mb="0">

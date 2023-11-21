@@ -17,6 +17,7 @@ import { MessageModel } from "model/MessageModel"
 import { IMessage } from "component/Message/types"
 import { useFavoriteMessage } from "service/messageService"
 import { ModeContext, ModeContextI } from "context/modeContext"
+import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
 
 // # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
 //  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
@@ -35,8 +36,9 @@ export const Message: FC<IMessage> = ({
     const [isCommenting, setIsCommenting] = useState<boolean>(false)
     const queryClient = useQueryClient()
     const user = useContext<UserModel>(UserContext)
-    const {currentMode} = useContext<ModeContextI>(ModeContext)
+    const { currentMode } = useContext<ModeContextI>(ModeContext)
     const favoriteMutation = useFavoriteMessage()
+    const { isFavoriteListEnabled } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     if (direction === "incoming") {
         justify = "start" as const
@@ -116,7 +118,7 @@ export const Message: FC<IMessage> = ({
             </HStack>
         )
     }
-
+    
     const Favorites = () => {
         return (
             <HStack>
@@ -186,7 +188,7 @@ export const Message: FC<IMessage> = ({
                             </VStack>
                         </>
                     }
-                    {direction === "outgoing" &&
+                    {isFavoriteListEnabled && direction === "outgoing" &&
                         <>
                             <Box alignSelf="end">
                                 <Favorites/>
