@@ -1,4 +1,4 @@
-import { addFavoriteMessage, clearMessages as clearMessagesApi, createMessage as createMessageApi } from "api/messageApi"
+import { addFavoriteMessage, clearMessages as clearMessagesApi, createMessage as createMessageApi, removeFavoriteMessage } from "api/messageApi"
 import queryClient from "api/queryClient"
 import { INITIAL_MESSAGE_COUNT } from "constant/chatMessages"
 import { ModeContext, ModeContextI } from "context/modeContext"
@@ -57,8 +57,17 @@ const useClearMessages = () => {
     })
 }
 
+const useDeleteFavoriteMessage = () => {
+    return useMutation(removeFavoriteMessage, {
+        onSuccess: () => {
+            queryClient.invalidateQueries("favoritesList")
+        }
+    })
+}
+
 export {
     useClearMessages,
     useCreateMessage,
-    useFavoriteMessage
+    useFavoriteMessage,
+    useDeleteFavoriteMessage
 }

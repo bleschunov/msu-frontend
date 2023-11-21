@@ -17,6 +17,10 @@ const getFavoriteMessages = async (userId: string): Promise<FavoriteMessageModel
     return axiosClient.get(`/message/favorite/${userId}`).then(response => response.data)
 }
 
+const removeFavoriteMessage = (favorite_message_id: number): Promise<FavoriteMessageModel> => {
+    return axiosClient.delete(`/message/favorite/${favorite_message_id}`).then((response) => response.data)
+}
+
 export {
-    clearMessages, createMessage, addFavoriteMessage, getFavoriteMessages
+    clearMessages, createMessage, addFavoriteMessage, getFavoriteMessages, removeFavoriteMessage
 }

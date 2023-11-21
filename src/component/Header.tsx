@@ -30,6 +30,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQuery, useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
+import { FavoriteMessage } from "component/FavoriteMessage"
 
 const Header = () => {
     const queryClient = useQueryClient()
@@ -37,7 +38,7 @@ const Header = () => {
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
     const adminModalFunctions = useDisclosure()
-    const { setSelectedFavoriteQuery, isFavoriteListEnabled } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
+    const { isFavoriteListEnabled } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
@@ -151,20 +152,24 @@ const Header = () => {
                 {isFavoriteListEnabled && (
                     <Menu>
                         <MenuButton as={Button} variant="ghost" w={230}>
-                        Избранное ⭐️
+                            Избранное ⭐️
                         </MenuButton>
                         <MenuList>
                             <MenuGroup title="Платежи">
                                 {databasesFavoriteList?.map((item, index: number) => (
-                                    <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
-                                        {item.query}
-                                    </MenuItem>))}
+                                    <FavoriteMessage
+                                        favoriteMessage={item}
+                                        key={index}
+                                    />
+                                ))}
                             </MenuGroup>
                             <MenuGroup title="Файлы">
                                 {wikiFavoriteList?.map((item, index: number) => (
-                                    <MenuItem onClick={() => setSelectedFavoriteQuery(item.query)} key={index}>
-                                        {item.query}
-                                    </MenuItem>))}
+                                    <FavoriteMessage
+                                        favoriteMessage={item}
+                                        key={index}
+                                    />
+                                ))}
                             </MenuGroup>
                         </MenuList>
                     </Menu>
