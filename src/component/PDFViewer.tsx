@@ -6,7 +6,7 @@ import { FC, useEffect } from "react"
 // Import styles
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
-import { Box, Drawer, DrawerContent, VStack, useColorModeValue, useDisclosure } from "@chakra-ui/react"
+import { Drawer, DrawerContent, VStack } from "@chakra-ui/react"
 
 interface IPDFViewer {
     fileUrl: string
@@ -23,31 +23,20 @@ export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
         jumpToPage(page)
     }, [page, jumpToPage])
 
-    const { isOpen, onClose } = useDisclosure()
-
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-            <VStack>
-                <Box minH="100vh" minW="42vw">
-                    <Drawer
-                        isOpen={isOpen}
-                        placement="left"
-                        onClose={onClose}
-                        returnFocusOnClose={false}
-                        size="full">
-                        <DrawerContent />
-                    </Drawer>
-                    <Box ml={{ base: 0, md: 0 }}>
-                        <Viewer
-                            fileUrl={fileUrl}
-                            plugins={[
-                                defaultLayoutPluginInstance,
-                                pageNavigationPluginInstance,
-                            ]}
-                            defaultScale={SpecialZoomLevel.PageFit}
-                        />
-                    </Box>
-                </Box>
+            <VStack
+                width="40vw"
+                height="100vh"
+            >
+                <Viewer
+                    fileUrl={fileUrl}
+                    plugins={[
+                        defaultLayoutPluginInstance,
+                        pageNavigationPluginInstance,
+                    ]}
+                    defaultScale={SpecialZoomLevel.PageFit}
+                />
             </VStack>
         </Worker>
     )
