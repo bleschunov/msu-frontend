@@ -15,6 +15,9 @@ import { useMutation, useQueryClient } from "react-query"
 import Accordion from "component/Accordion"
 import { MessageModel } from "model/MessageModel"
 import { IMessage } from "component/Message/types"
+import { useFavoriteMessage } from "service/messageService"
+import { ModeContext, ModeContextI } from "context/modeContext"
+import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
 
 export const Message: FC<IMessage> = ({
     messageId,
@@ -23,12 +26,16 @@ export const Message: FC<IMessage> = ({
     children,
     reviewModels,
     markModel,
-    callback = true
+    callback = true,
+    query
 }) => {
     let justify, flexDirection, name = ""
     const [isCommenting, setIsCommenting] = useState<boolean>(false)
     const queryClient = useQueryClient()
     const user = useContext<UserModel>(UserContext)
+    const { currentMode } = useContext<ModeContextI>(ModeContext)
+    const favoriteMutation = useFavoriteMessage()
+    const { isFavoriteListEnabled } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     if (direction === "incoming") {
         justify = "start" as const
@@ -77,6 +84,14 @@ export const Message: FC<IMessage> = ({
             message_id: messageId,
         } as MarkModel)
     }
+    
+    const handleFavoriteButton = () => {
+        favoriteMutation.mutate({
+            query: query!,
+            user_id: user.id,
+            mode: currentMode
+        })
+    }
 
     const LikeDislike = () => {
         return (
@@ -96,6 +111,21 @@ export const Message: FC<IMessage> = ({
                     onClick={() => handleMarkButton(0)}
                 >
                     👎
+                </Button>
+            </HStack>
+        )
+    }
+    
+    const Favorites = () => {
+        return (
+            <HStack>
+                <Button
+                    size="sm"
+                    colorScheme="blue"
+                    variant="outline"
+                    onClick={handleFavoriteButton}
+                >
+                    ⭐️
                 </Button>
             </HStack>
         )
@@ -122,7 +152,7 @@ export const Message: FC<IMessage> = ({
                     {direction === "incoming" && callback &&
                         <>
                             <HStack mt="0">
-                                
+
                                 <Button
                                     aria-label=""
                                     colorScheme="blue"
@@ -135,9 +165,9 @@ export const Message: FC<IMessage> = ({
                                 <Box alignSelf="end">
                                     <LikeDislike />
                                 </Box>
-                             
+
                             </HStack>
-                            {isCommenting && (          
+                            {isCommenting && (
                                 <Callback messageId={messageId} />
                             )}
                             <VStack align="start">
@@ -153,6 +183,13 @@ export const Message: FC<IMessage> = ({
                                     </>
                                 }
                             </VStack>
+                        </>
+                    }
+                    {isFavoriteListEnabled && direction === "outgoing" &&
+                        <>
+                            <Box alignSelf="end">
+                                <Favorites/>
+                            </Box>
                         </>
                     }
                 </CardBody>
@@ -200,10 +237,11 @@ export const createMessage = (messageModel: MessageModel, key: number): ReactNod
         // eslint-disable-next-line
         direction={messageModel.answer != undefined ? "incoming" : "outgoing"}
         key={key}
+        query={messageModel.query}
     >
         <Markdown>{messageContent}</Markdown>
         <Box mt="5">
-            { messageModel.sql &&
+            {messageModel.sql &&
                 <Accordion
                     titles={titles}
                     panels={panels}

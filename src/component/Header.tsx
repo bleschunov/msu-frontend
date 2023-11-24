@@ -1,32 +1,36 @@
 import {
     Avatar,
+    Box,
     Button,
     Flex,
+    FormControl,
+    FormLabel,
     HStack,
     Menu,
     MenuButton,
     MenuGroup,
     MenuItem,
     MenuList,
-    UseToastOptions,
-    useToast,
-    FormControl,
-    FormLabel,
     Switch,
+    UseToastOptions,
     useDisclosure,
-    Box,
+    useToast,
 } from "@chakra-ui/react"
+import { getDatabasePredictionConfig } from "api/databasePredictionConfigApi"
+import { getFavoriteMessages } from "api/messageApi"
 import { signOut } from "api/supabase"
+import { AdminModal } from "component/AdminModal"
 import Logo from "component/Logo"
+import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
 import ChatModel from "model/ChatModel"
+import { FavoriteMessageModel } from "model/MessageModel"
 import React, { useContext, useEffect, useState } from "react"
 import { AiOutlineDown } from "react-icons/ai"
 import { useQuery, useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
-import { AdminModal } from "component/AdminModal"
-import { getDatabasePredictionConfig } from "api/databasePredictionConfigApi"
+import { FavoriteMessage } from "component/FavoriteMessage"
 
 const Header = () => {
     const queryClient = useQueryClient()
@@ -34,6 +38,7 @@ const Header = () => {
     const { currentMode, setMode, isFilesEnabled, isDatabaseEnabled, chatID } = useContext<ModeContextI>(ModeContext)
     const clearMessagesMutation = useClearMessages()
     const adminModalFunctions = useDisclosure()
+    const { isFavoriteListEnabled } = useContext<IFavoriteMessageContext>(FavoriteMessageContext)
 
     const toast = useToast()
     const toastIdRef = React.useRef<string | number | undefined>()
@@ -41,6 +46,14 @@ const Header = () => {
     const [warningToastCountdown, setWarningToastCountdown] = useState<number>(5)
 
     const { data: databasePredictionConfig } = useQuery("getDatabasePredictionConfig", getDatabasePredictionConfig)
+
+    const { data: favoritesList } = useQuery<FavoriteMessageModel[]>("favoritesList", () => {
+        return getFavoriteMessages(user.id)
+    })
+
+    const wikiFavoriteList = favoritesList?.filter((query) => query.mode === "wiki")
+
+    const databasesFavoriteList = favoritesList?.filter((query) => query.mode === "databases")
 
     const handleSignOut = () => {
         signOut()
@@ -136,6 +149,31 @@ const Header = () => {
         <HStack bg="gray.100" h="48px" flexShrink="0" justify="space-between" px="165" py="10" position="fixed" w="100%" zIndex={100}>
             <Logo />
             <HStack>
+                {isFavoriteListEnabled && (
+                    <Menu>
+                        <MenuButton as={Button} variant="ghost" w={230}>
+                            Избранное ⭐️
+                        </MenuButton>
+                        <MenuList>
+                            <MenuGroup title="Платежи">
+                                {databasesFavoriteList?.map((item, index: number) => (
+                                    <FavoriteMessage
+                                        favoriteMessage={item}
+                                        key={index}
+                                    />
+                                ))}
+                            </MenuGroup>
+                            <MenuGroup title="Файлы">
+                                {wikiFavoriteList?.map((item, index: number) => (
+                                    <FavoriteMessage
+                                        favoriteMessage={item}
+                                        key={index}
+                                    />
+                                ))}
+                            </MenuGroup>
+                        </MenuList>
+                    </Menu>
+                )}
                 {isFilesEnabled && isDatabaseEnabled && (
                     <FormControl display='flex' alignItems='center'>
                         <FormLabel mb="0">

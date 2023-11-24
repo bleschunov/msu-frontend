@@ -1,6 +1,7 @@
 import { ReactNode } from "react"
 import MarkModel from "model/MarkModel"
 import { ReviewModelRead } from "model/ReviewModel"
+import { FavoriteMessageModel } from "model/MessageModel"
 
 interface IAvatar {
     name: string
@@ -23,6 +24,11 @@ interface IMessage {
     reviewModels?: ReviewModelRead[]
     markModel?: MarkModel
     callback?: boolean
+    query?: string
+}
+
+interface IFavoriteMessage {
+    favoriteMessage: FavoriteMessageModel
 }
 
 interface ISkeletonMessage {
@@ -36,5 +42,6 @@ export type {
     ICallback,
     IMarkdown,
     IMessage,
-    ISkeletonMessage
+    ISkeletonMessage,
+    IFavoriteMessage
 }

@@ -4,6 +4,7 @@ import { AppLayout } from "component/AppLayout"
 import Auth from "component/Auth"
 import Chat from "component/Chat"
 import EditPromptForm from "component/EditPromptForm"
+import { FavoriteMessageContextProvider } from "context/favoriteMessageContext"
 import { ModeContextProvider } from "context/modeContext"
 import { UserContextProvider } from "context/userContext"
 import { QueryClientProvider } from "react-query"
@@ -17,16 +18,19 @@ function App() {
                     <Auth>
                         <UserContextProvider>
                             <ModeContextProvider>
-                                <Routes >
-                                    <Route element={<AppLayout/>}>
-                                        <Route path="/admin" element={
-                                            <Box mt={40}>
-                                                <EditPromptForm />
-                                            </Box>
-                                        } />
-                                        <Route index element={<Chat />} />
-                                    </Route>
-                                </Routes>
+                                <FavoriteMessageContextProvider>
+                                    <Routes >
+                                        <Route element={<AppLayout />}>
+                                            <Route path="/admin" element={
+                                                <Box mt={40}>
+                                                    <EditPromptForm />
+                                                </Box>
+                                            } />
+                                            <Route index element={<Chat />} />
+                                            {/* <Route path="/PDFChat" element={<PDFChat />} /> */}
+                                        </Route>
+                                    </Routes>
+                                </FavoriteMessageContextProvider>
                             </ModeContextProvider>
                         </UserContextProvider>
                     </Auth>

@@ -1,5 +1,6 @@
 import { ReviewModelRead } from "model/ReviewModel"
 import MarkModel from "model/MarkModel"
+import { ModeT } from "model/UserModel"
 
 interface MessageBaseModel {
     answer?: string
@@ -27,9 +28,17 @@ interface MessageModel extends MessageInModel, MessageCreateModel {
     is_deleted: boolean
 }
 
+interface FavoriteMessageModel {
+    id: number
+    user_id: string
+    mode: ModeT
+    query: string
+}
+
 export type {
     MessageBaseModel,
     MessageCreateModel,
     MessageInModel,
-    MessageModel
+    MessageModel,
+    FavoriteMessageModel
 }
