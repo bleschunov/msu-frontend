@@ -13,7 +13,7 @@ import { FC } from "react"
 import { useMutation } from "react-query"
 import queryClient from "api/queryClient"
 import { DatabasePredictionConfigModel } from "model/DatabasePredictionConfigModel"
-import { getDatabasePredictionConfig, updateDatabasePredictionConfig } from "api/databasePredictionConfigApi"
+import { updateDatabasePredictionConfig } from "api/databasePredictionConfigApi"
 import { QuestionIcon } from "@chakra-ui/icons"
 
 interface IAdminModal {

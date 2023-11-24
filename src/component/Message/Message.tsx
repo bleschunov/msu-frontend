@@ -19,9 +19,6 @@ import { useFavoriteMessage } from "service/messageService"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
 
-// # TODO: Разделить визуальный компонент сообщения и логику с обработкой айди.
-//  Это нужно, потому что я не могу отобразить моковое сообщение, потому что у него нет айди.
-// # TODO: Сделать на беке в сообщении указание, сообщение от человека или от робота и убрать логику определения этого с фронта.
 export const Message: FC<IMessage> = ({
     messageId,
     src,
