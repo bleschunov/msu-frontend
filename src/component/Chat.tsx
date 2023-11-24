@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Spacer, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, Spacer, Text, position, useDisclosure } from "@chakra-ui/react"
 import { getOrCreateChat } from "api/chatApi"
 import queryClient from "api/queryClient"
 import InputGroup from "component/InputGroup/InputGroup"
@@ -7,7 +7,7 @@ import SkeletonMessage from "component/Message/SkeletonMessage"
 import FilesHistory from "component/FilesHistory/FilesHistory"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { UserContext } from "context/userContext"
-import { getLastN } from "misc/util"
+import { getLastN, useSearchQuery } from "misc/util"
 import ChatModel from "model/ChatModel"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
@@ -20,6 +20,8 @@ import FileModel from "model/FileModel"
 import { getAllFiles } from "api/fileApi"
 import QueryModel from "model/QueryModel"
 import LoadingMessage from "component/InputGroup/LoadingMessage"
+import { FAQ } from "component/FAQ"
+import { INSTRUCTION } from "constant/instruction"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)
@@ -29,6 +31,8 @@ function Chat() {
     const [currentFileIndex, setCurrentFileIndex] = useState<number>(-1)
     const user = useContext<UserModel>(UserContext)
     const [similarQueries, setSimilarQueries] = useState<string[]>([])
+    const query = useSearchQuery()
+    const isInstructionEnabled = String(query.get(INSTRUCTION)).toLowerCase() === "true"
     const {
         currentMode,
         isFilesEnabled,
@@ -193,7 +197,7 @@ function Chat() {
                         currentFileIndex={currentFileIndex}
                     />
                 </InputGroupContext.Provider>
-
+                
                 {isFilesEnabled && isFilesMode && (
                     isFilesMode ? filesList && currentFileIndex >= 0 ? (
                         <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
@@ -202,7 +206,10 @@ function Chat() {
                     ) : filesList && currentFileIndex >= 0 && (
                         <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
                     )
-                )}
+                )}                
+            </Flex>
+            <Flex position="absolute" right="50">
+                {isInstructionEnabled && <FAQ/>}
             </Flex>
         </Flex>
     )
