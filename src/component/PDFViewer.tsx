@@ -6,7 +6,7 @@ import { FC, useEffect } from "react"
 // Import styles
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
-import { VStack } from "@chakra-ui/react"
+import { Drawer, DrawerContent, VStack } from "@chakra-ui/react"
 
 interface IPDFViewer {
     fileUrl: string
@@ -26,8 +26,8 @@ export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
             <VStack
-                width={1000}
-                height={1000}
+                width="40vw"
+                height="100vh"
             >
                 <Viewer
                     fileUrl={fileUrl}
