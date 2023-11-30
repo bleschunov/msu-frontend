@@ -6,7 +6,7 @@ import { FC, useEffect } from "react"
 // Import styles
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
-import { Drawer, DrawerContent, VStack } from "@chakra-ui/react"
+import { VStack } from "@chakra-ui/react"
 
 interface IPDFViewer {
     fileUrl: string
