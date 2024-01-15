@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
 import { signOut, supabase } from "api/supabase"
 import { getBaseUrl } from "misc/util"
+import Cookies from 'universal-cookie'
 
 const axiosClient: AxiosInstance = axios.create({
     baseURL: getBaseUrl()
@@ -8,10 +9,12 @@ const axiosClient: AxiosInstance = axios.create({
 
 axiosClient.interceptors.request.use(
     async config => {
-        const { data: { session } } = await supabase.auth.getSession()
+        // const { data: { session } } = await supabase.auth.getSession()
+        const cookies = new Cookies();
+        const token = cookies.get("token")
 
-        if (session?.access_token) {
-            config.headers["Authorization"] = `Bearer ${session.access_token}`
+        if (token) {
+            config.headers["Authorization"] = `Bearer ${token.access_token}`
         }
 
         return config

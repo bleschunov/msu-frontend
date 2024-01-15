@@ -8,15 +8,9 @@ import { UserContext } from "context/userContext"
 const Logo = () => {
     const user = useContext(UserContext)
 
-    const { data: logo, status: queryStatus } = useQuery<string>("logo", () => getLogo(user?.id), { enabled: !!user.id })
-
-    if (queryStatus === "loading") {
-        return <div></div>
-    }
-
     const getLogoPath = () => {
-        if (logo) {
-            return logo
+        if (user.tenants[0].logo) {
+            return user.tenants[0].logo
         }
         return LOGO_DEFAULT_PATH
     }

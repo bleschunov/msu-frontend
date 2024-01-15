@@ -68,7 +68,7 @@ function Chat() {
             top: chatRef.current?.offsetHeight,
             behavior: "smooth",
         })
-    }, [chat?.message?.length])
+    }, [chat?.messages.length])
 
     const handleSubmit = async (finalQuery: string, limit: number) => {
         if (chat && finalQuery.trim() !== "") {
@@ -150,12 +150,12 @@ function Chat() {
                     />
                 )}
 
-                {chat && !!chat.message?.length && chat.message.length > shownMessageCount
+                {chat && !!chat.messages.length && chat.messages.length > shownMessageCount
                 && <Button colorScheme="blue" variant="link" onClick={handleShowMore}>Предыдущие сообщения</Button>}
 
                 {chatQueryStatus !== "loading" ?
                     <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
-                        {chat && !!chat.message?.length && getLastN(shownMessageCount, chat.message.map((message, i) => createMessage(message, i)))}
+                        {chat && !!chat.messages.length && getLastN(shownMessageCount, chat.messages.map((message, i) => createMessage(message, i)))}
                     </Flex> :
                     <Flex direction="column" gap="5" flexGrow="1" ref={messageWindowRef}>
                         <SkeletonMessage direction="outgoing" width="35%" height="60px" />
@@ -167,7 +167,7 @@ function Chat() {
                     </Flex>
                 }
 
-                {chat && !chat.message?.length &&
+                {chat && !chat.messages.length &&
                     <Message
                         direction='incoming'
                         messageId={-1}
@@ -205,9 +205,9 @@ function Chat() {
                     )
                 )}                
             </Flex>
-            <Flex position="absolute" right="50">
-                <FaqModal/>
-            </Flex>
+            {/*<Flex position="absolute" right="50">*/}
+            {/*    <FaqModal/>*/}
+            {/*</Flex>*/}
         </Flex>
     )
 }

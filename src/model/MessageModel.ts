@@ -11,7 +11,6 @@ interface MessageBaseModel {
 interface MessageCreateModel extends MessageBaseModel {
     query?: string
     connected_message_id?: number
-    exception?: string
     chat_id: number
 }
 
@@ -20,9 +19,9 @@ interface MessageInModel extends MessageBaseModel {
     page: number
 }
 
-interface MessageModel extends MessageInModel, MessageCreateModel {
+interface MessageModel extends MessageCreateModel {
     id: number
-    review?: ReviewModelRead[]
+    reviews: ReviewModelRead[]
     mark?: MarkModel[]
     created_at: string
     is_deleted: boolean

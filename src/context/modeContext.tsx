@@ -24,7 +24,11 @@ interface ModeContextProviderProps {
 
 const ModeContextProvider: FC<ModeContextProviderProps> = ({ children }) => {
     const user = useContext(UserContext)
-    const defaultMode = user.available_modes.includes("databases") ? "databases" : "wiki"
+
+    const is_wiki_mode = user.tenants[0].modes.filter(m => m.name === "wiki").length > 0
+    const is_databases_mode = user.tenants[0].modes.filter(m => m.name === "databases").length > 0
+    const defaultMode = is_databases_mode ? "databases" : "wiki"
+
     const [mode, setMode] = useState<ModeT>(defaultMode)
     const [shownMessageCount, setShownMessageCount] = useState<number>(INITIAL_MESSAGE_COUNT)
     const { data: chat } = useQuery<ChatModel>("chat", () => {
@@ -32,8 +36,8 @@ const ModeContextProvider: FC<ModeContextProviderProps> = ({ children }) => {
     })
     const chatID = chat?.id
 
-    const isFilesEnabled = user.available_modes.includes("wiki")
-    const isDatabaseEnabled = user.available_modes.includes("databases")
+    const isFilesEnabled = is_wiki_mode
+    const isDatabaseEnabled = is_databases_mode
 
     return (
         <ModeContext.Provider

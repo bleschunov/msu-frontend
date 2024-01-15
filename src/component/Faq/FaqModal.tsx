@@ -21,9 +21,9 @@ import { UserContext } from "context/userContext"
 
 export function FaqModal() {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { tenant_id } = useContext(UserContext)
+    const user = useContext(UserContext)
 
-    const { data: blockMap } = useQuery<BlockMapType>("getInstruction", () => getInstruction(tenant_id))
+    const { data: blockMap } = useQuery<BlockMapType>("getInstruction", () => getInstruction(user.tenants[0].id))
 
     return (
         <>

@@ -45,8 +45,6 @@ const Header = () => {
     const [isTimerActive, setTimerActive] = useState<boolean>(false)
     const [warningToastCountdown, setWarningToastCountdown] = useState<number>(5)
 
-    const { data: databasePredictionConfig } = useQuery("getDatabasePredictionConfig", getDatabasePredictionConfig)
-
     const { data: favoritesList } = useQuery<FavoriteMessageModel[]>("favoritesList", () => {
         return getFavoriteMessages(user.id)
     })
@@ -69,7 +67,7 @@ const Header = () => {
         decreaseCountdownInToast()
         const previousChat = queryClient.getQueryData<ChatModel>("chat")
         if (previousChat) {
-            previousChat.message = []
+            previousChat.messages = []
             queryClient.setQueriesData<ChatModel>("chat", previousChat)
         }
     }
@@ -202,8 +200,8 @@ const Header = () => {
                         <Avatar></Avatar>
                     </MenuButton>
                     <MenuList>
-                        <MenuGroup title={user.email}>
-                            {databasePredictionConfig && <MenuItem onClick={adminModalFunctions.onOpen}>Админка</MenuItem>}
+                        <MenuGroup title={user.username}>
+                            {user.database_prediction_config && <MenuItem onClick={adminModalFunctions.onOpen}>Админка</MenuItem>}
                             <MenuItem onClick={handleSignOut}>Выйти</MenuItem>
                         </MenuGroup>
                     </MenuList>
@@ -212,7 +210,7 @@ const Header = () => {
                 { adminModalFunctions.isOpen &&
                     <AdminModal
                         adminModalFunctions={adminModalFunctions}
-                        databasePredictionConfig={databasePredictionConfig!}
+                        databasePredictionConfig={user.database_prediction_config}
                     />
                 }
             </HStack>

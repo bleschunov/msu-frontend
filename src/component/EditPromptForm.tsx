@@ -15,7 +15,7 @@ const updatePrompt = (promptModel: PromptModel, newPrompt: string) => {
 const EditPromptForm = () => {
     const user = useContext(UserContext)
     const { data: prompt, status: queryPromptStatus } =
-        useQuery<PromptModel>("prompt", () => getActivePrompt(user.tenant_id))
+        useQuery<PromptModel>("prompt", () => getActivePrompt(user.tenants[0].id))
     const promptService = usePrompt()
 
     const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {

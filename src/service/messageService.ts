@@ -8,7 +8,7 @@ import { useContext } from "react"
 import { useMutation } from "react-query"
 
 const updateMessagesInChat = (previousChat: ChatModel, newMessage: MessageModel) => {
-    previousChat.message?.push(newMessage)
+    previousChat.messages.push(newMessage)
     return previousChat
 }
 

@@ -8,7 +8,7 @@ const getChat = async (userId: string): Promise<ChatModel> => {
     return chatModel
 }
 
-const createChat = async (body: Omit<ChatModel, "id" | "created_at" | "message">): Promise<ChatModel> => {
+const createChat = async (body: Omit<ChatModel, "id" | "messages">): Promise<ChatModel> => {
     const { data: chatModel } = await axiosClient.post("/chat", body)
     return chatModel
 }
@@ -16,7 +16,7 @@ const createChat = async (body: Omit<ChatModel, "id" | "created_at" | "message">
 const getOrCreateChat = async (userId: string): Promise<ChatModel> => {
     try {
         const chat = await getChat(userId)
-        chat.message?.sort(
+        chat.messages.sort(
             (messageA, messageB) => sortDate(messageA.created_at, messageB.created_at, false)
         )
         return chat

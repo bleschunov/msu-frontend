@@ -50,7 +50,7 @@ export const Message: FC<IMessage> = ({
     }
 
     const updateMarkInChat = (oldChat: ChatModel, messageId: number, newMark: MarkModel) => {
-        oldChat.message?.forEach((message) => {
+        oldChat.messages.forEach((message) => {
             if (message.id === messageId) {
                 message.mark = [newMark]
             }
@@ -229,7 +229,7 @@ export const createMessage = (messageModel: MessageModel, key: number): ReactNod
     }
 
     return <Message
-        reviewModels={messageModel?.review}
+        reviewModels={messageModel.reviews}
         markModel={messageModel.mark && (messageModel.mark.length === 0 ? undefined : messageModel.mark[0])}
         src={src}
         messageId={messageModel.id}
