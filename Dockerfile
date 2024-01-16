@@ -1,13 +1,19 @@
 FROM node:18-alpine
 WORKDIR /app
 
+COPY package.json yarn.lock ./
+
+# For running on Mac M1
+RUN apk --update --no-cache --virtual build-dependencies add \
+        python3 \
+        make \
+        g++
+
+RUN yarn install
+RUN yarn add serve
+
+RUN apk del build-dependencies
+
 COPY . .
 
-RUN yarn add serve
-RUN yarn install
 RUN yarn run build
-
-ENV NODE_ENV production
-EXPOSE 3000
-
-CMD [ "npx", "serve", "build" ]
