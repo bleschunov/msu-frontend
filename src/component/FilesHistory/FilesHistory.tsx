@@ -20,7 +20,7 @@ import {
     useState,
 } from "react"
 import { FaFileUpload } from "react-icons/fa"
-import FileModel from "model/FileModel"
+import { FileModel } from "model/FileModel"
 import queryClient from "api/queryClient"
 import { ModeContext, ModeContextI } from "context/modeContext"
 import { useMutation, useQuery } from "react-query"
@@ -31,7 +31,6 @@ import { FileUploadingProgress } from "component/FilesHistory/FileUploadingProgr
 import { getActiveFileUploadTasks } from "api/taskApi"
 
 interface IFilesHistory {
-  chat_id: number;
   filesList: FileModel[];
   currentFileIndex: number;
   setCurrentFileIndex: Dispatch<SetStateAction<number>>;
@@ -40,7 +39,6 @@ interface IFilesHistory {
 }
 
 const FilesHistory: FC<IFilesHistory> = ({
-    chat_id,
     filesList,
     currentFileIndex,
     setCurrentFileIndex,
@@ -64,7 +62,6 @@ const FilesHistory: FC<IFilesHistory> = ({
         const file = files.item(0)
         setMode("wiki")
         await filesMutation.mutateAsync({
-            chat_id: chat_id,
             file: file!,
         })
         await queryClient.invalidateQueries("filesList")

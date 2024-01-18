@@ -87,7 +87,7 @@ const InputGroup: FC<IInputGroup> = ({
                 templateColumns='repeat(2, 1fr)'
                 gap={4}
             >
-                {similarQueries.map((query: string) => (
+                {similarQueries && similarQueries.map((query: string) => (
                     <GridItem>
                         <AskQueryButton query={query} limit={limit} />
                     </GridItem>

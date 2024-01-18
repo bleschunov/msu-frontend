@@ -90,7 +90,7 @@ const FileRow: FC<IFileRow> = ({
             borderRadius={10}
         >
             <Flex direction="column">
-                <Text>{getShortFileName(file.name_ru)}</Text>
+                <Text>{getShortFileName(file.original_filename)}</Text>
             </Flex>
             {buttons}
         </Flex>

@@ -13,11 +13,21 @@ interface IPDFViewer {
     page: number
 }
 
+const getFullFilePath = (fileUrl: string): string => {
+    const host = process.env["REACT_APP_STATIC_URL"]
+    if (!host) {
+        throw Error("REACT_APP_STATIC_URL must be passed in .env.development or .env.production")
+    }
+
+    return `${process.env["REACT_APP_STATIC_URL"]}/${fileUrl}`
+}
+
 export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
     // Create new plugin instance
     const defaultLayoutPluginInstance = defaultLayoutPlugin()
     const pageNavigationPluginInstance = pageNavigationPlugin()
     const { jumpToPage } = pageNavigationPluginInstance
+    const fullFileUrl = getFullFilePath(fileUrl)
 
     useEffect(() => {
         jumpToPage(page)
@@ -30,7 +40,7 @@ export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {
                 height="100vh"
             >
                 <Viewer
-                    fileUrl={fileUrl}
+                    fileUrl={fullFileUrl}
                     plugins={[
                         defaultLayoutPluginInstance,
                         pageNavigationPluginInstance,

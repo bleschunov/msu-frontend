@@ -235,7 +235,7 @@ export const createMessage = (messageModel: MessageModel, key: number): ReactNod
         messageId={messageModel.id}
         // != не заменять на !==, иначе все аватарки будут по левую сторону
         // eslint-disable-next-line
-        direction={messageModel.answer != undefined ? "incoming" : "outgoing"}
+        direction={messageModel.answer !== "" ? "incoming" : "outgoing"}
         key={key}
         query={messageModel.query}
     >

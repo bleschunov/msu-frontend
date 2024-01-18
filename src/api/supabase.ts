@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js"
+import Cookies from 'universal-cookie'
 
 const supabase = createClient(
     "https://jkhlwowgrekoqgvfruhq.supabase.co",
@@ -7,7 +8,9 @@ const supabase = createClient(
 )
 
 const signOut = async () => {
-    await supabase.auth.signOut()
+    // await supabase.auth.signOut()
+    const cookies = new Cookies()
+    cookies.remove("token")
 }
 
 export {

@@ -16,7 +16,7 @@ import { usePrediction } from "service/predictionService"
 import { UserModel } from "model/UserModel"
 import InputGroupContext from "component/InputGroup/context"
 import { PDFViewer } from "component/PDFViewer"
-import FileModel from "model/FileModel"
+import { FileModel } from "model/FileModel"
 import { getAllFiles } from "api/fileApi"
 import QueryModel from "model/QueryModel"
 import LoadingMessage from "component/InputGroup/LoadingMessage"
@@ -53,7 +53,7 @@ function Chat() {
 
     const { data: filesList } = useQuery<FileModel[]>(
         "filesList",
-        () => getAllFiles(chat!.id),
+        () => getAllFiles(),
         { enabled: !!chat?.id }
     )
 
@@ -83,7 +83,7 @@ function Chat() {
             }
 
             if (isFilesMode && filesList) {
-                body["filename"] = filesList[currentFileIndex].name_en
+                body["filename"] = filesList[currentFileIndex].storage_filename
             } else {
                 body["tables"] = [table]
             }
@@ -123,7 +123,7 @@ function Chat() {
             {isFilesEnabled && filesList && currentFileIndex >= 0 && isFilesMode &&
                 <>
                     <Box position="fixed" left="0" top="80px">
-                        <PDFViewer fileUrl={filesList[currentFileIndex].url} page={currentPage} />
+                        <PDFViewer fileUrl={filesList[currentFileIndex].file_path} page={currentPage} />
                     </Box>
                     <Spacer />
                 </>
@@ -141,7 +141,6 @@ function Chat() {
 
                 {isFilesEnabled && filesList && (
                     <FilesHistory
-                        chat_id={chat!.id}
                         filesList={filesList}
                         currentFileIndex={currentFileIndex}
                         setCurrentFileIndex={setCurrentFileIndex}
@@ -197,11 +196,11 @@ function Chat() {
                 
                 {isFilesEnabled && isFilesMode && (
                     isFilesMode ? filesList && currentFileIndex >= 0 ? (
-                        <Text color="black">{filesList[currentFileIndex].name_ru}</Text>
+                        <Text color="black">{filesList[currentFileIndex].original_filename}</Text>
                     ) : (
                         <Text color="gray" fontStyle="italic">Выберите файл через кнопку «Документы»</Text>
                     ) : filesList && currentFileIndex >= 0 && (
-                        <Text color="gray">{filesList[currentFileIndex].name_ru}</Text>
+                        <Text color="gray">{filesList[currentFileIndex].original_filename}</Text>
                     )
                 )}                
             </Flex>

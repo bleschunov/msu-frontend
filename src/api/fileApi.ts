@@ -1,13 +1,13 @@
 import axiosClient from "api/axiosClient"
-import FileModel from "model/FileModel"
+import { FileModel, FileUploadModel } from 'model/FileModel'
 
-const getAllFiles = (chat_id: number): Promise<FileModel[]> => {
-    return axiosClient.get(`/file/${chat_id}`).then(response => response.data)
+const getAllFiles = (): Promise<FileModel[]> => {
+    return axiosClient.get(`/file`).then(response => response.data)
 }
 
-const uploadFile = (body: Omit<FileModel, "id" | "name_ru" | "name_en" | "url">): Promise<FileModel> => {
+const uploadFile = (body: FileUploadModel): Promise<FileModel> => {
     return axiosClient.postForm(
-        `/file/${body.chat_id}`,
+        `/file`,
         { fileObject: body.file },
         {
             headers: {

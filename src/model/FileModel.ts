@@ -1,10 +1,16 @@
 interface FileModel {
     id: number
-    name_ru: string
-    name_en: string
-    url: string
-    chat_id: number
+    tenant_id: number
+    original_filename: string
+    storage_filename: string
+    file_path: string
+}
+
+interface FileUploadModel {
     file: File
 }
 
-export default FileModel
+export type {
+    FileModel,
+    FileUploadModel
+}

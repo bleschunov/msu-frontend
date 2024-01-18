@@ -1,4 +1,4 @@
-import FileModel from "model/FileModel"
+import { FileModel } from "model/FileModel"
 import { FileUploadTaskModel } from "model/FileUploadTaskModel"
 
 interface IDeleteFileModal {
