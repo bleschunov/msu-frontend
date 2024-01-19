@@ -16,7 +16,6 @@ import {
     useDisclosure,
     useToast,
 } from "@chakra-ui/react"
-import { getDatabasePredictionConfig } from "api/databasePredictionConfigApi"
 import { getFavoriteMessages } from "api/messageApi"
 import { signOut } from "api/supabase"
 import { AdminModal } from "component/AdminModal"

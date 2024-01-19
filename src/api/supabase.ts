@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js"
-import Cookies from 'universal-cookie'
+import Cookies from "universal-cookie"
 
 const supabase = createClient(
     "https://jkhlwowgrekoqgvfruhq.supabase.co",

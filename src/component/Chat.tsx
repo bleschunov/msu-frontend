@@ -20,7 +20,6 @@ import { FileModel } from "model/FileModel"
 import { getAllFiles } from "api/fileApi"
 import QueryModel from "model/QueryModel"
 import LoadingMessage from "component/InputGroup/LoadingMessage"
-import { FaqModal } from "component/Faq/FaqModal"
 
 function Chat() {
     const messageWindowRef = useRef<HTMLDivElement | null>(null)

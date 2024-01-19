@@ -1,4 +1,4 @@
-import { ModeModel } from './ModeModel'
+import { ModeModel } from "model/ModeModel"
 
 interface TenantModel {
     id: number

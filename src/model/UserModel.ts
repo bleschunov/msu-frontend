@@ -1,5 +1,5 @@
-import { TenantModel } from './TenantModel'
-import { DatabasePredictionConfigModel } from './DatabasePredictionConfigModel'
+import { TenantModel } from "model/TenantModel"
+import { DatabasePredictionConfigModel } from "model/DatabasePredictionConfigModel"
 
 type ModeT = "wiki" | "databases"
 

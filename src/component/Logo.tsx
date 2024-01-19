@@ -1,6 +1,4 @@
 import { Image } from "@chakra-ui/react"
-import { getLogo } from "api/logoApi"
-import { useQuery } from "react-query"
 import { LOGO_DEFAULT_PATH } from "constant/logoDefaultPath"
 import { useContext } from "react"
 import { UserContext } from "context/userContext"
