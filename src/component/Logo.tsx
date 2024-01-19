@@ -1,5 +1,5 @@
 import { Image } from "@chakra-ui/react"
-import { getHostPath } from '../misc/util'
+import { getHostPath } from "misc/util"
 
 const getLogoPath = (): string => {
     const host = getHostPath()

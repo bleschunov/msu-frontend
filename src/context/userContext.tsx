@@ -3,7 +3,7 @@ import { useQuery } from "react-query"
 import { Grid, Spinner } from "@chakra-ui/react"
 import { getCurrentUser } from "api/userApi"
 import { UserModel } from "model/UserModel"
-import { signOut } from "api/supabase"
+import { signOut } from "api/authApi"
 
 const UserContext = createContext<UserModel>({} as UserModel)
 

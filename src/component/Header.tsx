@@ -29,7 +29,7 @@ import { AiOutlineDown } from "react-icons/ai"
 import { useQuery, useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
 import { FavoriteMessage } from "component/FavoriteMessage"
-import { signOut } from '../api/authApi'
+import { signOut } from "api/authApi"
 
 const Header = () => {
     const queryClient = useQueryClient()

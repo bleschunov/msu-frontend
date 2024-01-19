@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
 import { getBaseUrl } from "misc/util"
 import Cookies from "universal-cookie"
-import { signOut } from './authApi'
+import { signOut } from "api/authApi"
 
 const axiosClient: AxiosInstance = axios.create({
     baseURL: getBaseUrl()
