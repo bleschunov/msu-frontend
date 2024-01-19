@@ -7,6 +7,7 @@ import { FC, useEffect } from "react"
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
 import { VStack } from "@chakra-ui/react"
+import { getHostPath } from '../misc/util'
 
 interface IPDFViewer {
     fileUrl: string
@@ -14,12 +15,8 @@ interface IPDFViewer {
 }
 
 const getFullFilePath = (fileUrl: string): string => {
-    const host = process.env["REACT_APP_STATIC_URL"]
-    if (!host) {
-        throw Error("REACT_APP_STATIC_URL must be passed in .env.development or .env.production")
-    }
-
-    return `${process.env["REACT_APP_STATIC_URL"]}/${fileUrl}`
+    const host = getHostPath()
+    return `${host}/${fileUrl}`
 }
 
 export const PDFViewer: FC<IPDFViewer> = ({ page, fileUrl }) => {

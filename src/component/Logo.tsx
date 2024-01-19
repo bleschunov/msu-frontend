@@ -1,19 +1,13 @@
 import { Image } from "@chakra-ui/react"
-import { LOGO_DEFAULT_PATH } from "constant/logoDefaultPath"
-import { useContext } from "react"
-import { UserContext } from "context/userContext"
+import { getHostPath } from '../misc/util'
+
+const getLogoPath = (): string => {
+    const host = getHostPath()
+    return `${host}/logo/logo.svg`
+}
 
 const Logo = () => {
-    const user = useContext(UserContext)
-
-    const getLogoPath = () => {
-        if (user.tenants[0].logo) {
-            return user.tenants[0].logo
-        }
-        return LOGO_DEFAULT_PATH
-    }
-
-    return ( 
+    return (
         <Image src={getLogoPath()} alt="logo" />
     )
 }

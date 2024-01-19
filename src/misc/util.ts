@@ -11,6 +11,14 @@ const getBaseUrl = (): string => {
     return backend_url
 }
 
+const getHostPath = (): string => {
+    const host = process.env["REACT_APP_STATIC_URL"]
+    if (!host) {
+        throw Error("REACT_APP_STATIC_URL must be passed in .env.development or .env.production")
+    }
+    return host
+}
+
 const getLastN = (n: number, arr: ReactNode[]) => {
     return arr.slice(Math.max(arr.length - n, 0))
 }
@@ -33,5 +41,5 @@ const useSearchQuery = () => {
 export {
     formatDate, getBaseUrl,
     getLastN, sortDate,
-    useSearchQuery
+    useSearchQuery, getHostPath
 }

@@ -17,7 +17,6 @@ import {
     useToast,
 } from "@chakra-ui/react"
 import { getFavoriteMessages } from "api/messageApi"
-import { signOut } from "api/supabase"
 import { AdminModal } from "component/AdminModal"
 import Logo from "component/Logo"
 import { FavoriteMessageContext, IFavoriteMessageContext } from "context/favoriteMessageContext"
@@ -30,6 +29,7 @@ import { AiOutlineDown } from "react-icons/ai"
 import { useQuery, useQueryClient } from "react-query"
 import { useClearMessages } from "service/messageService"
 import { FavoriteMessage } from "component/FavoriteMessage"
+import { signOut } from '../api/authApi'
 
 const Header = () => {
     const queryClient = useQueryClient()
